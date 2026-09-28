@@ -11,7 +11,6 @@
 //! `.await`, and callers can invoke these synchronously from async handlers.
 
 use std::collections::HashMap;
-use std::env;
 use std::path::Path;
 use std::sync::Arc;
 
@@ -24,8 +23,10 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::auth::hash_password;
-use crate::models::{BoardRow, ColumnRow, SessionRow, SwimlaneRow, TaskRow, TimeEntryRow, UserRow};
+use crate::models::{
+    ActiveTimer, BoardRow, ColumnRow, SessionRow, Settings, SwimlaneRow, TaskRow, TimeEntryRow,
+    UserRow,
+};
 
 pub type DbResult<T> = Result<T, Box<dyn std::error::Error>>;
 
@@ -39,6 +40,10 @@ const COLUMNS: TableDefinition<&str, &[u8]> = TableDefinition::new("columns");
 const SWIMLANES: TableDefinition<&str, &[u8]> = TableDefinition::new("swimlanes");
 const TASKS: TableDefinition<&str, &[u8]> = TableDefinition::new("tasks");
 const TIME_ENTRIES: TableDefinition<&str, &[u8]> = TableDefinition::new("time_entries");
+/// Single-row table (`"app"` -> JSON [`Settings`]).
+const SETTINGS: TableDefinition<&str, &[u8]> = TableDefinition::new("settings");
+/// Single-row table (`"timer"` -> JSON [`ActiveTimer`]); absent when idle.
+const ACTIVE_TIMER: TableDefinition<&str, &[u8]> = TableDefinition::new("active_timer");
 
 // ---- Multimap indexes: parent id -> child id ----
 
@@ -153,12 +158,10 @@ fn mmap_get(
 }
 
 impl Db {
-    /// Open (creating when needed) the database file from `DATABASE_PATH`
-    /// (default `./data/kanban.redb`), create tables on first run, then seed
-    /// the admin user + starter board.
-    pub fn connect() -> DbResult<Self> {
-        let path = env::var("DATABASE_PATH").unwrap_or_else(|_| "./data/kanban.redb".to_string());
-
+    /// Open (creating when needed) the database file at `path`, create tables
+    /// on first run, then seed the starter board. The admin account is NOT
+    /// created here: the /setup page handles first-run account creation.
+    pub fn connect(path: &str) -> DbResult<Self> {
         // redb won't create missing parent directories itself.
         if let Some(parent) = Path::new(&path).parent() {
             if !parent.as_os_str().is_empty() {
@@ -177,6 +180,8 @@ impl Db {
             txn.open_table(SWIMLANES)?;
             txn.open_table(TASKS)?;
             txn.open_table(TIME_ENTRIES)?;
+            txn.open_table(SETTINGS)?;
+            txn.open_table(ACTIVE_TIMER)?;
             txn.open_multimap_table(COLUMNS_BY_BOARD)?;
             txn.open_multimap_table(SWIMLANES_BY_BOARD)?;
             txn.open_multimap_table(TASKS_BY_COLUMN)?;
@@ -189,19 +194,9 @@ impl Db {
         Ok(this)
     }
 
-    /// First-run seeding: admin user from `ADMIN_USER`/`ADMIN_PASS`, plus the
-    /// starter "General" board. Each part runs only when its table is empty,
-    /// so restarting never duplicates anything.
+    /// First-run seeding: the starter "General" board, created only when no
+    /// boards exist, so restarting never duplicates anything.
     fn seed(&self) -> DbResult<()> {
-        if self.table_len(USERS)? == 0 {
-            if let (Ok(username), Ok(password)) = (env::var("ADMIN_USER"), env::var("ADMIN_PASS")) {
-                if !username.trim().is_empty() && !password.is_empty() {
-                    let hash = hash_password(&password)?;
-                    self.create_user(username.trim(), &hash)?;
-                }
-            }
-        }
-
         if self.table_len(BOARDS)? == 0 {
             let board_id = self.create_board("General")?;
             let columns: [(&str, Option<i64>, bool); 4] = [
@@ -641,6 +636,8 @@ impl Db {
             created_at: Utc::now().to_rfc3339(),
             completed_at: None,
             total_minutes: 0,
+            pomodori_completed: 0,
+            interruptions: 0,
         };
         let txn = self.db.begin_write()?;
         write_one(&txn, TASKS, &id, &row)?;
@@ -821,19 +818,10 @@ impl Db {
     // ---- Time entries ----
 
     pub fn create_entry(&self, task_id: &str, minutes: i64, note: &str) -> DbResult<String> {
-        let id = Uuid::new_v4().to_string();
-        let row = TimeEntryRow {
-            id: id.clone(),
-            task_id: task_id.to_string(),
-            minutes,
-            note: note.to_string(),
-            started_at: Utc::now().to_rfc3339(),
-        };
-        let txn = self.db.begin_write()?;
-        write_one(&txn, TIME_ENTRIES, &id, &row)?;
-        mmap_insert(&txn, ENTRIES_BY_TASK, task_id, &id)?;
-        txn.commit()?;
-        Ok(id)
+        // log_time verifies the task exists first, so this always returns Some.
+        Ok(self
+            .create_entry_full(Some(task_id), minutes, note, "manual", false, None)?
+            .unwrap_or_default())
     }
 
     /// Time entries for a task, newest first.
@@ -850,5 +838,120 @@ impl Db {
                 .then_with(|| b.id.cmp(&a.id))
         });
         Ok(entries)
+    }
+
+    // ---- Settings & timer ----
+
+    pub fn user_count(&self) -> DbResult<u64> {
+        self.table_len(USERS)
+    }
+
+    /// App settings; defaults when never saved.
+    pub fn get_settings(&self) -> DbResult<Settings> {
+        let stored: Option<Settings> = read_one(&self.db, SETTINGS, "app")?;
+        Ok(stored.unwrap_or_default())
+    }
+
+    pub fn update_settings(&self, settings: &Settings) -> DbResult<()> {
+        let txn = self.db.begin_write()?;
+        write_one(&txn, SETTINGS, "app", settings)?;
+        txn.commit()?;
+        Ok(())
+    }
+
+    pub fn get_active_timer(&self) -> DbResult<Option<ActiveTimer>> {
+        read_one(&self.db, ACTIVE_TIMER, "timer")
+    }
+
+    pub fn set_active_timer(&self, timer: &ActiveTimer) -> DbResult<()> {
+        let txn = self.db.begin_write()?;
+        write_one(&txn, ACTIVE_TIMER, "timer", timer)?;
+        txn.commit()?;
+        Ok(())
+    }
+
+    pub fn clear_active_timer(&self) -> DbResult<()> {
+        let txn = self.db.begin_write()?;
+        {
+            let mut tbl = txn.open_table(ACTIVE_TIMER)?;
+            tbl.remove("timer")?;
+        }
+        txn.commit()?;
+        Ok(())
+    }
+
+    /// Bump a task's completed-pomodori counter. No-op when unknown.
+    pub fn record_pomodoro_complete(&self, task_id: &str) -> DbResult<()> {
+        mutate(&self.db, TASKS, task_id, |task: &mut TaskRow| {
+            task.pomodori_completed += 1;
+        })?;
+        Ok(())
+    }
+
+    /// Bump a task's interruption counter. No-op when unknown.
+    pub fn record_interruption(&self, task_id: &str) -> DbResult<()> {
+        mutate(&self.db, TASKS, task_id, |task: &mut TaskRow| {
+            task.interruptions += 1;
+        })?;
+        Ok(())
+    }
+
+    /// Create a time entry with full timer metadata. Returns `None` (and
+    /// writes nothing) when there is no task or the task is gone, so timer
+    /// sessions never leave orphan entries behind.
+    pub fn create_entry_full(
+        &self,
+        task_id: Option<&str>,
+        minutes: i64,
+        note: &str,
+        kind: &str,
+        interrupted: bool,
+        interrupt_reason: Option<&str>,
+    ) -> DbResult<Option<String>> {
+        let task_id = match task_id {
+            Some(id) if self.get_task(id)?.is_some() => id,
+            _ => return Ok(None),
+        };
+        let id = Uuid::new_v4().to_string();
+        let row = TimeEntryRow {
+            id: id.clone(),
+            task_id: task_id.to_string(),
+            minutes,
+            note: note.to_string(),
+            started_at: Utc::now().to_rfc3339(),
+            kind: kind.to_string(),
+            interrupted,
+            interrupt_reason: interrupt_reason.map(str::to_string),
+        };
+        let txn = self.db.begin_write()?;
+        write_one(&txn, TIME_ENTRIES, &id, &row)?;
+        mmap_insert(&txn, ENTRIES_BY_TASK, task_id, &id)?;
+        txn.commit()?;
+        Ok(Some(id))
+    }
+
+    /// Today's time entries (UTC date), newest first, with their task names.
+    pub fn entries_today(&self) -> DbResult<Vec<(TimeEntryRow, String)>> {
+        let today = Utc::now().format("%Y-%m-%d").to_string();
+        let txn = self.db.begin_read()?;
+        let tbl = txn.open_table(TIME_ENTRIES)?;
+        let mut out = Vec::new();
+        for item in tbl.iter()? {
+            let (_, value) = item?;
+            let entry: TimeEntryRow = serde_json::from_slice(value.value())?;
+            if entry.started_at.get(..10) == Some(today.as_str()) {
+                let name = self
+                    .get_task(&entry.task_id)?
+                    .map(|task| task.name)
+                    .unwrap_or_else(|| "(deleted task)".to_string());
+                out.push((entry, name));
+            }
+        }
+        out.sort_by(|a, b| {
+            b.0.started_at
+                .cmp(&a.0.started_at)
+                .then_with(|| b.0.id.cmp(&a.0.id))
+        });
+        Ok(out)
     }
 }

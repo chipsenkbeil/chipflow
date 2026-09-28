@@ -28,11 +28,12 @@ use crate::models::*;
 use crate::AppState;
 
 /// Build the full router. The auth middleware layer is added *before*
-/// `/login` and `/static` are registered, so those two stay public.
+/// `/login` and `/setup` are registered, so those two stay public.
 pub fn router(state: AppState) -> Router {
     let router = Router::new()
         .route("/", get(root))
         .route("/logout", post(logout))
+        .route("/settings", get(settings_page).post(settings_submit))
         .route("/b/:board_id", get(board_page))
         .route("/api/tasks", post(create_task))
         .route("/api/tasks/:id", patch(update_task).delete(delete_task))
@@ -40,6 +41,12 @@ pub fn router(state: AppState) -> Router {
         .route("/api/tasks/:id/modal", get(task_modal))
         .route("/api/tasks/:id/move", post(move_task))
         .route("/api/tasks/:id/time", post(log_time))
+        .route("/api/timer/start", post(timer_start))
+        .route("/api/timer/status", get(timer_status))
+        .route("/api/timer/stop", post(timer_stop))
+        .route("/api/timer/retarget", post(timer_retarget))
+        .route("/api/timer/today", get(timer_today))
+        .route("/api/settings", get(api_settings))
         .route("/api/columns", post(create_column))
         .route(
             "/api/columns/:id",
@@ -56,7 +63,8 @@ pub fn router(state: AppState) -> Router {
             state.clone(),
             auth::auth_middleware,
         ))
-        .route("/login", get(login_page).post(login_submit));
+        .route("/login", get(login_page).post(login_submit))
+        .route("/setup", get(setup_page).post(setup_submit));
     // Static assets (`static/app.js`, `static/style.css`): served from disk
     // in debug builds so edits show up without a rebuild; embedded in the
     // binary in release builds so `cargo install` produces a fully
@@ -166,6 +174,10 @@ struct TaskView {
     completed_at: Option<String>,
     /// "Sep 28" style rendering of `completed_at`, for cards.
     completed_display: Option<String>,
+    /// "Sep 28, 2026" style rendering of `created_at`, for the modal.
+    created_display: String,
+    pomodori_completed: u32,
+    interruptions: u32,
 }
 
 impl TaskView {
@@ -182,6 +194,11 @@ impl TaskView {
             total_minutes: row.total_minutes,
             completed_at: row.completed_at.clone(),
             completed_display: row.completed_at.as_deref().map(format_day),
+            created_display: DateTime::parse_from_rfc3339(&row.created_at)
+                .map(|dt| dt.with_timezone(&Local).format("%b %d, %Y").to_string())
+                .unwrap_or_else(|_| row.created_at.clone()),
+            pomodori_completed: row.pomodori_completed,
+            interruptions: row.interruptions,
         }
     }
 }
@@ -193,13 +210,13 @@ fn format_day(rfc3339: &str) -> String {
         .unwrap_or_else(|_| rfc3339.to_string())
 }
 
-/// Grouping label for completed tasks: Today / Yesterday / "Sep 27, 2026".
+/// Grouping label for completed tasks: Today / Yesterday / "Friday, 10 July".
 fn done_group_label(rfc3339: &str) -> String {
     let today = Local::now().date_naive();
     match DateTime::parse_from_rfc3339(rfc3339).map(|dt| dt.with_timezone(&Local).date_naive()) {
         Ok(date) if date == today => "Today".to_string(),
         Ok(date) if date == today - Duration::days(1) => "Yesterday".to_string(),
-        Ok(date) => date.format("%b %d, %Y").to_string(),
+        Ok(date) => date.format("%A, %-d %B").to_string(),
         Err(_) => rfc3339.to_string(),
     }
 }
@@ -269,6 +286,9 @@ struct TimeEntryView {
     minutes: i64,
     note: String,
     started_display: String,
+    kind_label: String,
+    interrupted: bool,
+    interrupt_reason: Option<String>,
 }
 
 #[derive(Template)]
@@ -282,7 +302,6 @@ struct TimeEntriesTemplate {
 struct ModalTemplate {
     task: TaskView,
     entries: Vec<TimeEntryView>,
-    pomodoro_minutes: u32,
     is_done: bool,
 }
 
@@ -299,16 +318,29 @@ fn fetch_entries(db: &Db, task_id: &str) -> Result<Vec<TimeEntryView>, AppError>
     let rows = db.list_entries(task_id).map_err(AppError::from)?;
     Ok(rows
         .into_iter()
-        .map(|row| TimeEntryView {
-            minutes: row.minutes,
-            note: row.note.clone(),
-            started_display: DateTime::parse_from_rfc3339(&row.started_at)
-                .map(|dt| {
-                    dt.with_timezone(&Local)
-                        .format("%b %d, %Y %H:%M")
-                        .to_string()
-                })
-                .unwrap_or(row.started_at),
+        .map(|row| {
+            let kind_label = match row.kind.as_str() {
+                "pomodoro" => "Pomodoro",
+                "stopwatch" => "Stopwatch",
+                "short_break" => "Short break",
+                "long_break" => "Long break",
+                _ => "Manual",
+            }
+            .to_string();
+            TimeEntryView {
+                minutes: row.minutes,
+                note: row.note.clone(),
+                started_display: DateTime::parse_from_rfc3339(&row.started_at)
+                    .map(|dt| {
+                        dt.with_timezone(&Local)
+                            .format("%b %d, %Y %H:%M")
+                            .to_string()
+                    })
+                    .unwrap_or(row.started_at),
+                kind_label,
+                interrupted: row.interrupted,
+                interrupt_reason: row.interrupt_reason.clone(),
+            }
         })
         .collect())
 }
@@ -531,6 +563,9 @@ async fn create_task(
             total_minutes: 0,
             completed_at: None,
             completed_display: None,
+            created_display: Local::now().format("%b %d, %Y").to_string(),
+            pomodori_completed: 0,
+            interruptions: 0,
         },
     })
 }
@@ -662,7 +697,6 @@ async fn task_modal(
     Ok(ModalTemplate {
         task,
         entries,
-        pomodoro_minutes: state.pomodoro_minutes,
         is_done,
     })
 }
@@ -938,4 +972,431 @@ async fn delete_swimlane(
     }
     db.delete_swimlane(&id).map_err(AppError::from)?;
     Ok(StatusCode::OK)
+}
+
+// ---- First-run setup ----
+
+#[derive(Template)]
+#[template(path = "setup.html")]
+struct SetupTemplate {
+    error: Option<String>,
+}
+
+/// First-run admin account creation. Unreachable once a user exists
+/// (the middleware redirects everything to /setup only while the user
+/// table is empty).
+async fn setup_page(State(state): State<AppState>) -> Result<Response, AppError> {
+    let count = state.db.user_count().map_err(AppError::from)?;
+    if count > 0 {
+        return Ok(Redirect::to("/").into_response());
+    }
+    Ok(SetupTemplate { error: None }.into_response())
+}
+
+#[derive(Deserialize)]
+struct SetupForm {
+    username: String,
+    password: String,
+    confirm: String,
+}
+
+async fn setup_submit(
+    State(state): State<AppState>,
+    Form(form): Form<SetupForm>,
+) -> Result<Response, AppError> {
+    let db = &state.db;
+    if db.user_count().map_err(AppError::from)? > 0 {
+        return Ok(Redirect::to("/").into_response());
+    }
+
+    let username = form.username.trim().to_string();
+    let error = if username.is_empty() {
+        Some("Choose a username.".to_string())
+    } else if form.password.len() < 8 {
+        Some("Password must be at least 8 characters.".to_string())
+    } else if form.password != form.confirm {
+        Some("Passwords do not match.".to_string())
+    } else {
+        None
+    };
+    if let Some(error) = error {
+        return Ok(SetupTemplate {
+            error: Some(error),
+        }
+        .into_response());
+    }
+
+    let hash = auth::hash_password(&form.password).map_err(AppError::from)?;
+    db.create_user(&username, &hash).map_err(AppError::from)?;
+    Ok(Redirect::to("/login").into_response())
+}
+
+// ---- Settings ----
+
+#[derive(Template)]
+#[template(path = "settings.html")]
+struct SettingsTemplate {
+    settings: Settings,
+    saved: bool,
+}
+
+async fn settings_page(
+    State(state): State<AppState>,
+    Extension(user): Extension<AuthUser>,
+    Query(query): Query<HashMap<String, String>>,
+) -> Result<SettingsTemplate, AppError> {
+    let settings = state.db.get_settings().map_err(AppError::from)?;
+    let _ = user;
+    Ok(SettingsTemplate {
+        settings,
+        saved: query.contains_key("saved"),
+    })
+}
+
+#[derive(Deserialize)]
+struct SettingsForm {
+    pomodoro_minutes: u32,
+    short_break_minutes: u32,
+    long_break_minutes: u32,
+    long_break_every: u32,
+    ding_enabled: Option<String>,
+    notifications_enabled: Option<String>,
+    interrupt_reasons: String,
+}
+
+async fn settings_submit(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+    Form(form): Form<SettingsForm>,
+) -> Result<Response, AppError> {
+    let clamp_minutes = |value: u32, fallback: u32| {
+        if (1..=180).contains(&value) {
+            value
+        } else {
+            fallback
+        }
+    };
+    let defaults = Settings::default();
+    let reasons: Vec<String> = form
+        .interrupt_reasons
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect();
+    let settings = Settings {
+        pomodoro_minutes: clamp_minutes(form.pomodoro_minutes, defaults.pomodoro_minutes),
+        short_break_minutes: clamp_minutes(form.short_break_minutes, defaults.short_break_minutes),
+        long_break_minutes: clamp_minutes(form.long_break_minutes, defaults.long_break_minutes),
+        long_break_every: form.long_break_every.clamp(1, 12),
+        ding_enabled: form.ding_enabled.as_deref() == Some("on"),
+        notifications_enabled: form.notifications_enabled.as_deref() == Some("on"),
+        interrupt_reasons: if reasons.is_empty() {
+            defaults.interrupt_reasons
+        } else {
+            reasons
+        },
+    };
+    state
+        .db
+        .update_settings(&settings)
+        .map_err(AppError::from)?;
+    Ok(Redirect::to("/settings?saved=1").into_response())
+}
+
+/// Settings as JSON for the timer JavaScript.
+async fn api_settings(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+) -> Result<Json<Settings>, AppError> {
+    Ok(Json(state.db.get_settings().map_err(AppError::from)?))
+}
+
+// ---- Timer ----
+
+/// Timer status for the header pill and popup, with everything the
+/// JavaScript needs to render without another round trip.
+#[derive(serde::Serialize)]
+struct TimerStatusView {
+    active: bool,
+    mode: Option<String>,
+    mode_title: Option<String>,
+    task_id: Option<String>,
+    task_name: Option<String>,
+    started_at: Option<i64>,
+    duration_secs: Option<u64>,
+}
+
+fn timer_status_view(
+    db: &Db,
+    timer: Option<ActiveTimer>,
+) -> Result<TimerStatusView, AppError> {
+    match timer {
+        None => Ok(TimerStatusView {
+            active: false,
+            mode: None,
+            mode_title: None,
+            task_id: None,
+            task_name: None,
+            started_at: None,
+            duration_secs: None,
+        }),
+        Some(timer) => {
+            let task_name = match timer.task_id.as_deref() {
+                Some(id) => db
+                    .get_task(id)
+                    .map_err(AppError::from)?
+                    .map(|task| task.name),
+                None => None,
+            };
+            // If the task was deleted mid-session, drop the timer quietly.
+            if timer.task_id.is_some() && task_name.is_none() {
+                db.clear_active_timer().map_err(AppError::from)?;
+                return Ok(TimerStatusView {
+                    active: false,
+                    mode: None,
+                    mode_title: None,
+                    task_id: None,
+                    task_name: None,
+                    started_at: None,
+                    duration_secs: None,
+                });
+            }
+            Ok(TimerStatusView {
+                active: true,
+                mode: Some(timer.mode.as_str().to_string()),
+                mode_title: Some(timer.mode.title().to_string()),
+                task_id: timer.task_id,
+                task_name,
+                started_at: Some(timer.started_at),
+                duration_secs: timer.duration_secs,
+            })
+        }
+    }
+}
+
+async fn timer_status(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+) -> Result<Json<TimerStatusView>, AppError> {
+    let timer = state.db.get_active_timer().map_err(AppError::from)?;
+    Ok(Json(timer_status_view(&state.db, timer)?))
+}
+
+#[derive(Deserialize)]
+struct TimerStartInput {
+    task_id: Option<String>,
+    mode: String,
+}
+
+/// Start a timer, replacing any active one. A replaced session of 20+
+/// seconds is logged as interrupted ("Switched task") so no work time
+/// silently vanishes; shorter ones are discarded.
+async fn timer_start(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Result<Json<TimerStatusView>, AppError> {
+    let input: TimerStartInput = parse_body(&headers, body).await?;
+    let db = &state.db;
+
+    let mode = TimerMode::from_str(&input.mode)
+        .ok_or_else(|| AppError::bad_request("unknown timer mode"))?;
+    if let Some(task_id) = input.task_id.as_deref() {
+        if db.get_task(task_id).map_err(AppError::from)?.is_none() {
+            return Err(AppError::not_found("task not found"));
+        }
+    }
+
+    // Retire any running timer first, with the same logging rules as stop.
+    if let Some(old) = db.get_active_timer().map_err(AppError::from)? {
+        log_timer_session(db, &old, false, Some("Switched task"))?;
+    }
+
+    let settings = db.get_settings().map_err(AppError::from)?;
+    let duration_secs = match mode {
+        TimerMode::Pomodoro => Some(u64::from(settings.pomodoro_minutes) * 60),
+        TimerMode::ShortBreak => Some(u64::from(settings.short_break_minutes) * 60),
+        TimerMode::LongBreak => Some(u64::from(settings.long_break_minutes) * 60),
+        TimerMode::Stopwatch => None,
+    };
+    let timer = ActiveTimer {
+        task_id: input.task_id,
+        mode,
+        started_at: chrono::Utc::now().timestamp(),
+        duration_secs,
+    };
+    db.set_active_timer(&timer).map_err(AppError::from)?;
+    Ok(Json(timer_status_view(db, Some(timer))?))
+}
+
+#[derive(Deserialize)]
+struct TimerStopInput {
+    /// True when the timer ran to zero on its own.
+    completed: bool,
+    /// Why a pomodoro was stopped early ("Why did you stop?").
+    reason: Option<String>,
+}
+
+/// Stop the active timer and log the session. Sessions under 20 seconds
+/// are discarded (KanbanFlow does the same). A finished pomodoro bumps the
+/// task's pomodori counter; an early stop bumps its interruptions.
+async fn timer_stop(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Result<Json<serde_json::Value>, AppError> {
+    let input: TimerStopInput = parse_body(&headers, body).await?;
+    let db = &state.db;
+
+    let timer = db
+        .get_active_timer()
+        .map_err(AppError::from)?
+        .ok_or_else(|| AppError::not_found("no active timer"))?;
+    let logged = log_timer_session(db, &timer, input.completed, input.reason.as_deref())?;
+
+    // Remember custom "why did you stop?" reasons for next time.
+    if let Some(reason) = input.reason.as_deref() {
+        let reason = reason.trim();
+        if !reason.is_empty() {
+            let mut settings = db.get_settings().map_err(AppError::from)?;
+            if !settings
+                .interrupt_reasons
+                .iter()
+                .any(|existing| existing.eq_ignore_ascii_case(reason))
+            {
+                // Keep the fixed list tidy: custom reasons slot in before
+                // the trailing "Task done".
+                let at = settings
+                    .interrupt_reasons
+                    .iter()
+                    .position(|existing| existing == "Task done")
+                    .unwrap_or(settings.interrupt_reasons.len());
+                settings.interrupt_reasons.insert(at, reason.to_string());
+                db.update_settings(&settings).map_err(AppError::from)?;
+            }
+        }
+    }
+
+    Ok(Json(serde_json::json!({
+        "discarded": logged.is_none(),
+        "minutes": logged,
+        "completed": input.completed,
+    })))
+}
+
+/// Shared stop logic for timer_stop and timer_start's replacement path.
+/// Returns the logged minutes, or None when the session was discarded.
+fn log_timer_session(
+    db: &Db,
+    timer: &ActiveTimer,
+    completed: bool,
+    reason: Option<&str>,
+) -> Result<Option<i64>, AppError> {
+    let elapsed = (chrono::Utc::now().timestamp() - timer.started_at).max(0);
+    db.clear_active_timer().map_err(AppError::from)?;
+    if elapsed < 20 {
+        return Ok(None);
+    }
+    let minutes = ((elapsed + 30) / 60).max(1);
+    let interrupted =
+        !completed && matches!(timer.mode, TimerMode::Pomodoro | TimerMode::Stopwatch);
+
+    if let Some(task_id) = timer.task_id.as_deref() {
+        db.create_entry_full(
+            Some(task_id),
+            minutes,
+            "",
+            timer.mode.entry_kind(),
+            interrupted,
+            reason,
+        )
+        .map_err(AppError::from)?;
+        match timer.mode {
+            TimerMode::Pomodoro if completed => {
+                db.record_pomodoro_complete(task_id).map_err(AppError::from)?;
+            }
+            TimerMode::Pomodoro => {
+                db.record_interruption(task_id).map_err(AppError::from)?;
+            }
+            _ => {}
+        }
+    }
+    Ok(Some(minutes))
+}
+
+#[derive(Deserialize)]
+struct TimerRetargetInput {
+    task_id: Option<String>,
+}
+
+/// Point the active timer at a different task ("Change task").
+async fn timer_retarget(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Result<Json<TimerStatusView>, AppError> {
+    let input: TimerRetargetInput = parse_body(&headers, body).await?;
+    let db = &state.db;
+
+    if let Some(task_id) = input.task_id.as_deref() {
+        if db.get_task(task_id).map_err(AppError::from)?.is_none() {
+            return Err(AppError::not_found("task not found"));
+        }
+    }
+    let mut timer = db
+        .get_active_timer()
+        .map_err(AppError::from)?
+        .ok_or_else(|| AppError::not_found("no active timer"))?;
+    timer.task_id = input.task_id;
+    db.set_active_timer(&timer).map_err(AppError::from)?;
+    Ok(Json(timer_status_view(db, Some(timer))?))
+}
+
+#[derive(serde::Serialize)]
+struct TodayEntryView {
+    task_name: String,
+    minutes: i64,
+    kind: String,
+    kind_label: String,
+    started_display: String,
+    interrupted: bool,
+    interrupt_reason: Option<String>,
+}
+
+/// Today's logged sessions for the timer popup's "Today" list.
+async fn timer_today(
+    State(state): State<AppState>,
+    Extension(_user): Extension<AuthUser>,
+) -> Result<Json<Vec<TodayEntryView>>, AppError> {
+    let rows = state.db.entries_today().map_err(AppError::from)?;
+    let entries = rows
+        .into_iter()
+        .map(|(entry, task_name)| {
+            let kind_label = match entry.kind.as_str() {
+                "pomodoro" => "Pomodoro",
+                "stopwatch" => "Stopwatch",
+                "short_break" => "Short break",
+                "long_break" => "Long break",
+                _ => "Time",
+            }
+            .to_string();
+            let started_display = DateTime::parse_from_rfc3339(&entry.started_at)
+                .map(|dt| dt.with_timezone(&Local).format("%-I:%M %p").to_string())
+                .unwrap_or(entry.started_at.clone());
+            TodayEntryView {
+                task_name,
+                minutes: entry.minutes,
+                kind: entry.kind,
+                kind_label,
+                started_display,
+                interrupted: entry.interrupted,
+                interrupt_reason: entry.interrupt_reason,
+            }
+        })
+        .collect();
+    Ok(Json(entries))
 }

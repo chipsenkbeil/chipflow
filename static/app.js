@@ -1,12 +1,15 @@
-/* Pomodoro Kanban frontend glue: drag-and-drop, task modal, pomodoro timer.
+/* ChipFlow frontend glue: drag-and-drop, task modal, and the global timer.
  * No framework — plain JS plus SortableJS (drag-and-drop) and htmx
- * (add-task forms, rendered server-side). */
+ * (add-task forms, rendered server-side).
+ *
+ * The timer is server-side: one active session, so it survives page
+ * reloads. This file polls it, renders the header pill + popup, and
+ * handles the "why did you stop?" flow. */
 (function () {
   'use strict';
 
   var dragging = false;   // true while a Sortable drag is in flight (suppresses card clicks)
   var modalDirty = false; // set when the modal changed something; reloads the board on close
-  var timer = null;       // active timer state, or null
 
   // ---------- drag and drop ----------
 
@@ -64,15 +67,22 @@
       .catch(function () { /* leave the board as-is on failure */ });
   }
 
+  function refreshModal() {
+    var id = modalTaskId();
+    if (id) openModal(id);
+  }
+
   function closeModal() {
-    stopTimer();
     document.removeEventListener('keydown', escHandler);
     document.getElementById('modal-root').innerHTML = '';
     if (modalDirty) window.location.reload();
   }
 
   function escHandler(e) {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      if (!document.getElementById('why-stop-menu').hidden) TimerUI.closeWhyMenu();
+      else closeModal();
+    }
   }
 
   function wireModal() {
@@ -124,8 +134,6 @@
         })
         .catch(function () { /* keep the form open on failure */ });
     });
-
-    initTimer();
   }
 
   function saveModalTask() {
@@ -149,84 +157,401 @@
       });
   }
 
-  // ---------- pomodoro timer ----------
-
-  function initTimer() {
-    var modal = document.querySelector('#modal-root .modal');
-    if (!modal) return;
-    var total = parseInt(modal.dataset.pomodoroMinutes, 10) * 60;
-    if (!total || total <= 0) total = 1500;
-    timer = { total: total, remaining: total, interval: null, taskId: modal.dataset.taskId };
-    renderTimer();
-    document.getElementById('timer-start').addEventListener('click', startTimer);
-    document.getElementById('timer-pause').addEventListener('click', pauseTimer);
-    document.getElementById('timer-reset').addEventListener('click', resetTimer);
+  function toggleTimerMenu(e) {
+    e.stopPropagation();
+    var menu = document.getElementById('timer-menu');
+    menu.hidden = !menu.hidden;
   }
 
-  function renderTimer() {
-    var display = document.getElementById('timer-display');
-    if (!display || !timer) return;
-    var m = Math.floor(timer.remaining / 60);
-    var s = timer.remaining % 60;
-    display.textContent =
-      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-    var running = timer.interval !== null;
-    document.getElementById('timer-start').disabled = running;
-    document.getElementById('timer-pause').disabled = !running;
+  function scrollToTimeLog() {
+    var menu = document.getElementById('timer-menu');
+    if (menu) menu.hidden = true;
+    var heading = document.getElementById('time-log-heading');
+    if (heading) heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function startTimer() {
-    if (!timer || timer.interval !== null) return;
-    timer.interval = window.setInterval(function () {
-      timer.remaining -= 1;
-      if (timer.remaining <= 0) { finishTimer(); return; }
-      renderTimer();
-    }, 1000);
-    renderTimer();
+  // ---------- toast ----------
+
+  var toastTimer = null;
+  function toast(message) {
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = message;
+    el.hidden = false;
+    if (toastTimer) window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () { el.hidden = true; }, 4000);
   }
 
-  function pauseTimer() {
-    if (!timer || timer.interval === null) return;
-    window.clearInterval(timer.interval);
-    timer.interval = null;
-    renderTimer();
-  }
+  // ---------- global timer ----------
 
-  function resetTimer() {
-    if (!timer) return;
-    pauseTimer();
-    timer.remaining = timer.total;
-    renderTimer();
-  }
+  var MODE_COLORS = {
+    pomodoro: '#e57373',
+    stopwatch: '#64b5f6',
+    short_break: '#81c784',
+    long_break: '#4db6ac',
+  };
 
-  function stopTimer() {
-    if (timer && timer.interval !== null) window.clearInterval(timer.interval);
-    timer = null;
-  }
+  var TimerUI = {
+    settings: null,
+    state: { active: false },
+    tickHandle: null,
+    endNotified: false,
+    popupOpen: false,
 
-  // When the countdown hits zero, auto-log one pomodoro on the task.
-  function finishTimer() {
-    var taskId = timer.taskId;
-    var minutes = Math.round(timer.total / 60);
-    window.clearInterval(timer.interval);
-    timer.interval = null;
-    timer.remaining = timer.total;
-    renderTimer();
-    var display = document.getElementById('timer-display');
-    if (display) display.textContent = 'Done!';
-    fetch('/api/tasks/' + encodeURIComponent(taskId) + '/time', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ minutes: minutes, note: 'Pomodoro' }),
-    })
-      .then(function (res) { return res.ok ? res.text() : Promise.reject(res.status); })
-      .then(function (html) {
-        var entries = document.getElementById('time-entries');
-        if (entries) entries.innerHTML = html;
-        modalDirty = true;
+    init: function () {
+      var pill = document.getElementById('timer-pill');
+      if (!pill) return; // not on a board page
+      var self = this;
+      Promise.all([
+        fetch('/api/settings').then(function (r) { return r.json(); }),
+        fetch('/api/timer/status').then(function (r) { return r.json(); }),
+      ]).then(function (results) {
+        self.settings = results[0];
+        self.setState(results[1]);
+        self.tickHandle = window.setInterval(function () { self.tick(); }, 1000);
+        self.refreshToday();
+      }).catch(function () { /* timer stays hidden when offline */ });
+      pill.addEventListener('click', function () { self.togglePopup(); });
+      document.addEventListener('click', function (e) {
+        var popup = document.getElementById('timer-popup');
+        var why = document.getElementById('why-stop-menu');
+        if (!popup.hidden && !popup.contains(e.target) && !pill.contains(e.target)) {
+          self.closePopup();
+        }
+        if (!why.hidden && !why.contains(e.target) && !e.target.closest('#timer-popup-stop')) {
+          self.closeWhyMenu();
+        }
+      });
+    },
+
+    setState: function (state) {
+      this.state = state;
+      this.endNotified = false;
+      this.render();
+    },
+
+    elapsedSecs: function () {
+      if (!this.state.active || !this.state.started_at) return 0;
+      return Math.max(0, Math.floor(Date.now() / 1000) - this.state.started_at);
+    },
+
+    fmt: function (totalSecs) {
+      var m = Math.floor(totalSecs / 60);
+      var s = totalSecs % 60;
+      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    },
+
+    tick: function () {
+      if (!this.state.active) return;
+      var elapsed = this.elapsedSecs();
+      var dur = this.state.duration_secs;
+      // Natural end: ding + notification once, then count overtime.
+      if (dur != null && elapsed >= dur && !this.endNotified) {
+        this.endNotified = true;
+        this.onNaturalEnd();
+      }
+      this.renderClock();
+    },
+
+    onNaturalEnd: function () {
+      var title = this.state.mode_title || 'Timer';
+      if (this.settings && this.settings.ding_enabled) this.ding();
+      this.notify(title + ' finished', this.endBody());
+      // After a pomodoro, offer a break in the popup.
+      var breaks = document.getElementById('timer-popup-breaks');
+      if (breaks && this.state.mode === 'pomodoro') breaks.hidden = false;
+    },
+
+    endBody: function () {
+      switch (this.state.mode) {
+        case 'pomodoro': return 'Time for a break.';
+        case 'short_break':
+        case 'long_break': return 'Break over — back to it.';
+        default: return '';
+      }
+    },
+
+    ding: function () {
+      try {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        var ctx = new Ctx();
+        var t = ctx.currentTime;
+        [880, 1174.66].forEach(function (freq, i) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          var start = t + i * 0.4;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.4, start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.7);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + 0.8);
+        });
+      } catch (e) { /* audio unavailable — stay silent */ }
+    },
+
+    notify: function (title, body) {
+      if (!this.settings || !this.settings.notifications_enabled) return;
+      try {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted') {
+          new Notification('ChipFlow', { body: body ? title + ' — ' + body : title });
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission();
+        }
+      } catch (e) { /* notifications unavailable */ }
+    },
+
+    render: function () {
+      var pill = document.getElementById('timer-pill');
+      if (!pill) return;
+      if (!this.state.active) {
+        pill.hidden = true;
+        document.title = document.title.replace(/^\([\d:+]+\) /, '');
+        return;
+      }
+      pill.hidden = false;
+      var dot = document.getElementById('timer-pill-dot');
+      dot.style.background = MODE_COLORS[this.state.mode] || '#e57373';
+      document.getElementById('timer-popup-title').textContent = this.state.mode_title || 'Timer';
+      var label = document.getElementById('timer-popup-label');
+      label.textContent = this.state.mode === 'stopwatch' ? 'Elapsed'
+        : this.state.mode === 'pomodoro' ? 'Time until break'
+        : 'Time remaining';
+      var name = document.getElementById('timer-popup-task-name');
+      name.textContent = this.state.task_name || 'No task';
+      this.renderClock();
+    },
+
+    renderClock: function () {
+      if (!this.state.active) return;
+      var elapsed = this.elapsedSecs();
+      var dur = this.state.duration_secs;
+      var text, title;
+      if (dur != null && elapsed >= dur) {
+        var over = elapsed - dur;
+        text = '+' + this.fmt(over);
+        title = '(' + text + ') ChipFlow';
+      } else if (dur != null) {
+        text = this.fmt(dur - elapsed);
+        title = '(' + text + ') ChipFlow';
+      } else {
+        text = this.fmt(elapsed);
+        title = '(' + text + ') ChipFlow';
+      }
+      document.getElementById('timer-pill-time').textContent = text;
+      document.getElementById('timer-popup-time').textContent = text;
+      document.title = title;
+    },
+
+    // ----- popup -----
+
+    togglePopup: function () {
+      if (this.popupOpen) this.closePopup();
+      else this.openPopup();
+    },
+
+    openPopup: function () {
+      this.popupOpen = true;
+      document.getElementById('timer-popup').hidden = false;
+      this.refreshToday();
+    },
+
+    closePopup: function () {
+      this.popupOpen = false;
+      document.getElementById('timer-popup').hidden = true;
+    },
+
+    openLog: function () {
+      this.openPopup();
+    },
+
+    refreshToday: function () {
+      var self = this;
+      fetch('/api/timer/today')
+        .then(function (r) { return r.json(); })
+        .then(function (entries) {
+          var list = document.getElementById('timer-today-list');
+          if (!list) return;
+          if (!entries.length) {
+            list.innerHTML = '<p class="empty-note">Nothing logged today yet.</p>';
+            return;
+          }
+          list.innerHTML = entries.map(function (e) {
+            var flag = e.interrupted ? ' &#9888;' : '';
+            var reason = e.interrupt_reason
+              ? ' <span class="today-reason">(' + escapeHtml(e.interrupt_reason) + ')</span>'
+              : '';
+            return '<div class="today-entry"><span class="today-dot" style="background:' +
+              (MODE_COLORS[e.kind] || '#ccc') + '"></span><span class="today-task">' +
+              escapeHtml(e.task_name) + '</span><span class="today-meta">' +
+              escapeHtml(e.started_display) + ' &mdash; ' + e.minutes + 'm ' +
+              escapeHtml(e.kind_label) + flag + '</span>' + reason + '</div>';
+          }).join('');
+        })
+        .catch(function () { /* leave the list as-is */ });
+    },
+
+    // ----- starting -----
+
+    start: function (mode, taskId) {
+      var self = this;
+      fetch('/api/timer/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_id: taskId || null, mode: mode }),
       })
-      .catch(function () { /* timer still resets below */ });
-    window.setTimeout(renderTimer, 2000);
+        .then(function (res) { return res.ok ? res.json() : Promise.reject(res.status); })
+        .then(function (status) {
+          self.setState(status);
+          document.getElementById('timer-popup-breaks').hidden = true;
+          if (!self.popupOpen) self.openPopup();
+        })
+        .catch(function () { toast('Could not start the timer.'); });
+    },
+
+    startForTask: function (mode) {
+      var menu = document.getElementById('timer-menu');
+      if (menu) menu.hidden = true;
+      this.start(mode, modalTaskId());
+    },
+
+    startBreak: function (mode) {
+      this.start(mode, null);
+    },
+
+    changeTask: function () {
+      var self = this;
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.task-card'));
+      if (!cards.length) { toast('No tasks on this board.'); return; }
+      var lines = cards.map(function (card, i) {
+        var name = card.querySelector('.task-name');
+        return (i + 1) + '. ' + (name ? name.textContent.trim() : card.dataset.taskId);
+      });
+      var raw = window.prompt('Move the timer to which task?\n' + lines.join('\n'));
+      if (!raw) return;
+      var index = parseInt(raw, 10) - 1;
+      var card = cards[index];
+      if (!card) { toast('No such task.'); return; }
+      fetch('/api/timer/retarget', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_id: card.dataset.taskId }),
+      })
+        .then(function (res) { return res.ok ? res.json() : Promise.reject(res.status); })
+        .then(function (status) { self.setState(status); })
+        .catch(function () { toast('Could not change task.'); });
+    },
+
+    addTime: function () {
+      var taskId = this.state.task_id;
+      if (!taskId) { toast('Start the timer on a task first.'); return; }
+      var raw = window.prompt('Minutes to add:');
+      if (raw === null) return;
+      var minutes = parseInt(raw, 10);
+      if (!minutes || minutes < 1 || minutes > 1440) {
+        toast('Enter 1–1440 minutes.');
+        return;
+      }
+      var note = window.prompt('Note (optional):') || '';
+      fetch('/api/tasks/' + encodeURIComponent(taskId) + '/time', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ minutes: minutes, note: note }),
+      }).then(function (res) {
+        if (res.ok) { TimerUI.refreshToday(); modalDirty = true; }
+        else toast('Could not add time.');
+      });
+    },
+
+    // ----- stopping -----
+
+    stopClicked: function () {
+      if (!this.state.active) return;
+      var elapsed = this.elapsedSecs();
+      var dur = this.state.duration_secs;
+      var completed = dur != null && elapsed >= dur;
+      // Pomodoro stopped early -> "Why did you stop?". Everything else
+      // (breaks, stopwatch, completed pomodoro) stops directly.
+      if (this.state.mode === 'pomodoro' && !completed) {
+        this.openWhyMenu();
+      } else {
+        this.confirmStop(true, null);
+      }
+    },
+
+    openWhyMenu: function () {
+      var self = this;
+      var menu = document.getElementById('why-stop-menu');
+      var box = document.getElementById('why-stop-reasons');
+      var reasons = (this.settings && this.settings.interrupt_reasons) || [];
+      box.innerHTML = '';
+      reasons.forEach(function (reason) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = reason;
+        btn.addEventListener('click', function () { self.confirmStop(false, reason); });
+        box.appendChild(btn);
+      });
+      var add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'why-add';
+      add.textContent = 'Add new reason...';
+      add.addEventListener('click', function () {
+        var custom = window.prompt('Reason for stopping:');
+        if (custom && custom.trim()) self.confirmStop(false, custom.trim());
+      });
+      box.appendChild(add);
+      menu.hidden = false;
+    },
+
+    closeWhyMenu: function () {
+      document.getElementById('why-stop-menu').hidden = true;
+    },
+
+    confirmStop: function (completed, reason) {
+      var self = this;
+      this.closeWhyMenu();
+      fetch('/api/timer/stop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: completed, reason: reason || null }),
+      })
+        .then(function (res) { return res.ok ? res.json() : Promise.reject(res.status); })
+        .then(function (result) {
+          return fetch('/api/timer/status')
+            .then(function (r) { return r.json(); })
+            .then(function (status) { return { result: result, status: status }; });
+        })
+        .then(function (both) {
+          var wasMode = self.state.mode;
+          self.setState(both.status);
+          self.refreshToday();
+          if (both.result.discarded) {
+            toast('Session discarded — session lasted less than 20 seconds.');
+          } else if (both.result.completed && wasMode === 'pomodoro') {
+            var breaks = document.getElementById('timer-popup-breaks');
+            if (breaks) breaks.hidden = false;
+            if (!self.popupOpen) self.openPopup();
+            toast('Pomodoro complete — time for a break.');
+          }
+          // Refresh the modal so pomodori/interruption counts update.
+          if (modalTaskId()) refreshModal();
+          else modalDirty = true;
+        })
+        .catch(function () { toast('Could not stop the timer.'); });
+    },
+  };
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   // ---------- add-task affordance ----------
@@ -370,7 +695,7 @@
   // interactive elements inside a card).
   document.addEventListener('click', function (e) {
     if (dragging) return;
-    if (e.target.closest('button, a, input, select, textarea, form, .modal')) return;
+    if (e.target.closest('button, a, input, select, textarea, form, .modal, .timer-popup, .why-stop-menu')) return;
     var card = e.target.closest('.task-card');
     if (card && card.dataset.taskId) openModal(card.dataset.taskId);
   });
@@ -384,8 +709,18 @@
     }
   });
 
-  document.addEventListener('DOMContentLoaded', initSortable);
+  // Timer menu in the modal rail closes when clicking elsewhere.
+  document.addEventListener('click', function (e) {
+    var menu = document.getElementById('timer-menu');
+    if (menu && !menu.hidden && !e.target.closest('.km-rail-btn-wrap')) menu.hidden = true;
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initSortable();
+    TimerUI.init();
+  });
   if (document.querySelector('.task-list')) initSortable(); // in case DOMContentLoaded already fired
+  TimerUI.init();
 
   // Called from inline onclick handlers in the templates.
   window.showAddForm = showAddForm;
@@ -393,6 +728,8 @@
   window.closeModal = closeModal;
   window.saveModalTask = saveModalTask;
   window.deleteModalTask = deleteModalTask;
+  window.toggleTimerMenu = toggleTimerMenu;
+  window.scrollToTimeLog = scrollToTimeLog;
   window.addColumn = addColumn;
   window.renameColumn = renameColumn;
   window.setWipLimit = setWipLimit;
@@ -403,4 +740,5 @@
   window.renameSwimlane = renameSwimlane;
   window.moveSwimlane = moveSwimlane;
   window.deleteSwimlane = deleteSwimlane;
+  window.TimerUI = TimerUI;
 })();

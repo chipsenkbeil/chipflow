@@ -1,15 +1,59 @@
 {% extends "base.html" %}
-{% block title %}{{ board_name }} &mdash; Pomodoro Kanban{% endblock %}
+{% block title %}{{ board_name }} &mdash; ChipFlow{% endblock %}
 {% block content %}
 <header class="topbar">
-  <h1>{{ board_name }}</h1>
+  <h1>&#127813; {{ board_name }}</h1>
   <div class="topbar-right">
+    <button type="button" id="timer-pill" class="timer-pill" hidden aria-label="Timer">
+      <span id="timer-pill-dot" class="timer-pill-dot"></span>
+      <span id="timer-pill-time">--:--</span>
+    </button>
     <span class="user">{{ username }}</span>
+    <a href="/settings" class="btn btn-ghost" aria-label="Settings">&#9881;</a>
     <form method="post" action="/logout" class="logout-form">
       <button type="submit" class="btn btn-ghost">Log out</button>
     </form>
   </div>
 </header>
+
+<div id="timer-popup" class="timer-popup" hidden>
+  <div class="timer-popup-head">
+    <span id="timer-popup-title">Pomodoro</span>
+    <button type="button" class="timer-popup-close" onclick="TimerUI.closePopup()" aria-label="Close">&times;</button>
+  </div>
+  <div class="timer-popup-time-label" id="timer-popup-label">Time until break</div>
+  <div class="timer-popup-clock">
+    <span id="timer-popup-time">--:--</span>
+    <button type="button" id="timer-popup-stop" class="btn btn-danger" onclick="TimerUI.stopClicked()">&#9632; Stop</button>
+  </div>
+  <div class="timer-popup-task" id="timer-popup-task-row">
+    <span id="timer-popup-task-dot" class="task-dot"></span>
+    <span id="timer-popup-task-name">No task</span>
+    <button type="button" class="btn-link" onclick="TimerUI.changeTask()">Change task</button>
+  </div>
+  <div class="timer-popup-breaks" id="timer-popup-breaks" hidden>
+    <span>Take a break:</span>
+    <button type="button" class="btn btn-sm" id="timer-break-short" onclick="TimerUI.startBreak('short_break')">Short break</button>
+    <button type="button" class="btn btn-sm" id="timer-break-long" onclick="TimerUI.startBreak('long_break')">Long break</button>
+  </div>
+  <h4>Today</h4>
+  <div id="timer-today-list" class="timer-today-list"></div>
+  <div class="timer-popup-foot">
+    <button type="button" class="timer-foot-btn" onclick="TimerUI.startMode('stopwatch')" title="Stopwatch">&#9201;<span>Stopwatch</span></button>
+    <button type="button" class="timer-foot-btn" onclick="TimerUI.addTime()" title="Add time">&#43;<span>Add time</span></button>
+    <button type="button" class="timer-foot-btn" onclick="TimerUI.openLog()" title="Log">&#9776;<span>Log</span></button>
+    <a href="/settings" class="timer-foot-btn" title="Settings">&#9881;<span>Settings</span></a>
+  </div>
+</div>
+
+<div id="why-stop-menu" class="why-stop-menu" hidden>
+  <div class="why-stop-head">Why did you stop?
+    <button type="button" class="timer-popup-close" onclick="TimerUI.closeWhyMenu()" aria-label="Close">&times;</button>
+  </div>
+  <div id="why-stop-reasons" class="why-stop-reasons"></div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
 
 <main class="board" data-board-id="{{ board_id }}">
   <div class="col-headers" style="--col-count: {{ columns.len() }};">

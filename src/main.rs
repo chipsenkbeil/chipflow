@@ -1,50 +1,74 @@
-//! pomodoro-kanban: a small self-hosted kanban board with pomodoro time tracking.
+//! ChipFlow: a small self-hosted kanban board with pomodoro time tracking.
 //!
-//! Configuration (environment variables):
-//! - `DATABASE_PATH`: path to the redb database file, default `./data/kanban.redb`
-//! - `ADMIN_USER` / `ADMIN_PASS`: single admin credentials, used on first run
-//!   to create the admin user in the database
-//! - `PORT`: HTTP port, default 3000
-//! - `POMODORO_MINUTES`: default pomodoro length for the timer UI (25)
+//! Configuration: command-line flags, or the matching environment variables.
+//! Everything has a sane default, so `chipflow` with no arguments just works.
+//!
+//! - `--port` / `PORT`: HTTP port (default 3000)
+//! - `--database-path` / `DATABASE_PATH`: database file
+//!   (default `~/.local/share/chipflow/chipflow.redb`, honoring XDG variables)
+//!
+//! The admin account is created on the /setup page on first run.
 
 mod auth;
 mod db;
 mod models;
 mod routes;
 
-use std::env;
+use std::path::PathBuf;
+
+use clap::Parser;
+use directories::ProjectDirs;
 
 use crate::db::Db;
 
-/// Shared application state: the DB pool plus server config.
+/// Shared application state.
 #[derive(Clone)]
 pub struct AppState {
     pub db: Db,
-    pub pomodoro_minutes: u32,
+}
+
+#[derive(Parser)]
+#[command(
+    name = "chipflow",
+    about = "ChipFlow: a self-hosted kanban board with pomodoro time tracking"
+)]
+struct Args {
+    /// HTTP port to listen on.
+    #[arg(long, env = "PORT", default_value_t = 3000)]
+    port: u16,
+
+    /// Path to the database file.
+    #[arg(long, env = "DATABASE_PATH")]
+    database_path: Option<PathBuf>,
+}
+
+/// Default database location: `~/.local/share/chipflow/chipflow.redb`
+/// (or `$XDG_DATA_HOME/chipflow/chipflow.redb` when set).
+fn default_database_path() -> PathBuf {
+    let base = ProjectDirs::from("", "", "chipflow")
+        .map(|dirs| dirs.data_dir().to_path_buf())
+        .unwrap_or_else(|| PathBuf::from("."));
+    base.join("chipflow.redb")
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let db = Db::connect()?;
+    let args = Args::parse();
+    let database_path = args
+        .database_path
+        .unwrap_or_else(default_database_path);
 
-    let pomodoro_minutes: u32 = env::var("POMODORO_MINUTES")
-        .ok()
-        .and_then(|value| value.parse().ok())
-        .unwrap_or(25);
-    let port: u16 = env::var("PORT")
-        .ok()
-        .and_then(|value| value.parse().ok())
-        .unwrap_or(3000);
+    let db = Db::connect(database_path.to_str().ok_or("database path is not valid UTF-8")?)?;
 
-    let state = AppState {
-        db,
-        pomodoro_minutes,
-    };
+    let state = AppState { db };
     let app = routes::router(state);
 
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await?;
+    let listener =
+        tokio::net::TcpListener::bind(format!("0.0.0.0:{}", args.port)).await?;
     println!(
-        "pomodoro-kanban listening on http://0.0.0.0:{port} (pomodoro: {pomodoro_minutes} min)"
+        "chipflow listening on http://0.0.0.0:{} (database: {})",
+        args.port,
+        database_path.display()
     );
     axum::serve(listener, app).await?;
     Ok(())

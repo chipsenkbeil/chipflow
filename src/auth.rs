@@ -93,9 +93,11 @@ pub fn redirect_with_cookie(target: &str, cookie: &str) -> Response {
     response
 }
 
-/// Middleware guarding every route except `/login` and `/static` (those are
-/// registered after this layer, so it never sees them).
+/// Middleware guarding every route except `/login`, `/setup`, and `/static`
+/// (those are registered after this layer, so it never sees them).
 ///
+/// On first run (no users yet) everything redirects to `/setup` so the
+/// admin account can be created in the browser instead of via env vars.
 /// API routes (`/api/*`) get a plain 401 so htmx/fetch can detect it;
 /// page routes redirect to `/login`.
 pub async fn auth_middleware(
@@ -103,6 +105,13 @@ pub async fn auth_middleware(
     mut req: Request,
     next: Next,
 ) -> Response {
+    // First run: no admin account exists yet. Send every request to the
+    // setup page. (/setup itself is registered after this layer, so this
+    // can't loop.) On DB error, assume setup is done and fall through to
+    // the normal login flow.
+    if state.db.user_count().unwrap_or(1) == 0 {
+        return Redirect::to("/setup").into_response();
+    }
     let user = match session_token_from_headers(req.headers()) {
         Some(token) => user_for_token(&state.db, &token),
         None => None,

@@ -85,6 +85,13 @@ pub struct TaskRow {
     pub completed_at: Option<String>,
     /// Aggregated by the DB layer on read; 0 for freshly created tasks.
     pub total_minutes: i64,
+    /// Completed pomodoro sessions; defaults to 0 for rows written before
+    /// this field existed.
+    #[serde(default)]
+    pub pomodori_completed: u32,
+    /// Pomodoro sessions stopped early; defaults to 0 for older rows.
+    #[serde(default)]
+    pub interruptions: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -94,6 +101,20 @@ pub struct TimeEntryRow {
     pub minutes: i64,
     pub note: String,
     pub started_at: String,
+    /// "pomodoro" | "stopwatch" | "short_break" | "long_break" | "manual".
+    /// Defaults to "manual" for rows written before this field existed.
+    #[serde(default = "default_entry_kind")]
+    pub kind: String,
+    /// True when a pomodoro/stopwatch session was stopped before finishing.
+    #[serde(default)]
+    pub interrupted: bool,
+    /// Why the session was stopped early, if a reason was given.
+    #[serde(default)]
+    pub interrupt_reason: Option<String>,
+}
+
+fn default_entry_kind() -> String {
+    "manual".to_string()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -107,4 +128,115 @@ pub struct UserRow {
 pub struct SessionRow {
     pub user_id: String,
     pub created_at: String,
+}
+
+/// App settings, edited on the /settings page and stored as one JSON row.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Settings {
+    pub pomodoro_minutes: u32,
+    pub short_break_minutes: u32,
+    pub long_break_minutes: u32,
+    /// Take a long break every N completed pomodori.
+    pub long_break_every: u32,
+    /// Play a ding when a pomodoro or break ends.
+    pub ding_enabled: bool,
+    /// Show a browser notification when a pomodoro or break ends.
+    pub notifications_enabled: bool,
+    /// Preset answers for "Why did you stop?", editable on /settings.
+    pub interrupt_reasons: Vec<String>,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            pomodoro_minutes: 25,
+            short_break_minutes: 5,
+            long_break_minutes: 15,
+            long_break_every: 4,
+            ding_enabled: true,
+            notifications_enabled: true,
+            interrupt_reasons: vec![
+                "Boss interrupted",
+                "Colleague interrupted",
+                "Context switch",
+                "Dog",
+                "Email",
+                "Family",
+                "Finished with no new task",
+                "Food Delivery",
+                "Meeting",
+                "Other",
+                "Phone call",
+                "Restroom",
+                "Sleep",
+                "Web browsing",
+                "Workchat",
+                "Task done",
+            ]
+            .into_iter()
+            .map(str::to_string)
+            .collect(),
+        }
+    }
+}
+
+/// What the timer is currently doing.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TimerMode {
+    Pomodoro,
+    Stopwatch,
+    ShortBreak,
+    LongBreak,
+}
+
+impl TimerMode {
+    pub fn from_str(value: &str) -> Option<Self> {
+        match value {
+            "pomodoro" => Some(TimerMode::Pomodoro),
+            "stopwatch" => Some(TimerMode::Stopwatch),
+            "short_break" => Some(TimerMode::ShortBreak),
+            "long_break" => Some(TimerMode::LongBreak),
+            _ => None,
+        }
+    }
+
+    pub fn title(self) -> &'static str {
+        match self {
+            TimerMode::Pomodoro => "Pomodoro",
+            TimerMode::Stopwatch => "Stopwatch",
+            TimerMode::ShortBreak => "Short break",
+            TimerMode::LongBreak => "Long break",
+        }
+    }
+
+    /// snake_case id used by the API and JavaScript.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            TimerMode::Pomodoro => "pomodoro",
+            TimerMode::Stopwatch => "stopwatch",
+            TimerMode::ShortBreak => "short_break",
+            TimerMode::LongBreak => "long_break",
+        }
+    }
+
+    /// Entry kind recorded when a session of this mode is logged.
+    pub fn entry_kind(self) -> &'static str {
+        match self {
+            TimerMode::Pomodoro => "pomodoro",
+            TimerMode::Stopwatch => "stopwatch",
+            TimerMode::ShortBreak => "short_break",
+            TimerMode::LongBreak => "long_break",
+        }
+    }
+}
+
+/// The single currently-running timer, if any. `duration_secs` is `None`
+/// for the stopwatch, which counts up without a target.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ActiveTimer {
+    pub task_id: Option<String>,
+    pub mode: TimerMode,
+    pub started_at: i64,
+    pub duration_secs: Option<u64>,
 }

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Settings &mdash; ChipFlow{% endblock %}
+{% block content %}
+<header class="topbar">
+  <h1><a href="/" class="brand-link">&#127813; ChipFlow</a> &mdash; Settings</h1>
+  <div class="topbar-right">
+    <a href="/" class="btn btn-ghost">Back to board</a>
+  </div>
+</header>
+
+<main class="settings-page">
+  {% if saved %}<p class="settings-saved">Settings saved.</p>{% endif %}
+  <form method="post" action="/settings" class="settings-form">
+    <section class="settings-section">
+      <h2>Timer</h2>
+      <label>Pomodoro length (minutes)
+        <input type="number" name="pomodoro_minutes" min="1" max="180" value="{{ settings.pomodoro_minutes }}" required>
+      </label>
+      <label>Short break (minutes)
+        <input type="number" name="short_break_minutes" min="1" max="180" value="{{ settings.short_break_minutes }}" required>
+      </label>
+      <label>Long break (minutes)
+        <input type="number" name="long_break_minutes" min="1" max="180" value="{{ settings.long_break_minutes }}" required>
+      </label>
+      <label>Long break every N pomodori
+        <input type="number" name="long_break_every" min="1" max="12" value="{{ settings.long_break_every }}" required>
+      </label>
+    </section>
+
+    <section class="settings-section">
+      <h2>Alerts</h2>
+      <label class="check-label">
+        <input type="checkbox" name="ding_enabled" {% if settings.ding_enabled %}checked{% endif %}>
+        Play a ding when a timer ends
+      </label>
+      <label class="check-label">
+        <input type="checkbox" name="notifications_enabled" {% if settings.notifications_enabled %}checked{% endif %}>
+        Show a browser notification when a timer ends
+      </label>
+      <p class="settings-hint">Your browser will ask for notification permission the first time a timer ends.</p>
+    </section>
+
+    <section class="settings-section">
+      <h2>Interruption reasons</h2>
+      <p class="settings-hint">One per line. These appear in the &ldquo;Why did you stop?&rdquo; menu when you stop a pomodoro early. Custom reasons you type there are added automatically.</p>
+      <textarea name="interrupt_reasons" rows="10">{% for reason in settings.interrupt_reasons %}{{ reason }}
+{% endfor %}</textarea>
+    </section>
+
+    <button type="submit" class="btn btn-primary">Save settings</button>
+  </form>
+</main>
+{% endblock %}
