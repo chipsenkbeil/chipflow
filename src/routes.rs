@@ -15,16 +15,15 @@ use axum::{
     routing::{get, patch, post},
     Form, Json, Router,
 };
-use chrono::{DateTime, Duration, Local, Utc};
+use chrono::{DateTime, Duration, Local};
 #[cfg(not(debug_assertions))]
 use rust_embed::RustEmbed;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
-use sqlx::sqlite::SqlitePool;
 use tower_http::services::ServeDir;
-use uuid::Uuid;
 
 use crate::auth::{self, AuthUser};
+use crate::db::Db;
 use crate::models::*;
 use crate::AppState;
 
@@ -36,10 +35,7 @@ pub fn router(state: AppState) -> Router {
         .route("/logout", post(logout))
         .route("/b/:board_id", get(board_page))
         .route("/api/tasks", post(create_task))
-        .route(
-            "/api/tasks/:id",
-            patch(update_task).delete(delete_task),
-        )
+        .route("/api/tasks/:id", patch(update_task).delete(delete_task))
         .route("/api/tasks/:id/card", get(task_card))
         .route("/api/tasks/:id/modal", get(task_modal))
         .route("/api/tasks/:id/move", post(move_task))
@@ -133,17 +129,14 @@ impl IntoResponse for AppError {
     }
 }
 
-impl From<sqlx::Error> for AppError {
-    fn from(error: sqlx::Error) -> Self {
+impl From<Box<dyn std::error::Error>> for AppError {
+    fn from(error: Box<dyn std::error::Error>) -> Self {
         Self::internal(error.to_string())
     }
 }
 
 /// Parse a request body as JSON or as a form, based on Content-Type.
-async fn parse_body<T: DeserializeOwned>(
-    headers: &HeaderMap,
-    body: Bytes,
-) -> Result<T, AppError> {
+async fn parse_body<T: DeserializeOwned>(headers: &HeaderMap, body: Bytes) -> Result<T, AppError> {
     let content_type = headers
         .get(CONTENT_TYPE)
         .and_then(|value| value.to_str().ok())
@@ -163,6 +156,7 @@ async fn parse_body<T: DeserializeOwned>(
 #[derive(Debug, Clone)]
 struct TaskView {
     id: String,
+    column_id: String,
     name: String,
     description: String,
     size: i64,
@@ -179,6 +173,7 @@ impl TaskView {
         let size = Size::from_i64(row.size);
         Self {
             id: row.id.clone(),
+            column_id: row.column_id.clone(),
             name: row.name.clone(),
             description: row.description.clone(),
             size: size as i64,
@@ -201,9 +196,7 @@ fn format_day(rfc3339: &str) -> String {
 /// Grouping label for completed tasks: Today / Yesterday / "Sep 27, 2026".
 fn done_group_label(rfc3339: &str) -> String {
     let today = Local::now().date_naive();
-    match DateTime::parse_from_rfc3339(rfc3339)
-        .map(|dt| dt.with_timezone(&Local).date_naive())
-    {
+    match DateTime::parse_from_rfc3339(rfc3339).map(|dt| dt.with_timezone(&Local).date_naive()) {
         Ok(date) if date == today => "Today".to_string(),
         Ok(date) if date == today - Duration::days(1) => "Yesterday".to_string(),
         Ok(date) => date.format("%b %d, %Y").to_string(),
@@ -296,31 +289,14 @@ struct ModalTemplate {
 // ---- Small DB helpers ----
 
 /// Fetch one task with its total logged minutes, shaped for templates.
-async fn fetch_task_view(pool: &SqlitePool, id: &str) -> Result<Option<TaskView>, AppError> {
-    let row: Option<TaskRow> = sqlx::query_as(
-        "SELECT t.id, t.column_id, t.swimlane_id, t.name, t.description, t.size,
-                t.position, t.created_at, t.completed_at,
-                COALESCE(te.total, 0) AS total_minutes
-         FROM tasks t
-         LEFT JOIN (SELECT task_id, SUM(minutes) AS total FROM time_entries GROUP BY task_id) te
-                ON te.task_id = t.id
-         WHERE t.id = ?1",
-    )
-    .bind(id)
-    .fetch_optional(pool)
-    .await?;
+fn fetch_task_view(db: &Db, id: &str) -> Result<Option<TaskView>, AppError> {
+    let row = db.get_task_with_minutes(id).map_err(AppError::from)?;
     Ok(row.as_ref().map(TaskView::from_row))
 }
 
 /// Time entries for a task, newest first, with display-ready timestamps.
-async fn fetch_entries(pool: &SqlitePool, task_id: &str) -> Result<Vec<TimeEntryView>, AppError> {
-    let rows: Vec<TimeEntryRow> = sqlx::query_as(
-        "SELECT id, task_id, minutes, note, started_at
-         FROM time_entries WHERE task_id = ?1 ORDER BY started_at DESC",
-    )
-    .bind(task_id)
-    .fetch_all(pool)
-    .await?;
+fn fetch_entries(db: &Db, task_id: &str) -> Result<Vec<TimeEntryView>, AppError> {
+    let rows = db.list_entries(task_id).map_err(AppError::from)?;
     Ok(rows
         .into_iter()
         .map(|row| TimeEntryView {
@@ -344,9 +320,7 @@ async fn root(
     State(state): State<AppState>,
     Extension(_user): Extension<AuthUser>,
 ) -> Result<Response, AppError> {
-    let id: Option<String> = sqlx::query_scalar("SELECT id FROM boards ORDER BY position LIMIT 1")
-        .fetch_optional(&state.db.pool)
-        .await?;
+    let id: Option<String> = state.db.first_board_id().map_err(AppError::from)?;
     match id {
         Some(id) => Ok(Redirect::to(&format!("/b/{id}")).into_response()),
         None => Err(AppError::internal("no boards found")),
@@ -359,47 +333,19 @@ async fn board_page(
     Extension(user): Extension<AuthUser>,
     Path(board_id): Path<String>,
 ) -> Result<BoardTemplate, AppError> {
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let board: Option<BoardRow> =
-        sqlx::query_as("SELECT id, name, position FROM boards WHERE id = ?1")
-            .bind(&board_id)
-            .fetch_optional(pool)
-            .await?;
-    let board = board.ok_or_else(|| AppError::not_found("board not found"))?;
+    let board = db
+        .get_board(&board_id)
+        .map_err(AppError::from)?
+        .ok_or_else(|| AppError::not_found("board not found"))?;
 
-    let columns: Vec<ColumnRow> = sqlx::query_as(
-        "SELECT id, board_id, name, position, wip_limit, is_done
-         FROM columns WHERE board_id = ?1 ORDER BY position",
-    )
-    .bind(&board_id)
-    .fetch_all(pool)
-    .await?;
+    let columns = db.list_columns(&board_id).map_err(AppError::from)?;
 
-    let swimlanes: Vec<SwimlaneRow> = sqlx::query_as(
-        "SELECT id, board_id, name, position
-         FROM swimlanes WHERE board_id = ?1 ORDER BY position",
-    )
-    .bind(&board_id)
-    .fetch_all(pool)
-    .await?;
+    let swimlanes = db.list_swimlanes(&board_id).map_err(AppError::from)?;
 
     // One query for every task on the board, ordered for rendering.
-    let tasks: Vec<TaskRow> = sqlx::query_as(
-        "SELECT t.id, t.column_id, t.swimlane_id, t.name, t.description, t.size,
-                t.position, t.created_at, t.completed_at,
-                COALESCE(te.total, 0) AS total_minutes
-         FROM tasks t
-         JOIN columns c ON c.id = t.column_id
-         LEFT JOIN swimlanes s ON s.id = t.swimlane_id
-         LEFT JOIN (SELECT task_id, SUM(minutes) AS total FROM time_entries GROUP BY task_id) te
-                ON te.task_id = t.id
-         WHERE c.board_id = ?1
-         ORDER BY c.position, COALESCE(s.position, 9999), t.position, t.id",
-    )
-    .bind(&board_id)
-    .fetch_all(pool)
-    .await?;
+    let tasks = db.board_tasks(&board_id).map_err(AppError::from)?;
 
     let column_heads: Vec<ColumnHead> = columns
         .iter()
@@ -456,11 +402,7 @@ async fn board_page(
                 column_id: col.id.clone(),
                 swimlane_id: lane.id.clone(),
                 is_done,
-                tasks: if is_done {
-                    Vec::new()
-                } else {
-                    cell_tasks
-                },
+                tasks: if is_done { Vec::new() } else { cell_tasks },
                 done_groups,
             });
         }
@@ -503,11 +445,10 @@ async fn login_submit(
     State(state): State<AppState>,
     Form(form): Form<LoginForm>,
 ) -> Result<Response, AppError> {
-    let row: Option<UserRow> =
-        sqlx::query_as("SELECT id, username, password_hash FROM users WHERE username = ?1")
-            .bind(form.user.trim())
-            .fetch_optional(&state.db.pool)
-            .await?;
+    let row = state
+        .db
+        .user_by_username(form.user.trim())
+        .map_err(AppError::from)?;
 
     let authenticated = row
         .as_ref()
@@ -517,18 +458,17 @@ async fn login_submit(
         return Ok(Redirect::to("/login?error=1").into_response());
     }
 
-    let token = auth::create_session(&state.db.pool, &row.expect("checked above").id)
-        .await
-        .map_err(AppError::from)?;
-    Ok(auth::redirect_with_cookie("/", &auth::session_cookie(&token)))
+    let token =
+        auth::create_session(&state.db, &row.expect("checked above").id).map_err(AppError::from)?;
+    Ok(auth::redirect_with_cookie(
+        "/",
+        &auth::session_cookie(&token),
+    ))
 }
 
 async fn logout(State(state): State<AppState>, headers: HeaderMap) -> impl IntoResponse {
     if let Some(token) = auth::session_token_from_headers(&headers) {
-        let _ = sqlx::query("DELETE FROM sessions WHERE token = ?1")
-            .bind(&token)
-            .execute(&state.db.pool)
-            .await;
+        let _ = state.db.delete_session(&token);
     }
     auth::redirect_with_cookie("/login", &auth::clear_session_cookie())
 }
@@ -551,65 +491,38 @@ async fn create_task(
     body: Bytes,
 ) -> Result<TaskCardTemplate, AppError> {
     let input: CreateTaskInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
     let name = input.name.trim().to_string();
     if name.is_empty() {
         return Err(AppError::bad_request("task name is required"));
     }
 
-    let column: Option<ColumnRow> =
-        sqlx::query_as("SELECT id, board_id, name, position, wip_limit, is_done FROM columns WHERE id = ?1")
-            .bind(&input.column_id)
-            .fetch_optional(pool)
-            .await?;
-    let column = column.ok_or_else(|| AppError::bad_request("unknown column"))?;
+    let column = db
+        .get_column(&input.column_id)
+        .map_err(AppError::from)?
+        .ok_or_else(|| AppError::bad_request("unknown column"))?;
 
     // Default to the board's first swimlane when none is given.
     let swimlane_id = match input.swimlane_id.filter(|s| !s.is_empty()) {
         Some(id) => Some(id),
-        None => {
-            sqlx::query_scalar(
-                "SELECT id FROM swimlanes WHERE board_id = ?1 ORDER BY position LIMIT 1",
-            )
-            .bind(&column.board_id)
-            .fetch_optional(pool)
-            .await?
-        }
+        None => db
+            .list_swimlanes(&column.board_id)
+            .map_err(AppError::from)?
+            .into_iter()
+            .next()
+            .map(|lane| lane.id),
     };
 
     let size = Size::from_i64(input.size.unwrap_or(1));
-
-    // Append at the end of the cell.
-    let max_position: Option<f64> = sqlx::query_scalar(
-        "SELECT MAX(position) FROM tasks
-         WHERE column_id = ?1 AND IFNULL(swimlane_id, '') = IFNULL(?2, '')",
-    )
-    .bind(&column.id)
-    .bind(&swimlane_id)
-    .fetch_one(pool)
-    .await?;
-    let position = max_position.map(|max| max + 1.0).unwrap_or(0.0);
-
-    let id = Uuid::new_v4().to_string();
-    let now = Utc::now().to_rfc3339();
-    sqlx::query(
-        "INSERT INTO tasks (id, column_id, swimlane_id, name, description, size, position, created_at)
-         VALUES (?1, ?2, ?3, ?4, '', ?5, ?6, ?7)",
-    )
-    .bind(&id)
-    .bind(&column.id)
-    .bind(&swimlane_id)
-    .bind(&name)
-    .bind(size as i64)
-    .bind(position)
-    .bind(&now)
-    .execute(pool)
-    .await?;
+    let id = db
+        .create_task(&column.id, swimlane_id.as_deref(), &name, size as i64)
+        .map_err(AppError::from)?;
 
     Ok(TaskCardTemplate {
         task: TaskView {
             id,
+            column_id: column.id.clone(),
             name,
             description: String::new(),
             size: size as i64,
@@ -638,46 +551,27 @@ async fn update_task(
     body: Bytes,
 ) -> Result<TaskCardTemplate, AppError> {
     let input: UpdateTaskInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let exists: Option<String> = sqlx::query_scalar("SELECT id FROM tasks WHERE id = ?1")
-        .bind(&id)
-        .fetch_optional(pool)
-        .await?;
-    if exists.is_none() {
+    if db.get_task(&id).map_err(AppError::from)?.is_none() {
         return Err(AppError::not_found("task not found"));
     }
 
-    if let Some(name) = input.name {
-        let name = name.trim().to_string();
-        if name.is_empty() {
+    if let Some(name) = input.name.as_deref() {
+        if name.trim().is_empty() {
             return Err(AppError::bad_request("task name is required"));
         }
-        sqlx::query("UPDATE tasks SET name = ?1 WHERE id = ?2")
-            .bind(&name)
-            .bind(&id)
-            .execute(pool)
-            .await?;
     }
-    if let Some(description) = input.description {
-        sqlx::query("UPDATE tasks SET description = ?1 WHERE id = ?2")
-            .bind(&description)
-            .bind(&id)
-            .execute(pool)
-            .await?;
-    }
-    if let Some(size) = input.size {
-        let size = Size::from_i64(size);
-        sqlx::query("UPDATE tasks SET size = ?1 WHERE id = ?2")
-            .bind(size as i64)
-            .bind(&id)
-            .execute(pool)
-            .await?;
-    }
+    let size = input.size.map(Size::from_i64).map(|size| size as i64);
+    db.update_task(
+        &id,
+        input.name.as_deref().map(str::trim),
+        input.description.as_deref(),
+        size,
+    )
+    .map_err(AppError::from)?;
 
-    let task = fetch_task_view(pool, &id)
-        .await?
-        .ok_or_else(|| AppError::not_found("task not found"))?;
+    let task = fetch_task_view(db, &id)?.ok_or_else(|| AppError::not_found("task not found"))?;
     Ok(TaskCardTemplate { task })
 }
 
@@ -698,88 +592,33 @@ async fn move_task(
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
     let input: MoveTaskInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let task: Option<TaskRow> = sqlx::query_as("SELECT * FROM tasks WHERE id = ?1")
-        .bind(&id)
-        .fetch_optional(pool)
-        .await?;
-    let task = task.ok_or_else(|| AppError::not_found("task not found"))?;
-    let old_column_id = task.column_id.clone();
-    let old_swimlane_id = task.swimlane_id.clone();
-
-    let target: Option<ColumnRow> =
-        sqlx::query_as("SELECT id, board_id, name, position, wip_limit, is_done FROM columns WHERE id = ?1")
-            .bind(&input.column_id)
-            .fetch_optional(pool)
-            .await?;
-    let target = target.ok_or_else(|| AppError::bad_request("unknown column"))?;
-
-    let was_done: bool = sqlx::query_scalar("SELECT is_done FROM columns WHERE id = ?1")
-        .bind(&old_column_id)
-        .fetch_optional(pool)
-        .await?
-        .unwrap_or(false);
-    let now_done = target.is_done;
+    if db.get_task(&id).map_err(AppError::from)?.is_none() {
+        return Err(AppError::not_found("task not found"));
+    }
+    if db
+        .get_column(&input.column_id)
+        .map_err(AppError::from)?
+        .is_none()
+    {
+        return Err(AppError::bad_request("unknown column"));
+    }
 
     // Keep the current swimlane when the client doesn't name one.
-    let swimlane_id = input
-        .swimlane_id
-        .filter(|s| !s.is_empty())
-        .or_else(|| old_swimlane_id.clone());
+    let swimlane_id = input.swimlane_id.filter(|s| !s.is_empty());
 
-    let completed_at = if now_done && !was_done {
-        Some(Utc::now().to_rfc3339())
-    } else if !now_done && was_done {
-        None
-    } else {
-        task.completed_at.clone()
-    };
-
-    sqlx::query(
-        "UPDATE tasks SET column_id = ?1, swimlane_id = ?2, position = ?3, completed_at = ?4
-         WHERE id = ?5",
+    // Crossing into the Done column stamps `completed_at`; crossing out
+    // clears it. Both affected cells are renumbered densely inside.
+    db.move_task(
+        &id,
+        &input.column_id,
+        swimlane_id.as_deref(),
+        input.position,
     )
-    .bind(&input.column_id)
-    .bind(&swimlane_id)
-    .bind(input.position)
-    .bind(&completed_at)
-    .bind(&id)
-    .execute(pool)
-    .await?;
-
-    // Keep positions dense in both affected cells.
-    renumber_cell(pool, &input.column_id, swimlane_id.as_deref()).await?;
-    if input.column_id != old_column_id || swimlane_id.as_deref() != old_swimlane_id.as_deref() {
-        renumber_cell(pool, &old_column_id, old_swimlane_id.as_deref()).await?;
-    }
+    .map_err(AppError::from)?;
 
     Ok(StatusCode::OK)
-}
-
-/// Rewrite positions in one column x swimlane cell as dense 0..n ordering.
-async fn renumber_cell(
-    pool: &SqlitePool,
-    column_id: &str,
-    swimlane_id: Option<&str>,
-) -> Result<(), AppError> {
-    let ids: Vec<String> = sqlx::query_scalar(
-        "SELECT id FROM tasks
-         WHERE column_id = ?1 AND IFNULL(swimlane_id, '') = IFNULL(?2, '')
-         ORDER BY position, id",
-    )
-    .bind(column_id)
-    .bind(swimlane_id)
-    .fetch_all(pool)
-    .await?;
-    for (index, task_id) in ids.iter().enumerate() {
-        sqlx::query("UPDATE tasks SET position = ?1 WHERE id = ?2")
-            .bind(index as f64)
-            .bind(task_id)
-            .execute(pool)
-            .await?;
-    }
-    Ok(())
 }
 
 /// Delete a task and its time entries.
@@ -788,18 +627,8 @@ async fn delete_task(
     Extension(_user): Extension<AuthUser>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, AppError> {
-    let pool = &state.db.pool;
-    let mut tx = pool.begin().await?;
-    sqlx::query("DELETE FROM time_entries WHERE task_id = ?1")
-        .bind(&id)
-        .execute(&mut *tx)
-        .await?;
-    let result = sqlx::query("DELETE FROM tasks WHERE id = ?1")
-        .bind(&id)
-        .execute(&mut *tx)
-        .await?;
-    tx.commit().await?;
-    if result.rows_affected() == 0 {
+    let deleted = state.db.delete_task(&id).map_err(AppError::from)?;
+    if !deleted {
         return Err(AppError::not_found("task not found"));
     }
     Ok(StatusCode::OK)
@@ -811,9 +640,8 @@ async fn task_card(
     Extension(_user): Extension<AuthUser>,
     Path(id): Path<String>,
 ) -> Result<TaskCardTemplate, AppError> {
-    let task = fetch_task_view(&state.db.pool, &id)
-        .await?
-        .ok_or_else(|| AppError::not_found("task not found"))?;
+    let task =
+        fetch_task_view(&state.db, &id)?.ok_or_else(|| AppError::not_found("task not found"))?;
     Ok(TaskCardTemplate { task })
 }
 
@@ -823,17 +651,14 @@ async fn task_modal(
     Extension(_user): Extension<AuthUser>,
     Path(id): Path<String>,
 ) -> Result<ModalTemplate, AppError> {
-    let pool = &state.db.pool;
-    let task = fetch_task_view(pool, &id)
-        .await?
-        .ok_or_else(|| AppError::not_found("task not found"))?;
-    let is_done: bool =
-        sqlx::query_scalar("SELECT c.is_done FROM columns c JOIN tasks t ON t.column_id = c.id WHERE t.id = ?1")
-            .bind(&id)
-            .fetch_optional(pool)
-            .await?
-            .unwrap_or(false);
-    let entries = fetch_entries(pool, &id).await?;
+    let db = &state.db;
+    let task = fetch_task_view(db, &id)?.ok_or_else(|| AppError::not_found("task not found"))?;
+    let is_done = db
+        .get_column(&task.column_id)
+        .map_err(AppError::from)?
+        .map(|column| column.is_done)
+        .unwrap_or(false);
+    let entries = fetch_entries(db, &id)?;
     Ok(ModalTemplate {
         task,
         entries,
@@ -857,33 +682,20 @@ async fn log_time(
     body: Bytes,
 ) -> Result<TimeEntriesTemplate, AppError> {
     let input: LogTimeInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
     if !(1..=24 * 60).contains(&input.minutes) {
         return Err(AppError::bad_request("minutes must be between 1 and 1440"));
     }
-    let exists: Option<String> = sqlx::query_scalar("SELECT id FROM tasks WHERE id = ?1")
-        .bind(&id)
-        .fetch_optional(pool)
-        .await?;
-    if exists.is_none() {
+    if db.get_task(&id).map_err(AppError::from)?.is_none() {
         return Err(AppError::not_found("task not found"));
     }
 
-    sqlx::query(
-        "INSERT INTO time_entries (id, task_id, minutes, note, started_at)
-         VALUES (?1, ?2, ?3, ?4, ?5)",
-    )
-    .bind(Uuid::new_v4().to_string())
-    .bind(&id)
-    .bind(input.minutes)
-    .bind(input.note.unwrap_or_default())
-    .bind(Utc::now().to_rfc3339())
-    .execute(pool)
-    .await?;
+    db.create_entry(&id, input.minutes, &input.note.unwrap_or_default())
+        .map_err(AppError::from)?;
 
     Ok(TimeEntriesTemplate {
-        entries: fetch_entries(pool, &id).await?,
+        entries: fetch_entries(db, &id)?,
     })
 }
 
@@ -891,17 +703,15 @@ async fn log_time(
 
 /// Resolve the board for a create call: an explicit id when given,
 /// otherwise the first board (mirrors the `/` redirect).
-async fn resolve_board(pool: &SqlitePool, board_id: Option<String>) -> Result<String, AppError> {
+fn resolve_board(db: &Db, board_id: Option<String>) -> Result<String, AppError> {
     if let Some(id) = board_id.filter(|s| !s.is_empty()) {
-        let exists: Option<String> = sqlx::query_scalar("SELECT id FROM boards WHERE id = ?1")
-            .bind(&id)
-            .fetch_optional(pool)
-            .await?;
-        return exists.ok_or_else(|| AppError::bad_request("unknown board"));
+        return match db.board_exists(&id).map_err(AppError::from)? {
+            true => Ok(id),
+            false => Err(AppError::bad_request("unknown board")),
+        };
     }
-    sqlx::query_scalar("SELECT id FROM boards ORDER BY position LIMIT 1")
-        .fetch_optional(pool)
-        .await?
+    db.first_board_id()
+        .map_err(AppError::from)?
         .ok_or_else(|| AppError::internal("no boards found"))
 }
 
@@ -920,7 +730,7 @@ async fn create_column(
     body: Bytes,
 ) -> Result<Json<serde_json::Value>, AppError> {
     let input: CreateColumnInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
     let name = input.name.trim().to_string();
     if name.is_empty() {
@@ -932,25 +742,10 @@ async fn create_column(
         }
     }
 
-    let board_id = resolve_board(pool, input.board_id).await?;
-    let max_position: Option<i64> =
-        sqlx::query_scalar("SELECT MAX(position) FROM columns WHERE board_id = ?1")
-            .bind(&board_id)
-            .fetch_one(pool)
-            .await?;
-
-    let id = Uuid::new_v4().to_string();
-    sqlx::query(
-        "INSERT INTO columns (id, board_id, name, position, wip_limit, is_done)
-         VALUES (?1, ?2, ?3, ?4, ?5, 0)",
-    )
-    .bind(&id)
-    .bind(&board_id)
-    .bind(&name)
-    .bind(max_position.map(|max| max + 1).unwrap_or(0))
-    .bind(input.wip_limit)
-    .execute(pool)
-    .await?;
+    let board_id = resolve_board(db, input.board_id)?;
+    let id = db
+        .create_column(&board_id, &name, input.wip_limit)
+        .map_err(AppError::from)?;
     Ok(Json(serde_json::json!({ "id": id })))
 }
 
@@ -971,26 +766,18 @@ async fn update_column(
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
     let input: UpdateColumnInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let exists: Option<String> = sqlx::query_scalar("SELECT id FROM columns WHERE id = ?1")
-        .bind(&id)
-        .fetch_optional(pool)
-        .await?;
-    if exists.is_none() {
+    if db.get_column(&id).map_err(AppError::from)?.is_none() {
         return Err(AppError::not_found("column not found"));
     }
 
-    if let Some(name) = input.name {
-        let name = name.trim().to_string();
+    if let Some(name) = input.name.as_deref() {
+        let name = name.trim();
         if name.is_empty() {
             return Err(AppError::bad_request("column name is required"));
         }
-        sqlx::query("UPDATE columns SET name = ?1 WHERE id = ?2")
-            .bind(&name)
-            .bind(&id)
-            .execute(pool)
-            .await?;
+        db.rename_column(&id, name).map_err(AppError::from)?;
     }
     if let Some(wip_limit) = input.wip_limit {
         if let Some(limit) = wip_limit {
@@ -998,18 +785,10 @@ async fn update_column(
                 return Err(AppError::bad_request("WIP limit must be at least 1"));
             }
         }
-        sqlx::query("UPDATE columns SET wip_limit = ?1 WHERE id = ?2")
-            .bind(wip_limit)
-            .bind(&id)
-            .execute(pool)
-            .await?;
+        db.set_column_wip(&id, wip_limit).map_err(AppError::from)?;
     }
     if let Some(is_done) = input.is_done {
-        sqlx::query("UPDATE columns SET is_done = ?1 WHERE id = ?2")
-            .bind(is_done)
-            .bind(&id)
-            .execute(pool)
-            .await?;
+        db.set_column_done(&id, is_done).map_err(AppError::from)?;
     }
     Ok(StatusCode::OK)
 }
@@ -1028,31 +807,13 @@ async fn move_column(
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
     let input: MoveColumnInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let column: Option<ColumnRow> = sqlx::query_as(
-        "SELECT id, board_id, name, position, wip_limit, is_done FROM columns WHERE id = ?1",
-    )
-    .bind(&id)
-    .fetch_optional(pool)
-    .await?;
-    let column = column.ok_or_else(|| AppError::not_found("column not found"))?;
-
-    let mut ids: Vec<String> = sqlx::query_scalar(
-        "SELECT id FROM columns WHERE board_id = ?1 ORDER BY position, id",
-    )
-    .bind(&column.board_id)
-    .fetch_all(pool)
-    .await?;
-    ids.retain(|column_id| column_id != &id);
-    let at = input.position.clamp(0, ids.len() as i64) as usize;
-    ids.insert(at, id.clone());
-    for (index, column_id) in ids.iter().enumerate() {
-        sqlx::query("UPDATE columns SET position = ?1 WHERE id = ?2")
-            .bind(index as i64)
-            .bind(column_id)
-            .execute(pool)
-            .await?;
+    if !db
+        .move_column(&id, input.position)
+        .map_err(AppError::from)?
+    {
+        return Err(AppError::not_found("column not found"));
     }
     Ok(StatusCode::OK)
 }
@@ -1063,28 +824,18 @@ async fn delete_column(
     Extension(_user): Extension<AuthUser>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, AppError> {
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let exists: Option<String> = sqlx::query_scalar("SELECT id FROM columns WHERE id = ?1")
-        .bind(&id)
-        .fetch_optional(pool)
-        .await?;
-    if exists.is_none() {
+    if db.get_column(&id).map_err(AppError::from)?.is_none() {
         return Err(AppError::not_found("column not found"));
     }
-    let task_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tasks WHERE column_id = ?1")
-        .bind(&id)
-        .fetch_one(pool)
-        .await?;
+    let task_count = db.count_tasks_in_column(&id).map_err(AppError::from)?;
     if task_count > 0 {
         return Err(AppError::bad_request(format!(
             "cannot delete column with {task_count} task(s); move or delete them first"
         )));
     }
-    sqlx::query("DELETE FROM columns WHERE id = ?1")
-        .bind(&id)
-        .execute(pool)
-        .await?;
+    db.delete_column(&id).map_err(AppError::from)?;
     Ok(StatusCode::OK)
 }
 
@@ -1102,30 +853,17 @@ async fn create_swimlane(
     body: Bytes,
 ) -> Result<Json<serde_json::Value>, AppError> {
     let input: CreateSwimlaneInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
     let name = input.name.trim().to_string();
     if name.is_empty() {
         return Err(AppError::bad_request("swimlane name is required"));
     }
 
-    let board_id = resolve_board(pool, input.board_id).await?;
-    let max_position: Option<i64> =
-        sqlx::query_scalar("SELECT MAX(position) FROM swimlanes WHERE board_id = ?1")
-            .bind(&board_id)
-            .fetch_one(pool)
-            .await?;
-
-    let id = Uuid::new_v4().to_string();
-    sqlx::query(
-        "INSERT INTO swimlanes (id, board_id, name, position) VALUES (?1, ?2, ?3, ?4)",
-    )
-    .bind(&id)
-    .bind(&board_id)
-    .bind(&name)
-    .bind(max_position.map(|max| max + 1).unwrap_or(0))
-    .execute(pool)
-    .await?;
+    let board_id = resolve_board(db, input.board_id)?;
+    let id = db
+        .create_swimlane(&board_id, &name)
+        .map_err(AppError::from)?;
     Ok(Json(serde_json::json!({ "id": id })))
 }
 
@@ -1143,19 +881,14 @@ async fn update_swimlane(
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
     let input: UpdateSwimlaneInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
     let name = input
         .name
         .map(|name| name.trim().to_string())
         .filter(|name| !name.is_empty())
         .ok_or_else(|| AppError::bad_request("swimlane name is required"))?;
-    let result = sqlx::query("UPDATE swimlanes SET name = ?1 WHERE id = ?2")
-        .bind(&name)
-        .bind(&id)
-        .execute(pool)
-        .await?;
-    if result.rows_affected() == 0 {
+    if !db.rename_swimlane(&id, &name).map_err(AppError::from)? {
         return Err(AppError::not_found("swimlane not found"));
     }
     Ok(StatusCode::OK)
@@ -1175,30 +908,13 @@ async fn move_swimlane(
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
     let input: MoveSwimlaneInput = parse_body(&headers, body).await?;
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let lane: Option<SwimlaneRow> =
-        sqlx::query_as("SELECT id, board_id, name, position FROM swimlanes WHERE id = ?1")
-            .bind(&id)
-            .fetch_optional(pool)
-            .await?;
-    let lane = lane.ok_or_else(|| AppError::not_found("swimlane not found"))?;
-
-    let mut ids: Vec<String> = sqlx::query_scalar(
-        "SELECT id FROM swimlanes WHERE board_id = ?1 ORDER BY position, id",
-    )
-    .bind(&lane.board_id)
-    .fetch_all(pool)
-    .await?;
-    ids.retain(|lane_id| lane_id != &id);
-    let at = input.position.clamp(0, ids.len() as i64) as usize;
-    ids.insert(at, id.clone());
-    for (index, lane_id) in ids.iter().enumerate() {
-        sqlx::query("UPDATE swimlanes SET position = ?1 WHERE id = ?2")
-            .bind(index as i64)
-            .bind(lane_id)
-            .execute(pool)
-            .await?;
+    if !db
+        .move_swimlane(&id, input.position)
+        .map_err(AppError::from)?
+    {
+        return Err(AppError::not_found("swimlane not found"));
     }
     Ok(StatusCode::OK)
 }
@@ -1209,27 +925,17 @@ async fn delete_swimlane(
     Extension(_user): Extension<AuthUser>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, AppError> {
-    let pool = &state.db.pool;
+    let db = &state.db;
 
-    let exists: Option<String> = sqlx::query_scalar("SELECT id FROM swimlanes WHERE id = ?1")
-        .bind(&id)
-        .fetch_optional(pool)
-        .await?;
-    if exists.is_none() {
+    if db.get_swimlane(&id).map_err(AppError::from)?.is_none() {
         return Err(AppError::not_found("swimlane not found"));
     }
-    let task_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tasks WHERE swimlane_id = ?1")
-        .bind(&id)
-        .fetch_one(pool)
-        .await?;
+    let task_count = db.count_tasks_in_swimlane(&id).map_err(AppError::from)?;
     if task_count > 0 {
         return Err(AppError::bad_request(format!(
             "cannot delete swimlane with {task_count} task(s); move or delete them first"
         )));
     }
-    sqlx::query("DELETE FROM swimlanes WHERE id = ?1")
-        .bind(&id)
-        .execute(pool)
-        .await?;
+    db.delete_swimlane(&id).map_err(AppError::from)?;
     Ok(StatusCode::OK)
 }

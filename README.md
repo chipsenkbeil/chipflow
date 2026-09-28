@@ -16,7 +16,7 @@ ADMIN_USER=admin ADMIN_PASS='choose-a-strong-password' pomodoro-kanban
 
 (Requires a Rust toolchain, e.g. via [rustup](https://rustup.rs). Release
 builds embed the web assets, so the installed binary needs nothing next to
-it — just point `DATABASE_URL` at wherever you want the SQLite file.)
+it — just point `DATABASE_PATH` at wherever you want the database file.)
 
 Or with Docker Compose:
 
@@ -33,11 +33,11 @@ Configuration (environment variables):
   only (the argon2 hash is stored in the database afterwards).
 - `POMODORO_MINUTES` — pomodoro length in minutes (default: `25`).
 - `PORT` — port the server listens on (default: `3000`).
-- `DATABASE_URL` — sqlite URL (default: `sqlite:./kanban.db?mode=rwc`,
+- `DATABASE_PATH` — path to the database file (default: `./data/kanban.redb`,
   created next to wherever you run it;
-  docker compose sets `sqlite:/data/app.db?mode=rwc`).
+  docker compose sets `/data/kanban.redb`).
 
-The SQLite database lives in the named volume `kanban-data` (mounted at
+The database lives in the named volume `kanban-data` (mounted at
 `/data` in the container), so it survives rebuilds and restarts.
 
 To shut down:
@@ -49,7 +49,7 @@ docker compose down
 ## Development
 
 ```sh
-DATABASE_URL=sqlite:./kanban.db ADMIN_USER=admin ADMIN_PASS=secret cargo run
+DATABASE_PATH=./data/kanban.redb cargo run
 ```
 
 Requires Rust 1.70+ (edition 2021).

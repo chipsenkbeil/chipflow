@@ -5,7 +5,6 @@ COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 COPY templates ./templates
 COPY static ./static
-COPY migrations ./migrations
 RUN cargo build --release
 
 # Runtime stage
@@ -17,9 +16,10 @@ WORKDIR /app
 COPY --from=builder /app/target/release/pomodoro-kanban /app/pomodoro-kanban
 COPY templates ./templates
 COPY static ./static
-# migrations are embedded in the binary via sqlx::migrate!
+# web assets are embedded in the binary via rust-embed; the database file is
+# created at DATABASE_PATH on first run
 ENV PORT=3000 \
-    DATABASE_URL=sqlite:/data/app.db?mode=rwc \
+    DATABASE_PATH=/data/kanban.redb \
     POMODORO_MINUTES=25
 VOLUME /data
 EXPOSE 3000

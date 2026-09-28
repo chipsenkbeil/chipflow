@@ -7,6 +7,7 @@
 
 use argon2::password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString};
 use argon2::Argon2;
+use axum::extract::State;
 use axum::{
     extract::Request,
     http::{
@@ -16,11 +17,9 @@ use axum::{
     middleware::Next,
     response::{IntoResponse, Redirect, Response},
 };
-use axum::extract::State;
 use rand::thread_rng;
-use sqlx::sqlite::SqlitePool;
-use uuid::Uuid;
 
+use crate::db::Db;
 use crate::AppState;
 
 /// Authenticated user, inserted into request extensions by [`auth_middleware`].
@@ -60,30 +59,15 @@ pub fn session_token_from_headers(headers: &HeaderMap) -> Option<String> {
 }
 
 /// Look up the user behind a session token.
-pub async fn user_for_token(pool: &SqlitePool, token: &str) -> Option<AuthUser> {
-    sqlx::query_as::<_, (String, String)>(
-        "SELECT u.id, u.username
-         FROM users u JOIN sessions s ON s.user_id = u.id
-         WHERE s.token = ?1",
-    )
-    .bind(token)
-    .fetch_optional(pool)
-    .await
-    .ok()?
-    .map(|(id, username)| AuthUser { id, username })
+pub fn user_for_token(db: &Db, token: &str) -> Option<AuthUser> {
+    db.user_for_token(token)
+        .ok()?
+        .map(|(id, username)| AuthUser { id, username })
 }
 
 /// Create a session row and return the new token.
-pub async fn create_session(pool: &SqlitePool, user_id: &str) -> Result<String, sqlx::Error> {
-    let token = Uuid::new_v4().to_string();
-    let now = chrono::Utc::now().to_rfc3339();
-    sqlx::query("INSERT INTO sessions (token, user_id, created_at) VALUES (?1, ?2, ?3)")
-        .bind(&token)
-        .bind(user_id)
-        .bind(now)
-        .execute(pool)
-        .await?;
-    Ok(token)
+pub fn create_session(db: &Db, user_id: &str) -> Result<String, Box<dyn std::error::Error>> {
+    db.create_session(user_id)
 }
 
 /// `Set-Cookie` value for a fresh login.
@@ -120,7 +104,7 @@ pub async fn auth_middleware(
     next: Next,
 ) -> Response {
     let user = match session_token_from_headers(req.headers()) {
-        Some(token) => user_for_token(&state.db.pool, &token).await,
+        Some(token) => user_for_token(&state.db, &token),
         None => None,
     };
     match user {

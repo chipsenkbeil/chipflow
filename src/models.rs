@@ -1,7 +1,6 @@
 //! Domain types shared by the DB layer, routes, and templates.
 
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
 
 /// Pomodoro size of a task. `Many` (stored as 4) means ">3 pomodori".
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -44,16 +43,16 @@ impl Size {
     }
 }
 
-// ---- Row types: one per table, mapped with sqlx::FromRow ----
+// ---- Row types: one per table, serialized as JSON values in redb ----
 
-#[derive(Debug, Clone, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BoardRow {
     pub id: String,
     pub name: String,
     pub position: i64,
 }
 
-#[derive(Debug, Clone, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColumnRow {
     pub id: String,
     pub board_id: String,
@@ -65,7 +64,7 @@ pub struct ColumnRow {
     pub is_done: bool,
 }
 
-#[derive(Debug, Clone, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwimlaneRow {
     pub id: String,
     pub board_id: String,
@@ -73,7 +72,7 @@ pub struct SwimlaneRow {
     pub position: i64,
 }
 
-#[derive(Debug, Clone, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TaskRow {
     pub id: String,
     pub column_id: String,
@@ -84,12 +83,11 @@ pub struct TaskRow {
     pub position: f64,
     pub created_at: String,
     pub completed_at: Option<String>,
-    /// Aggregated by board queries; 0 when the query doesn't select it.
-    #[sqlx(default)]
+    /// Aggregated by the DB layer on read; 0 for freshly created tasks.
     pub total_minutes: i64,
 }
 
-#[derive(Debug, Clone, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TimeEntryRow {
     pub id: String,
     pub task_id: String,
@@ -98,9 +96,15 @@ pub struct TimeEntryRow {
     pub started_at: String,
 }
 
-#[derive(Debug, Clone, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserRow {
     pub id: String,
     pub username: String,
     pub password_hash: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SessionRow {
+    pub user_id: String,
+    pub created_at: String,
 }

@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 axum = "0.7"
 tokio = { version = "1", features = ["full"] }
-sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "migrate", "uuid", "chrono"] }
+redb = "4"
 askama = "0.12"
 askama_axum = "0.4"
 tower-http = { version = "0.6", features = ["fs"] }
