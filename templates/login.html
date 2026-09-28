@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Log in &mdash; Pomodoro Kanban{% endblock %}
+{% block content %}
+<main class="login-page">
+  <div class="login-card">
+    <h1>&#127813; Pomodoro Kanban</h1>
+    {% if error %}<p class="login-error">Invalid username or password.</p>{% endif %}
+    <form method="post" action="/login">
+      <label>Username
+        <input type="text" name="user" required autocomplete="username" autofocus>
+      </label>
+      <label>Password
+        <input type="password" name="pass" required autocomplete="current-password">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

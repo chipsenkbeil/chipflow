@@ -1,0 +1,52 @@
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" data-task-id="{{ task.id }}" data-pomodoro-minutes="{{ pomodoro_minutes }}">
+    <div class="modal-header">
+      <input type="text" id="modal-name" value="{{ task.name }}" maxlength="200" aria-label="Task name">
+      <button type="button" class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+    </div>
+    {% if is_done %}
+      {% if let Some(done) = task.completed_display %}
+      <div class="modal-completed">&#10003; Completed {{ done }}</div>
+      {% endif %}
+    {% endif %}
+
+    <label class="field-label" for="modal-description">Description</label>
+    <textarea id="modal-description" rows="4" placeholder="Add a description...">{{ task.description }}</textarea>
+
+    <span class="field-label">Size</span>
+    <div class="size-picker" role="group" aria-label="Pomodoro size">
+      <button type="button" data-size="1" style="background: #FFF9C4;" class="{% if task.size == 1 %}selected{% endif %}" title="1 Pomodoro">1</button>
+      <button type="button" data-size="2" style="background: #C8E6C9;" class="{% if task.size == 2 %}selected{% endif %}" title="2 Pomodori">2</button>
+      <button type="button" data-size="3" style="background: #BBDEFB;" class="{% if task.size == 3 %}selected{% endif %}" title="3 Pomodori">3</button>
+      <button type="button" data-size="4" style="background: #FFCDD2;" class="{% if task.size == 4 %}selected{% endif %}" title=">3 Pomodori">4</button>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="saveModalTask()">Save</button>
+      <button type="button" class="btn btn-danger-ghost" onclick="deleteModalTask()">Delete task</button>
+    </div>
+
+    <hr>
+
+    <h3>Pomodoro timer</h3>
+    <div class="timer">
+      <div class="timer-display" id="timer-display">{{ pomodoro_minutes }}:00</div>
+      <div class="timer-controls">
+        <button type="button" class="btn" id="timer-start">Start</button>
+        <button type="button" class="btn" id="timer-pause" disabled>Pause</button>
+        <button type="button" class="btn btn-ghost" id="timer-reset">Reset</button>
+      </div>
+      <p class="timer-hint">Finishing the timer logs {{ pomodoro_minutes }} minutes on this task automatically.</p>
+    </div>
+
+    <hr>
+
+    <h3>Time entries</h3>
+    <div id="time-entries">{% include "time_entries.html" %}</div>
+    <form id="log-time-form" class="log-time-form">
+      <input type="number" name="minutes" min="1" max="1440" value="{{ pomodoro_minutes }}" required aria-label="Minutes">
+      <input type="text" name="note" placeholder="Note (optional)" maxlength="200" aria-label="Note">
+      <button type="submit" class="btn btn-sm">Log time</button>
+    </form>
+  </div>
+</div>

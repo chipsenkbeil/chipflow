@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ board_name }} &mdash; Pomodoro Kanban{% endblock %}
+{% block content %}
+<header class="topbar">
+  <h1>{{ board_name }}</h1>
+  <div class="topbar-right">
+    <span class="user">{{ username }}</span>
+    <form method="post" action="/logout" class="logout-form">
+      <button type="submit" class="btn btn-ghost">Log out</button>
+    </form>
+  </div>
+</header>
+
+<main class="board" data-board-id="{{ board_id }}">
+  <div class="col-headers" style="--col-count: {{ columns.len() }};">
+    {% for col in columns %}
+    <div class="col-header{% if col.at_limit %} wip-limit{% endif %}"
+         data-column-id="{{ col.id }}"
+         data-column-name="{{ col.name }}"
+         data-task-count="{{ col.count }}"
+         data-wip-limit="{% if let Some(lim) = col.wip_limit %}{{ lim }}{% endif %}"
+         data-is-done="{% if col.is_done %}1{% else %}0{% endif %}">
+      <span class="col-name">{{ col.name }}</span>
+      <span class="col-right">
+        <span class="col-count">{{ col.count }}{% if let Some(lim) = col.wip_limit %} / {{ lim }}{% endif %}</span>
+        <details class="col-menu">
+          <summary aria-label="Column options">&#8943;</summary>
+          <div class="menu-pop">
+            <button type="button" onclick="renameColumn(this)">Rename</button>
+            <button type="button" onclick="setWipLimit(this)">WIP limit&hellip;</button>
+            <button type="button" onclick="moveColumn(this, -1)">Move left</button>
+            <button type="button" onclick="moveColumn(this, 1)">Move right</button>
+            {% if col.is_done %}
+            <button type="button" onclick="toggleDoneColumn(this, false)">Unmark as done column</button>
+            {% else %}
+            <button type="button" onclick="toggleDoneColumn(this, true)">Mark as done column</button>
+            {% endif %}
+            <button type="button" class="menu-danger" onclick="deleteColumn(this)">Delete</button>
+          </div>
+        </details>
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+  <button type="button" class="add-column-btn" onclick="addColumn()">+ Add column</button>
+
+  {% for band in bands %}
+  <div class="swimlane-band"
+       data-swimlane-id="{{ band.id }}"
+       data-swimlane-name="{{ band.name }}"
+       data-task-count="{{ band.task_count }}">
+    <span class="band-name">{{ band.name }}</span>
+    <span class="band-controls">
+      <button type="button" onclick="renameSwimlane(this)">Rename</button>
+      <button type="button" onclick="moveSwimlane(this, -1)" aria-label="Move up">&#8593;</button>
+      <button type="button" onclick="moveSwimlane(this, 1)" aria-label="Move down">&#8595;</button>
+      <button type="button" onclick="deleteSwimlane(this)">Delete</button>
+    </span>
+  </div>
+  <div class="col-row" style="--col-count: {{ columns.len() }};">
+    {% for cell in band.cells %}
+    <div class="cell" data-column-id="{{ cell.column_id }}" data-swimlane-id="{{ cell.swimlane_id }}">
+      <div class="task-list" data-column-id="{{ cell.column_id }}" data-swimlane-id="{{ cell.swimlane_id }}">
+        {% if cell.is_done %}
+          {% for group in cell.done_groups %}
+          <div class="done-group-label">{{ group.label }}</div>
+          {% for task in group.tasks %}{% include "task_card.html" %}{% endfor %}
+          {% endfor %}
+        {% else %}
+          {% for task in cell.tasks %}{% include "task_card.html" %}{% endfor %}
+        {% endif %}
+      </div>
+      <button type="button" class="add-task-btn" onclick="showAddForm(this)">+ Add task</button>
+      <form class="add-task-form" hidden
+            hx-post="/api/tasks" hx-target="previous .task-list" hx-swap="beforeend"
+            hx-on::after-request="this.reset(); this.hidden = true; this.closest('.cell').querySelector('.add-task-btn').hidden = false;">
+        <input type="hidden" name="column_id" value="{{ cell.column_id }}">
+        <input type="hidden" name="swimlane_id" value="{{ cell.swimlane_id }}">
+        <input type="text" name="name" placeholder="Task name" required maxlength="200">
+        <select name="size" aria-label="Pomodoro size">
+          <option value="1">1 Pomodoro</option>
+          <option value="2">2 Pomodori</option>
+          <option value="3">3 Pomodori</option>
+          <option value="4">>3 Pomodori</option>
+        </select>
+        <div class="add-task-actions">
+          <button type="submit" class="btn btn-primary btn-sm">Add</button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="hideAddForm(this)">Cancel</button>
+        </div>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <button type="button" class="add-swimlane-btn" onclick="addSwimlane()">+ Add swimlane</button>
+
+  <footer class="legend" aria-label="Pomodoro size legend">
+    <span class="legend-chip" style="background: #FFF9C4;">1 Pomodoro</span>
+    <span class="legend-chip" style="background: #C8E6C9;">2 Pomodori</span>
+    <span class="legend-chip" style="background: #BBDEFB;">3 Pomodori</span>
+    <span class="legend-chip" style="background: #FFCDD2;">>3 Pomodori</span>
+  </footer>
+</main>
+
+<div id="modal-root"></div>
+{% endblock %}

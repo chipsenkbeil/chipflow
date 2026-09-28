@@ -1,0 +1,13 @@
+{% if entries.is_empty() %}
+<p class="empty-note">No time logged yet.</p>
+{% else %}
+<ul class="entries-list">
+  {% for e in entries %}
+  <li>
+    <span class="entry-minutes">{{ e.minutes }}m</span>
+    <span class="entry-note">{{ e.note }}</span>
+    <span class="entry-date">{{ e.started_display }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

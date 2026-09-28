@@ -1,0 +1,8 @@
+<article class="task-card" data-task-id="{{ task.id }}" style="--card-color: {{ task.color_hex }};" tabindex="0" title="{{ task.size_label }}">
+  <div class="card-title">{{ task.name }}</div>
+  <div class="card-meta">
+    <span class="card-size">{{ task.size_label }}</span>
+    {% if task.total_minutes > 0 %}<span class="card-time">{{ task.total_minutes }}m logged</span>{% endif %}
+    {% if let Some(done) = task.completed_display %}<span class="card-done">&#10003; {{ done }}</span>{% endif %}
+  </div>
+</article>
