@@ -16,6 +16,8 @@ use axum::{
     Form, Json, Router,
 };
 use chrono::{DateTime, Duration, Local, Utc};
+#[cfg(not(debug_assertions))]
+use rust_embed::RustEmbed;
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use sqlx::sqlite::SqlitePool;
@@ -29,7 +31,7 @@ use crate::AppState;
 /// Build the full router. The auth middleware layer is added *before*
 /// `/login` and `/static` are registered, so those two stay public.
 pub fn router(state: AppState) -> Router {
-    Router::new()
+    let router = Router::new()
         .route("/", get(root))
         .route("/logout", post(logout))
         .route("/b/:board_id", get(board_page))
@@ -58,9 +60,40 @@ pub fn router(state: AppState) -> Router {
             state.clone(),
             auth::auth_middleware,
         ))
-        .route("/login", get(login_page).post(login_submit))
-        .nest_service("/static", ServeDir::new("static"))
-        .with_state(state)
+        .route("/login", get(login_page).post(login_submit));
+    // Static assets (`static/app.js`, `static/style.css`): served from disk
+    // in debug builds so edits show up without a rebuild; embedded in the
+    // binary in release builds so `cargo install` produces a fully
+    // self-contained binary with no `./static` directory needed next to it.
+    #[cfg(debug_assertions)]
+    let router = router.nest_service("/static", ServeDir::new("static"));
+    #[cfg(not(debug_assertions))]
+    let router = router.route("/static/*path", get(serve_embedded_static));
+    router.with_state(state)
+}
+
+/// Static assets embedded in release builds so the installed binary is
+/// self-contained (see `router`).
+#[cfg(not(debug_assertions))]
+#[derive(RustEmbed)]
+#[folder = "static/"]
+struct EmbeddedStatic;
+
+#[cfg(not(debug_assertions))]
+async fn serve_embedded_static(Path(path): Path<String>) -> impl IntoResponse {
+    match EmbeddedStatic::get(&path) {
+        Some(file) => {
+            let content_type = if path.ends_with(".js") {
+                "text/javascript"
+            } else if path.ends_with(".css") {
+                "text/css"
+            } else {
+                "application/octet-stream"
+            };
+            ([(CONTENT_TYPE, content_type)], file.data).into_response()
+        }
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
 }
 
 // ---- Errors ----

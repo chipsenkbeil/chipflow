@@ -6,6 +6,20 @@ single-admin login.
 
 ## Self-host quickstart
 
+Docker is optional. The app is a single self-contained binary — install it
+with cargo and run it anywhere:
+
+```sh
+cargo install --git https://github.com/chipsenkbeil/pomodoro-kanban
+ADMIN_USER=admin ADMIN_PASS='choose-a-strong-password' pomodoro-kanban
+```
+
+(Requires a Rust toolchain, e.g. via [rustup](https://rustup.rs). Release
+builds embed the web assets, so the installed binary needs nothing next to
+it — just point `DATABASE_URL` at wherever you want the SQLite file.)
+
+Or with Docker Compose:
+
 ```sh
 # Set the admin credentials (required on first run), then build and run:
 ADMIN_USER=admin ADMIN_PASS='choose-a-strong-password' docker compose up --build -d
@@ -19,7 +33,8 @@ Configuration (environment variables):
   only (the argon2 hash is stored in the database afterwards).
 - `POMODORO_MINUTES` — pomodoro length in minutes (default: `25`).
 - `PORT` — port the server listens on (default: `3000`).
-- `DATABASE_URL` — sqlite URL (default: `sqlite:data/app.db?mode=rwc`;
+- `DATABASE_URL` — sqlite URL (default: `sqlite:./kanban.db?mode=rwc`,
+  created next to wherever you run it;
   docker compose sets `sqlite:/data/app.db?mode=rwc`).
 
 The SQLite database lives in the named volume `kanban-data` (mounted at
