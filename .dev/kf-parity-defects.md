@@ -768,3 +768,9 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: No reports menu exists.
 - Evidence: Live KanbanFlow handoff.
 - Not a duplicate: No existing defect enumerates the Reports submenu.
+
+### KF-137 — Double init binds every handler twice: manual-time submit creates duplicate entries [HIGH | broken | Timer]
+- KanbanFlow reference: Adding time manually creates exactly one entry; the calendar button toggles the date picker.
+- ChipFlow behavior: `static/app.js` is loaded with `defer`, so at execution time `document.readyState` is already `'interactive'` — both the immediate init block AND the `DOMContentLoaded` listener fire, running `initEntryEdit()` (and `initBoard()`, `initTimerLogPage()`, `initTimerStatsPage()`) twice. Every handler is double-bound: the "Add time manually" submit double-POSTs to `/api/time/manual` (browser-verified: 3 tasks each got exactly 2 identical entries), and the calendar button's toggle opens-then-immediately-closes the popup (verified: `openCalendar` called twice per click). `TimerUI.init` already has an `initialized` guard; the others do not.
+- Evidence: Playwright adversarial pass 2026-09-29 (dbg4.js: calls=2; dbg5.js: entries per task = 2,2,2).
+- Not a duplicate: no existing defect covers init double-binding. (initEntryEdit guarded 2026-09-29; initBoard/initTimerLogPage/initTimerStatsPage still unguarded.)
