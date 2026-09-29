@@ -188,3 +188,4 @@ interaction pass actually occur.
 - 2026-09-28 22:05 CDT: restored full status file (it had been overwritten
   with phase-log-only content). Reminder: this file is append-only —
   never overwrite it.
+- 2026-09-28 21:58 CDT: Dale pushed the KanbanFlow-parity UI milestone to GitHub main via .dev/push_via_api.py (plain git push has no credentials in this env; the worker's 21:53 auth failure was a wrong-mechanism miss, not a token problem). Remote main now 34b6023f "Rebuild UI to match KanbanFlow"; remote tree 3c64d572beb2072b12b57321f1b21a2d14b68487 verified equal to local master 04060b7. Worker notified that its push base (f52010d/da0dce7) is stale. (UI)
