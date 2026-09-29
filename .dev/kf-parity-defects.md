@@ -40,7 +40,7 @@
 - KanbanFlow: dark menu, header "Why did you stop?" + 17 items verbatim in order: Boss interrupted, Colleague interrupted, Context switch, Dog, Email, Family, Finished with no new task, Food Delivery, Meeting, Other, Phone call, Restroom, Sleep, Web browsing, Workchat, "Add new reason…", "Task done" (v4 S2, zoom-verified).
 - ChipFlow: nothing ever populates `#why-stop-reasons` (zero references in static/app.js), so the menu opens empty. `beginWhy` then throws on `document.getElementById('why-task-name')` / `#why-elapsed`, neither of which exists in templates/board.html:65-75.
 
-### KF-006 — Restore the break flow
+### KF-006 — Restore the break flow **[VERIFIED 2026-09-29]** — real-Chromium run vs fresh DB: pomodoro forced to 00:00 shows single green Take break (rgb(22,163,74)); clicking it starts a short-break session ('SHORT BREAK 4:59 … Stop Switch task'); dead Pause/Resume branch removed — running session now shows only red Stop (rgb(220,38,38)) + Switch task, matching KanbanFlow (no /api/timer/pause|resume exist).
 - Surface: timer · Category: broken · Severity: high
 - KanbanFlow: at 00:00 the panel shows "00:00" with a single green "Take break" button next to the clock (v8 S1; v8-e001 verified).
 - ChipFlow: `#timer-popup-breaks` ("Take a break:" + Short/Long break buttons, templates/board.html:50-54) is never unhidden by any JS. `finishSession` posts the invalid stop body (see KF-002) and plays the chime regardless, so a pomodoro that runs to zero is never logged as completed. No "long break every 4th break" logic exists client- or server-side.
@@ -55,7 +55,7 @@
 - KanbanFlow: stopwatch panel header is "Stopwatch", the label reads "Session time", the clock counts up from "00:00", red ■ Stop, no progress fill (v9 S3; v9-e003 verified).
 - ChipFlow: `#timer-popup-title` and `#timer-popup-label` are never updated — the panel always reads "Pomodoro" / "Time until break" (templates/board.html:36-39), and the clock never counts up.
 
-### KF-009 — Rename the footer first tab to the other mode
+### KF-009 — Rename the footer first tab to the other mode **[VERIFIED 2026-09-29]** — real-Chromium run: `#timer-foot-mode` span reads 'Stopwatch' in pomodoro mode and 'Pomodoro' in stopwatch mode (setModeTab renames it to the other mode, static/app.js:1250-1258).
 - Surface: timer · Category: divergent · Severity: medium
 - KanbanFlow: the bottom-nav first tab names the other mode: "Pomodoro" in stopwatch mode, "Stopwatch" in pomodoro mode (v4-00002, v4-00037; frame review).
 - ChipFlow: `#timer-foot-mode` always shows "Stopwatch" (templates/board.html:58); `switchModeTab` only toggles nonexistent `.timer-modes button`s (static/app.js:1143-1150), so clicking changes nothing.
@@ -147,7 +147,7 @@
 - KanbanFlow: idle pill icon is a green ▶ play triangle (v1-e001; v3-e022).
 - ChipFlow: `.timer-pill-dot` is a static `#e57373` red rounded square that never changes color or shape (static/style.css:1028-1033) — it reads as a stop icon even when idle.
 
-### KF-027 — Give the running pill a visible running state
+### KF-027 — Give the running pill a visible running state **[VERIFIED 2026-09-29]** — real-Chromium run: idle pill '▶ 25:00 ▾' on rgb(31,41,55); running pill '■ 24:55 ▾' on rgb(63,29,29) with `running` class — visibly distinct.
 - Surface: header · Category: broken · Severity: high
 - KanbanFlow: running pomodoro pill shows a red ■ stop icon plus countdown digits on the dark pill (v1-e023; frame review §(e) notes red digits and a likely subtle red fill); running stopwatch shows red ■ + counting-up "00:02" + ▾ (v9-e002).
 - ChipFlow: `renderPill()` toggles a `running` class (static/app.js:953) but no `.timer-pill.running` CSS rule exists — the pill looks identical whether idle or running.
@@ -494,12 +494,12 @@
 
 ## Cross-surface (KF-094–KF-103)
 
-### KF-094 — Fix T / P / Y keyboard shortcuts and make the dialog text agree with the code
+### KF-094 — Fix T / P / Y keyboard shortcuts and make the dialog text agree with the code **[VERIFIED 2026-09-29]** — real-Chromium run vs fresh DB: T toggles popup; P opens Reports menu (Timer log + Pomodoro statistics); Y opens Add time manually; E opens estimate dialog in task modal; V opens Move dialog; `.` opens More menu; Esc closes dialogs incl. with focus in a field (fixed 2026-09-29: Escape was swallowed by the inField early-return, static/app.js); Ctrl+Enter saves+closes modal; Delete deletes (after confirm).
 - Surface: cross-surface (header, timer, reports, task modal) · Category: broken · Severity: high
 - KanbanFlow: T = timer menu, P = reports menu, Y = manual time entry, E = time estimate (v7-e018; frame review).
 - ChipFlow: T immediately STARTS a pomodoro on the open task instead of opening the timer menu (static/app.js:1679-1682); **P calls `TimerUI.stopClicked()` — it stops a running timer** — instead of opening the Reports menu (static/app.js:1683-1684); Y smooth-scrolls to the first task card instead of opening manual time entry (static/app.js:1676-1678). The shortcuts dialog additionally disagrees with the code on all three (says Y = "Add time entry manually", T = "Open / close the timer popup", P = "Open pomodoro statistics", templates/board.html:402-407); no Enter handler exists though the dialog lists one; "?" opens the dialog but isn't listed (static/app.js:1670-1700).
 
-### KF-095 — Rewrite the shortcuts dialog with KanbanFlow's 9 rows
+### KF-095 — Rewrite the shortcuts dialog with KanbanFlow's 9 rows **[VERIFIED 2026-09-29]** — real-Chromium run: `#shortcuts-dialog` contains exactly the nine KanbanFlow rows (V/T/P/./↑↓/Cmd+↑↓/Esc/Cmd+Enter/Delete) with no extras. NOTE: the dialog is compiled into the Rust binary (Askama) — template edits require `cargo build` before browser verification.
 - Surface: cross-surface (task modal, reports) · Category: divergent · Severity: high
 - KanbanFlow: 9 rows verbatim in order: Open Move dialog — V; Open Timer menu — T; Open Reports menu — P; Open More menu — `.`; Navigate subtask list — ↑ ↓; Move subtask in list — Cmd + ↑ ↓; Close window / discard changes — Esc; Save changes — Cmd + Enter; Delete task — Delete (v7-e018).
 - ChipFlow: 6 unrelated rows (Y/T/P/E/Enter/Esc) with different meanings, omitting V, `.`, subtask navigation, Cmd+Enter, Delete entirely (templates/board.html:398-412).
@@ -514,7 +514,7 @@
 - KanbanFlow: the pill is absent while the timer popup panel is open/docked and in layout-edit view (frame review §(e); v1-02504–02516; v9-e001).
 - ChipFlow: `renderPill` forces `pill.hidden = false` with the comment "The pill is the always-visible timer dropdown control; never leave it hidden" (static/app.js:966-970) — the pill stays visible under the open popup.
 
-### KF-098 — Show the configured duration with green ▶ and ▾ on the idle pill (red ■ + 00:00 in stopwatch mode)
+### KF-098 — Show the configured duration with green ▶ and ▾ on the idle pill (red ■ + 00:00 in stopwatch mode) **[VERIFIED 2026-09-29]** — real-Chromium run: pomodoro idle pill '▶ 25:00 ▾'; stopwatch idle pill '■ 00:00 ▾' (red square).
 - Surface: cross-surface (header, timer) · Category: divergent · Severity: high
 - KanbanFlow: idle pill is dark with a green ▶, "25:00", and a ⌄ dropdown (v1-e001; v3-e022); stopwatch idle pill shows a red ■, "00:00", and ⌄ (v9-e003; frame review §(d)).
 - ChipFlow: the pill label is always the literal word "Pomodoro" (`pillLabel`, static/app.js:937-939); the dot is a pink rounded square (`border-radius: 3px`, `#e57373`, static/style.css:1028-1033) — no green play triangle, no red square, no dropdown arrow in any state; no chevron element in the markup (templates/board.html:14-17).
@@ -774,3 +774,9 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `static/app.js` is loaded with `defer`, so at execution time `document.readyState` is already `'interactive'` — both the immediate init block AND the `DOMContentLoaded` listener fire, running `initEntryEdit()` (and `initBoard()`, `initTimerLogPage()`, `initTimerStatsPage()`) twice. Every handler is double-bound: the "Add time manually" submit double-POSTs to `/api/time/manual` (browser-verified: 3 tasks each got exactly 2 identical entries), and the calendar button's toggle opens-then-immediately-closes the popup (verified: `openCalendar` called twice per click). `TimerUI.init` already has an `initialized` guard; the others do not.
 - Evidence: Playwright adversarial pass 2026-09-29 (dbg4.js: calls=2; dbg5.js: entries per task = 2,2,2).
 - Not a duplicate: no existing defect covers init double-binding. (initEntryEdit guarded 2026-09-29; initBoard/initTimerLogPage/initTimerStatsPage still unguarded.)
+
+### KF-138 — Timer popup DOM skeleton missing: running session view, idle start UI, and Today list never render [HIGH | broken | Timer] **[VERIFIED 2026-09-29]** — real-Chromium run vs fresh DB: popup renders mode tabs (Pomodoro/Stopwatch), idle start UI (task select + duration + Start), running view ticks down (24:59→24:55) with task name + red Stop; Today list populated from /api/timer/today ('Timer test task B 10:26 AM · 1m').
+- KanbanFlow reference: the timer panel renders the live session (countdown/count-up, task, Pause/Stop), the idle start UI (task + duration pickers, Start button), and the Today entries list.
+- ChipFlow behavior: `renderPopup()` writes the running session into `#timer-popup-body` and the idle start UI into `#timer-mode-tab` under `.timer-modes`, but none of those elements exist in `templates/board.html` (only `#timer-foot-mode` exists) — every one of those writes is a null-guarded no-op, so the popup is stuck on its static skeleton (frozen "--:--", always-visible Stop button). The `#timer-today-list` is never populated: no code fetches the existing `GET /api/timer/today`. Additionally `tick()` requires `phase === 'running'`, but the server reports the mode string as phase ('pomodoro'/'stopwatch'/…), so the 1s tick never fires — no live countdown, and `finishSession()` can never trigger client-side (KF-006's break flow is unreachable).
+- Evidence: source read 2026-09-29 (static/app.js:971-973, 1030, 1087; templates/board.html popup markup).
+- Not a duplicate: KF-001 covered the status field mismatch (fixed); this is the missing DOM + dead tick.
