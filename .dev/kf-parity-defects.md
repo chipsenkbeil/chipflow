@@ -786,3 +786,57 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `ensure_board_colors` (src/db.rs:1008) explicitly guards against this: "Don't backfill colors for a board that doesn't exist (e.g. after deletion); list_colors on a deleted board must stay empty." The function returns early if `get_board(board_id)` is None.
 - Evidence: Source verification 2026-09-29. The guard is present and the intent is documented in the code comment.
 - Not a duplicate: No existing defect covers deleted-board color backfilling.
+
+### KF-140 — Card context menu has 8 entries incl. "Timer" and "Edit grouping date"; expected 7 starting with "Start timer" [MEDIUM | broken | Board]
+- KanbanFlow reference: task context menu has exactly 7 entries: Start timer, Move, Color, Assign members, Copy here, Task URL, Delete.
+- ChipFlow behavior: right-clicking a card shows 8 entries: Timer, Move, Edit grouping date, Color, Assign members, Copy here, Task URL, Delete.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers the context-menu entry list.
+
+### KF-141 — Context-menu Move does nothing: client PATCHes /api/tasks/{id}/move, API defines POST [HIGH | broken | Board]
+- KanbanFlow reference: Move relocates the task to the chosen column.
+- ChipFlow behavior: right-click card → Move → pick column does nothing; the client issues PATCH /api/tasks/{id}/move while the API (per /api/v1/openapi.json and /agents.md) defines POST for that route.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers the Move verb mismatch.
+
+### KF-142 — Color change via context menu leaves stale accessible title [LOW | broken | Board]
+- KanbanFlow reference: card title/label updates to reflect the new color.
+- ChipFlow behavior: right-click a green card → Color → Red changes the color but the accessible title still reads the old value (e.g. "2 Pomodori").
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers stale accessible titles after recolor.
+
+### KF-143 — [RESERVED — description missing from browser handoff]
+- The 2026-09-29 browser handoff claimed 9 defects filed but described only 8 (KF-140–142, KF-144–148). This number is reserved pending reconciliation; do not reuse.
+
+### KF-144 — Task modal → Add → Label closes the menu and opens no dialog [HIGH | broken | Board]
+- KanbanFlow reference: Add → Label opens the label editor dialog.
+- ChipFlow behavior: Task modal → Add → Label closes the Add menu and opens no dialog. Confirmed twice in the same session.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers the Label dialog.
+
+### KF-145 — Task modal → Add → Due date closes the menu and opens no dialog [HIGH | broken | Board]
+- KanbanFlow reference: Add → Due date opens the due-date picker dialog.
+- ChipFlow behavior: Task modal → Add → Due date closes the Add menu and opens no dialog. Confirmed twice in the same session.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers the Due date dialog.
+
+### KF-146 — Settings → API tokens → Revoke does nothing; token persists after reload [HIGH | broken | API]
+- KanbanFlow reference: n/a (ChipFlow-native feature). Expected: revoking a token invalidates it.
+- ChipFlow behavior: Settings → API tokens → Revoke appears to do nothing; the token is still present after page reload. Security-relevant: revocation must actually invalidate the token.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3). Bearer-header negative test not possible in that environment — re-verify server-side that a revoked token returns 401.
+- Not a duplicate: no existing defect covers token revocation.
+
+### KF-147 — Cards in the first swimlane row are obscured by the sticky column header and unclickable [HIGH | broken | Board]
+- KanbanFlow reference: all cards are clickable regardless of swimlane row.
+- ChipFlow behavior: cards in the first swimlane row render underneath the sticky column header ("obscured" actionability error); new tasks default to the first swimlane, so newly created cards cannot be opened at all.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers sticky-header occlusion.
+
+### KF-148 — Task deletion completely broken: modal Delete and context-menu Delete fail silently [CRITICAL | broken | Board]
+- KanbanFlow reference: deleting a task removes it.
+- ChipFlow behavior: both the task-modal Delete button and the card context-menu Delete entry fail silently; the card persists after reload.
+- Evidence: Real-Chromium adversarial pass 2026-09-29 vs fresh DB (build 1b618c3).
+- Not a duplicate: no existing defect covers task deletion.
+
+### Observation (not filed) — unexplained "Foo" entry in global Interruption reasons list
+- The 2026-09-29 browser pass noticed a "Foo" entry in Settings → Interruption reasons that the tester does not recall adding via the UI. The seeded default list in src/models.rs contains no such entry. Likely accidental creation during the settings pass; no repro. Not filed as a defect. If it reappears on a fresh DB without user input, file it then.
