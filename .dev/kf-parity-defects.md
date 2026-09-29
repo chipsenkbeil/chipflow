@@ -780,3 +780,9 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `renderPopup()` writes the running session into `#timer-popup-body` and the idle start UI into `#timer-mode-tab` under `.timer-modes`, but none of those elements exist in `templates/board.html` (only `#timer-foot-mode` exists) — every one of those writes is a null-guarded no-op, so the popup is stuck on its static skeleton (frozen "--:--", always-visible Stop button). The `#timer-today-list` is never populated: no code fetches the existing `GET /api/timer/today`. Additionally `tick()` requires `phase === 'running'`, but the server reports the mode string as phase ('pomodoro'/'stopwatch'/…), so the 1s tick never fires — no live countdown, and `finishSession()` can never trigger client-side (KF-006's break flow is unreachable).
 - Evidence: source read 2026-09-29 (static/app.js:971-973, 1030, 1087; templates/board.html popup markup).
 - Not a duplicate: KF-001 covered the status field mismatch (fixed); this is the missing DOM + dead tick.
+
+### KF-139 — Deleted-board color recreation guarded [LOW | verified | Colors] **[VERIFIED 2026-09-29]**
+- Discovery: If a board is deleted and `list_colors` is called on the deleted board ID, would `ensure_board_colors` recreate the default palette?
+- ChipFlow behavior: `ensure_board_colors` (src/db.rs:1008) explicitly guards against this: "Don't backfill colors for a board that doesn't exist (e.g. after deletion); list_colors on a deleted board must stay empty." The function returns early if `get_board(board_id)` is None.
+- Evidence: Source verification 2026-09-29. The guard is present and the intent is documented in the code comment.
+- Not a duplicate: No existing defect covers deleted-board color backfilling.
