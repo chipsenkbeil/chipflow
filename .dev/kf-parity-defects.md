@@ -9,9 +9,10 @@
 
 ## Totals
 
-- **103 defects**: high 25 · medium 44 · low 34
-- By category: broken 15 · divergent 51 · missing 37
-- By surface: timer 21 · header 12 · columns 16 · cards 6 · task modal 18 · settings 16 · reports 4 · cross-surface 10
+- **149 actionable defects** (150 headers KF-001–KF-150; KF-143 is reserved — description missing from browser handoff): high 41 · medium 53 · low 54 · critical 1
+- By category: broken 35 · divergent 70 · missing 44
+- By surface: timer 28 · header 14 · columns 21 · cards 7 · task modal 21 · settings 20 · reports 6 · cross-surface 11 · board 10 · colors 5 · legend 2 · swimlanes 1 · filter 1 · menu 1 · api 1
+- Status as of 2026-09-29 ~18:25 CDT: **all 149 actionable defects FIXED** (KF-143 reserved, not actionable). The original 2026-09-28/29 audit covered the first 103; KF-104+ were filed by later browser passes.
 
 ## Timer (KF-001–KF-021)
 
@@ -781,7 +782,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: source read 2026-09-29 (static/app.js:971-973, 1030, 1087; templates/board.html popup markup).
 - Not a duplicate: KF-001 covered the status field mismatch (fixed); this is the missing DOM + dead tick.
 
-### KF-139 — Deleted-board color recreation guarded [LOW | verified | Colors] **[VERIFIED 2026-09-29]**
+### KF-139 — Deleted-board color recreation guarded [LOW | divergent | Colors] **[VERIFIED 2026-09-29]**
 - Discovery: If a board is deleted and `list_colors` is called on the deleted board ID, would `ensure_board_colors` recreate the default palette?
 - ChipFlow behavior: `ensure_board_colors` (src/db.rs:1008) explicitly guards against this: "Don't backfill colors for a board that doesn't exist (e.g. after deletion); list_colors on a deleted board must stay empty." The function returns early if `get_board(board_id)` is None.
 - Evidence: Source verification 2026-09-29. The guard is present and the intent is documented in the code comment.
@@ -840,3 +841,17 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 ### Observation (not filed) — unexplained "Foo" entry in global Interruption reasons list
 - The 2026-09-29 browser pass noticed a "Foo" entry in Settings → Interruption reasons that the tester does not recall adding via the UI. The seeded default list in src/models.rs contains no such entry. Likely accidental creation during the settings pass; no repro. Not filed as a defect. If it reappears on a fresh DB without user input, file it then.
+
+### KF-149 — Board created without a template has no swimlanes; column "+" add-task buttons silently do nothing [HIGH | broken | Board]
+- KanbanFlow reference: a new board's column add-task buttons work immediately.
+- ChipFlow behavior: POST /api/boards without template_id seeds colors + one "To-do" column but zero swimlanes. The board renders an empty tbody; the add-task click handler finds no `.task-list[data-column-id]` cell and returns early with no feedback, so every "+" button appears broken until the user discovers the layout view's "+ Add swimlane".
+- Evidence: managed-browser verification pass 2026-09-29 vs fresh DB (build 1f4fb378) — new "KF Test Board" (3 columns, 0 swimlanes): column "+" buttons silently did nothing; confirmed in source (`initAddTask` early return in static/app.js; `create_board` in src/routes.rs seeds no lane).
+- Not a duplicate: no existing defect covers the zero-swimlane board state.
+- Fix (2026-09-29): new `Db::ensure_default_swimlane` backfills a "Default" lane when a board has none (idempotent, skips missing boards); `create_board` calls it for template-less boards; `DELETE /api/swimlanes/{id}` now returns 400 on the board's last lane (mirrors the existing last-board rule); agents.md documents both. Regression test `tests/board_default_swimlane.rs` (3 tests) pins the contract.
+
+### KF-150 — New API token doesn't appear in Active tokens until manual reload (15s delayed full-page reload) [LOW | divergent | Settings]
+- KanbanFlow reference: n/a (API tokens are a ChipFlow addition); reasonable UX is the new token appears in the list immediately.
+- ChipFlow behavior: creating a token shows the one-time secret but schedules `setTimeout(function () { location.reload(); }, 15000)` (templates/settings.html inline script) — the Active tokens table stays stale for 15 seconds, inviting duplicate creation.
+- Evidence: managed-browser verification pass 2026-09-29 (build 1f4fb378); confirmed in source.
+- Not a duplicate: no existing defect covers the token list refresh.
+- Fix (2026-09-29): after creation, the client re-fetches the settings page and swaps `#token-list` in place (server-rendered, so date formatting stays consistent), re-binding the revoke buttons; no reload, so the one-time secret stays visible.
