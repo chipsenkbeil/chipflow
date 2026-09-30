@@ -207,18 +207,21 @@
 
 ### KF-038 — Hide the ⋮ button on board column headers; open the menu on right-click
 - Surface: columns · Category: divergent · Severity: low
-- KanbanFlow: board column headers show no ⋮ affordance — the 6-item menu opens on right-click (hi-res screenshot shows no ⋮; v1-S12). (Items/order already match; this is about the trigger.)
-- ChipFlow: an always-visible ⋮ button on every header, at the far right where KanbanFlow puts the count (board.html:173; style.css:151,165).
+- Status: trigger FIXED (ChipFlow's ⋮ is display:none; menu opens on right-click like KanbanFlow — confirmed 2026-09-30 by visual verifier). CORRECTION 2026-09-30: the old note "(Items/order already match; this is about the trigger)" and "the 6-item menu" were wrong — the LIVE golden-master board's column menu has 3 items (Edit / Collapse / Show details), not 6. Menu contents split into KF-223.
+- KanbanFlow: board column headers show no ⋮ affordance — the menu opens on right-click (v1-S12; live board 2026-09-30).
+- ChipFlow (before fix): an always-visible ⋮ button on every header, at the far right where KanbanFlow puts the count (board.html:173; style.css:151,165).
 
-### KF-039 — Show the red task count on collapsed column strips
+### KF-039 — Match the collapsed column strip: count color, vertical name, expand behavior
 - Surface: columns · Category: divergent · Severity: medium
-- KanbanFlow: collapsed strip shows the task count in red, e.g. "3" (fidelity-status Discovered behaviors).
-- ChipFlow: `.columnHeader--collapsed .columnHeader-count{display:none}` (style.css:195-197) — the count is never rendered on collapsed columns.
+- CORRECTION 2026-09-30 (verified live on the golden-master board): the count badge is RED only when the WIP limit is exceeded ("5", tooltip "Task count: 5 / Click to expand"); otherwise it is black/dark (To Do shows "5" in dark). The old "always red" premise was wrong.
+- KanbanFlow: collapsed column is a narrow white vertical strip (~20–24px), full task-area height; count badge at top; column name vertical, rotated 90° CCW (reads bottom-to-top), UPPERCASE via CSS ("IN PROGRESS" from source "In Progress"); click anywhere on the strip (badge, name, header) expands it. Collapsed strips also carry an overdue indicator: To Do shows "1 overdue task" + warning line beneath, tooltip "Overdue tasks: 1 / Total tasks: 5 / Click to expand".
+- ChipFlow: no column collapse exists at all (no reachable fold UI/API/JS).
+- Evidence: column-behavior browser check 2026-09-30 (collapsed-strip screenshots).
 
 ### KF-040 — Uppercase the collapsed column name
 - Surface: columns · Category: divergent · Severity: low
-- KanbanFlow: collapsed strip shows the name vertical and UPPERCASE in gray ("PERSONAL TO-DO", "BACKLOG") (hi-res screenshot).
-- ChipFlow: vertical name rendered as-is, no text-transform (style.css:188-193).
+- KanbanFlow: collapsed strip shows the name vertical (90° CCW, reads bottom-to-top) and UPPERCASE via CSS ("IN PROGRESS"; "PERSONAL TO-DO", "BACKLOG") (live golden-master board, 2026-09-30).
+- ChipFlow: no column collapse exists at all. (Subsumed by the missing collapse feature — see KF-039/KF-223.)
 
 ### KF-041 — Insert "Add to left/right" adjacent to the column, not at the board ends
 - Surface: columns · Category: broken · Severity: medium
@@ -670,8 +673,9 @@
 - Not a duplicate: Server-side ordering defect; not in KF-001–KF-103. (Client sends the right value; found during wiring audit.)
 
 ### KF-121 — Legend footer shows task colors; KanbanFlow's footer is a fixed pomodoro-count band [MEDIUM | divergent | Legend]
-- KanbanFlow reference: The board footer is a full-width band of four equal pastel segments — "1 Pomodoro" (pale yellow), "2 Pomodori" (pale green), "3 Pomodori" (pale blue), ">3 Pomodori" (pale pink). It is a pomodoro-count legend, not a color key (hi-res board screenshot, bottom strip).
-- ChipFlow behavior: `footer.color-legend` (`templates/board.html:208-214`) renders one segment per enabled board color. On any non-Pomodoro board it shows task colors, which KanbanFlow never shows in the footer.
+- Status: CLOSED 2026-09-30 — false premise. KanbanFlow's footer is NOT a fixed pomodoro-count band: the legend-trigger investigation (2026-09-30) proved the footer is a COLOR LEGEND showing one segment per board-ENABLED color with custom names, controlled by the board Menu's "Color legend" toggle. Chip's General board shows pomodoro labels only because its colors were renamed (Yellow→"1 Pomodoro" etc.). KF-222 implements exactly this mechanism (verified 2026-09-30); KF-104 (presentation: dots vs segments) remains the open styling question.
+- KanbanFlow reference (original, based on Chip's customized board): The board footer is a full-width band of four equal pastel segments — "1 Pomodoro" (pale yellow), "2 Pomodori" (pale green), "3 Pomodori" (pale blue), ">3 Pomodori" (pale pink). It is a pomodoro-count legend, not a color key (hi-res board screenshot, bottom strip).
+- ChipFlow behavior (before KF-222): `footer.color-legend` (`templates/board.html:208-214`) renders one segment per enabled board color. On any non-Pomodoro board it shows task colors, which KanbanFlow never shows in the footer.
 - Not a duplicate: KF-104 covers the legend's PRESENTATION (dots vs full-width segments); this is the CONTENT (task-color key vs fixed pomodoro-count band).
 
 ### KF-122 — Invented board-toolbar row occupies the board-bar slot [LOW | divergent | Header]
@@ -1157,7 +1161,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
 
 ### KF-205 — Missing bottom Pomodoro color legend bar [MED | divergent | Board]
-- Status: FIXED 2026-09-30 (deployed in 4fa15398; legend visible in Chip's screenshot 2026-09-30 14:09 CDT showing all four Pomodoro segments)
+- Status: FIXED 2026-09-30 (deployed in 4fa15398; legend visible in Chip's screenshot 2026-09-30 14:09 CDT showing all four Pomodoro segments). SUPERSEDED 2026-09-30 by KF-222: the legend is now KanbanFlow's actual mechanism — a per-board "Color legend" toggle rendering enabled colors with custom names (a board with pomodoro-renamed colors + toggle ON shows exactly the four Pomodoro segments).
 - KanbanFlow: bottom of board shows a color legend bar ("1 Pomodoro" yellow, "2 Pomodori" green, "3 Pomodori" blue, ">3 Pomodori" pink/red).
 - ChipFlow: no legend bar visible.
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
@@ -1220,15 +1224,77 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/visual-2026-09-30.md`, screenshots `cmp-kf-topbar.png` vs `cmp-cf-topbar.png`. (KF-023/030/031 cover control presence; this is styling only.)
 - Fix direction: wrap top-bar controls in dark rounded button wells matching KanbanFlow.
 
-### KF-214 — No UI affordance to clear a task's color [MED | open | Board]
-- Status: OPEN 2026-09-30 (filed by functional-battery worker, session 46937944)
-- ChipFlow behavior: API `PATCH /api/tasks/:id` with `{"color_id": ""}` clears correctly (HTTP 200, `color_id: null` on subsequent GET; `{"color_id": null}` also clears). But the UI offers no clearing path: the card context-menu Color submenu lists exactly 10 colors (1 Pomodoro, 2 Pomodori, 3 Pomodori, >3 Pomodori, Orange, Purple, Magenta, Cyan, Brown, White) with no "No color"/clear entry, and the task edit modal exposes no color controls at all.
-- KanbanFlow behavior: TBD — check the golden-master board's color menu for a clear/no-color option.
-- Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-color-submenu.png`.
-- Fix direction: add a "No color" entry to the Color submenu (and/or color controls in the task edit modal) that PATCHes `color_id: ""`.
+### KF-214 — No UI affordance to clear a task's color [MED | closed | Board]
+- Status: CLOSED 2026-09-30 — parity investigation found KanbanFlow ALSO offers no color-clear UI: its color picker (task editor → color button) shows exactly the 8 palette swatches with no "No color"/"Clear"/"None" option, and right-clicking a card opens no color submenu at all. ChipFlow's API-level clear support exceeds KanbanFlow; adding a "No color" entry would be a deviation, not parity. No change needed.
+- ChipFlow behavior: API `PATCH /api/tasks/:id` with `{"color_id": ""}` clears correctly (HTTP 200, `color_id: null` on subsequent GET; `{"color_id": null}` also clears). The card context-menu Color submenu lists 10 colors with no clear entry, and the task edit modal exposes no color controls.
+- KanbanFlow behavior: CONFIRMED 2026-09-30 on the golden-master board — no clear-color UI exists (8-swatch picker only).
+- Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-color-submenu.png`; golden-master color-picker screenshot.
+- OPEN QUESTION (needs a dedicated check): the KanbanFlow worker reported right-clicking a card opens NOTHING — if true, ChipFlow's whole card right-click context menu (Color/Move/etc.) may be a deviation. Verify against the video catalog and live board before acting.
 
 ### KF-215 — Filter panel covers its own toggle button [LOW | open | Board]
 - Status: OPEN 2026-09-30 (filed by functional-battery worker, session 46937944)
 - ChipFlow behavior: open `#filter-panel` (300px wide, x=1300+) overlays `#filter-btn` (x~1426), so the button can't toggle it closed while open — closing requires x or Escape.
-- KanbanFlow behavior: TBD — flag for visual worker to compare against the golden master.
-- Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-filter-open.png`.
+- KanbanFlow behavior: CONFIRMED 2026-09-30 on the golden-master board — the filter is a RIGHT-DOCKED sidebar (~245px wide, full viewport height starting just below the top black header bar, y≈36) and the Filter funnel toggle stays fully visible and clickable in the top toolbar (~x=1514, y≈47); the panel never covers it. ChipFlow's floating 300px panel overlaying the toggle is a real deviation.
+- Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-filter-open.png`; golden-master filter-panel screenshot.
+- Fix direction: dock the filter panel to the right edge below the top bar (like KanbanFlow) instead of floating it over the toggle.
+
+### KF-216 — Hour-based time estimates not expressible [MED-HIGH | open | Task modal]
+- Status: OPEN 2026-09-30 (filed from golden-master mirror worker; the KanbanFlow golden master uses 4h/6h/3h/8h estimates)
+- ChipFlow behavior: the estimate field is pomodori size 1–4 only; there is no field or endpoint for hour-based estimates, so the fixture's 4h/6h/3h/8h/8h estimates could not be mirrored (left at default, not faked).
+- KanbanFlow behavior: task time estimates are entered in hours (golden master: tasks 1, 6, 9, 10, 11).
+- Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (P1).
+- Fix direction: generic parity requires hour-based estimates; reconcile with Chip's Pomodoro sizing afterward.
+
+### KF-217 — Filter Color dropdown shows hardcoded pomodoro options, not the board's palette [MED | open | Filter]
+- Status: OPEN 2026-09-30 (filed from golden-master mirror worker)
+- ChipFlow behavior: Filter → Color offers 4 hardcoded pomodoro options; purple/orange/cyan/magenta cards are unfilterable even when the board palette contains them.
+- KanbanFlow behavior: filter Color section lists the board's palette verbatim (golden-master reference: Show all, Yellow, Green, Blue, Red, Orange, Purple, Magenta, Cyan — see tracker line 756).
+- Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (P3).
+
+### KF-218 — No column-level "N overdue task(s)" indicator [LOW-MED | open | Board]
+- Status: OPEN 2026-09-30 (filed from golden-master mirror worker; INDEPENDENTLY CONFIRMED 2026-09-30 by the visual verifier via the creation task's accessibility tree — the To Do header cell reads "1 overdue task Implement dark mode toggle …"; reference screenshots had To Do collapsed so it wasn't screenshot-visible). FURTHER CONFIRMED 2026-09-30: the COLLAPSED To Do strip itself shows "1 overdue task" + warning line beneath the count, tooltip "Overdue tasks: 1 / Total tasks: 5 / Click to expand" (collapsed-strip screenshot).
+- ChipFlow behavior: the To Do column header shows only the count badge ("5"); no overdue indicator.
+- KanbanFlow behavior: To Do shows a "1 overdue task" indicator under/beside the header (golden-master board, task 7 due Sep 25).
+- Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (O1).
+
+### KF-219 — Card flagged overdue before its due time [MED | open | Cards]
+- Status: OPEN 2026-09-30 (filed from golden-master mirror worker; INDEPENDENTLY CONFIRMED 2026-09-30 by the visual verifier — ChipFlow flagged the Sep-30 5PM card overdue-red at ~16:00 CDT while KanbanFlow counts exactly 1 overdue task, the Sep-25 one)
+- ChipFlow behavior: the Sep-30 5:00 PM due card ("Implement dark mode toggle") already carried `card-due-overdue` at ~15:45 CDT, hours before its due time.
+- KanbanFlow behavior: the golden-master board shows exactly 1 overdue task (the Sep-25 one); the Sep-30 card is not flagged overdue.
+- Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (O2).
+- Fix direction: overdue flagging should compare against the full due timestamp, not the due date.
+
+### KF-220 — agents.md documents wrong column-move schema [LOW | open | Docs]
+- Status: OPEN 2026-09-30 (filed from golden-master mirror worker)
+- agents.md says column move takes `{"to_index":2}`; the real schema requires `{"position":N}` (the generated OpenAPI annotations are correct).
+- Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (D1).
+- Fix direction: correct agents.md (and audit agents/skill.md + agents.json for the same error).
+
+### KF-221 — REST API ergonomics gaps found during golden-master mirroring [LOW | open | API]
+- Status: OPEN 2026-09-30 (filed from golden-master mirror worker)
+- Gaps: (a) `POST /api/tasks` returns an HTML card fragment — the id must be parsed from `data-task-id`; (b) no JSON read endpoint for comments (must scrape `/api/tasks/{id}/modal`); (c) columns list returns only `{id,name}` — no `wip_limit`/`is_done`; (d) login Set-Cookie carries `Secure`, so cookie auth over plain http silently drops it; (e) comments created via API are attributed to `api-token` with no way to attribute to a user.
+- Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (D2–D5, P4).
+- Note: the mirror worker's P2 (legend hardcoded to 4 pomodoro segments) is NOT filed separately — it is entangled with KF-205/KF-121 (both divergent, based on Chip's customized board). The visual verifier must first establish what a *generic* KanbanFlow board's footer actually shows on the golden-master board, then decide.
+
+### KF-222 — Pomodoro legend footer renders on generic boards; KanbanFlow shows no footer [HIGH | open | Board]
+- Status: VERIFIED 2026-09-30 — implementation passed independent verification (diff review, full check suite green, functional tests on :3106: new board → no footer, toggle ON → labeled segments, rename/disable reflected, OFF → zero markup, survives restart, migration backfill exactly-once). Deploy pending; will mark FIXED with the release SHA after green-box deploy + version check.
+- ChipFlow behavior: every board renders the full-width Pomodoro legend strip ("1 Pomodoro | 2 Pomodori | 3 Pomodori | >3 Pomodori") pinned at the bottom.
+- KanbanFlow behavior: TRIGGER FOUND 2026-09-30. The footer is controlled by a "Color legend" toggle in the board's Menu (top-right toolbar of the board view). When ON, a full-width footer strip renders one labeled segment per board-ENABLED color, using each color's custom name; when OFF, `#board-footer` stays empty (`colorLegendVisible=false`). Chip's General board (UTTNB5) has it ON with renamed colors — Yellow→"1 Pomodoro" (also board default), Green→"2 Pomodori", Blue→"3 Pomodori", Red→">3 Pomodori" (Brown/Cyan/Magenta/Orange/Purple/White disabled) — which is exactly where his "1 Pomodoro / 2 Pomodori / 3 Pomodori / >3 Pomodori" footer comes from. Toggling it ON on the golden-master test board immediately produced an 8-segment footer with default color names; toggle alone is sufficient, no custom colors needed. (Board Settings > General/Advanced have no legend options; footer colors are the board palette entries, not column colors.)
+- Evidence: `.dev/evidence/visual-compare-golden-2026-09-30.md`, `vcompare-board-1600.png` vs KanbanFlow footer close-up; legend-trigger browser investigation 2026-09-30 (screenshots of both boards' footers + Menu toggle).
+- Fix direction: add a per-board `color_legend` boolean (default OFF for new boards); put a "Color legend" toggle in the board Menu (≡ Menu, board-bar far right); when ON render the footer as one labeled segment per enabled board color in palette order using custom names (keep KF-210 bottom-anchored + KF-212 full-bleed); when OFF render nothing. Migrate existing boards to ON (preserves their current rendering). Related: KF-205, KF-121 (both divergent, based on Chip's customized board — re-evaluate after this lands); KF-083 (default color), KF-084 (color rename dialog).
+
+### KF-223 — Column menu contents differ from KanbanFlow [MED | open | Columns]
+- Status: OPEN 2026-09-30 (filed by visual-comparison worker; supersedes KF-038's old "(Items/order already match)" premise, which was based on v1-S12 video frames and is wrong against the live board)
+- ChipFlow behavior: column menu has 6 items — Edit / Move left / Move right / Add to left / Add to right / Delete.
+- KanbanFlow behavior: column menu has 3 items — Edit / Collapse / Show details (live golden-master board, right-click menu screenshot).
+- Evidence: `.dev/evidence/visual-compare-golden-2026-09-30.md`, `vcompare-colmenu.png`; live behaviors verified 2026-09-30 on the golden-master board (details-popover + collapsed-strip screenshots).
+- "Show details" spec (verified live): small white popover directly below the column header, overlapping the top of the first card; title row bold "Column: {name}" with a Close (×) at top-right; body a single line "Task count: {n}"; dismissed via ×.
+- "Collapse" spec (verified live): column becomes a narrow white vertical strip (~20–24px), full task-area height; count badge at top (RED when WIP exceeded, tooltip "Task count: N / Click to expand"; black/dark otherwise); column name vertical, rotated 90° CCW (reads bottom-to-top), UPPERCASE via CSS; collapsed strips also show the overdue indicator when applicable ("1 overdue task" + warning line, tooltip "Overdue tasks: 1 / Total tasks: 5 / Click to expand"); click anywhere on the strip expands it. (No column collapse exists in ChipFlow today — see also corrected KF-039/KF-040.)
+- Fix direction: match the 3-item menu; "Collapse" needs a working column-collapse implementation (no reachable fold UI/API/JS exists today — treat as unimplemented); determine what "Show details" does on the live board before implementing.
+
+### KF-224 — Cards lack KanbanFlow's icon row and inline subtasks [LOW-MED | open | Cards]
+- Status: OPEN 2026-09-30 (filed by visual-comparison worker)
+- ChipFlow behavior: cards show only a due chip + assignee avatar + logged time.
+- KanbanFlow behavior: cards show an icon row (description / due date / subtasks / comments / time), a "Due: Friday 5:00 PM (Done)" line, and inline subtask checkboxes with a "2 hidden (2 done)" summary.
+- Evidence: `.dev/evidence/visual-compare-golden-2026-09-30.md`.
+- Fix direction: add the icon row, due line, and inline subtask summary to cards.
