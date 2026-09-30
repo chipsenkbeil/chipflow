@@ -1106,3 +1106,33 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior (2026-09-30 battery, build 248ce1e): hidden Boards-panel DOM nodes remain in the accessibility tree and intercept hits, producing spurious "obscured" actionability errors (e.g., blocked Boards button, Help button).
 - Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
 - Fix direction: when the drawer/panel is hidden, remove it from hit-testing (display:none / visibility:hidden + aria-hidden, or detach from DOM) so it cannot obscure other controls.
+
+### KF-197 — Timer pill doesn't tick live; only updates when clicked [HIGH | broken | Timer]
+- Status: FIXED 2026-09-30 (W-timer)
+- ChipFlow behavior: pomodoro/stopwatch timer pill in header shows static time (e.g. 24:19) and doesn't count down until clicked.
+- Evidence: Chip's screenshots 2026-09-30 11:15 CDT — timer showed 24:19 frozen, updated only on click.
+- Fix direction: timer pill must tick/update every second while running, matching KanbanFlow.
+
+### KF-198 — Selected stop reason not shown in time log [HIGH | broken | Timer]
+- Status: FIXED 2026-09-30 (W-timer)
+- ChipFlow behavior: after stopping timer and selecting "Other" in the "Why did you stop?" dialog, the time log entry shows "senkwich 1m" with no reason displayed.
+- Evidence: Chip's screenshots 2026-09-30 11:15 CDT — screenshot 3 shows "Other" selected, screenshot 4 shows the log entry without it.
+- Fix direction: display the selected interruption reason in the time log entry, matching KanbanFlow.
+
+### KF-199 — Card doesn't refresh after move while timer running [MEDIUM | broken | Board]
+- Status: FIXED 2026-09-30 (W-board, merged 527ae68)
+- ChipFlow behavior: moving a task to another column while its timer runs doesn't update the card position until the timer pill is clicked, then "the outline follows."
+- Evidence: Chip's report 2026-09-30 11:15 CDT.
+- Fix direction: card move must re-render immediately regardless of timer state.
+
+### KF-200 — Canceled pomodoro shows tomato indicator [MEDIUM | divergent | Timer]
+- Status: FIXED 2026-09-30 (W-timer)
+- ChipFlow behavior: card shows "🍅 1m" after a pomodoro was canceled early. Chip: "since I canceled early there shouldn't be a tomato."
+- Evidence: Chip's screenshot 5, 2026-09-30 11:15 CDT.
+- Fix direction: only show the pomodoro tomato for completed pomodoros; canceled/interrupted sessions log time without the tomato, matching KanbanFlow.
+
+### KF-201 — Collapsed swimlanes render as grid instead of hidden [HIGH | divergent | Board]
+- Status: FIXED 2026-09-30 (W-board, merged 527ae68)
+- ChipFlow behavior: empty/collapsed swimlanes ("Personal To-do", "Backlog") render as a vertical grid sidebar with labels rotated, separate from the main column area. In KanbanFlow these were folded/collapsed and the board was just the columns.
+- Evidence: Chip's screenshots 2026-09-30 11:15 CDT; report "those sections were just empty and folded to be collapsed. You seem to have made this weird grid thing."
+- Fix direction: empty swimlanes must collapse to thin bars (or hide) so the board shows only the columns, matching KanbanFlow's folded-swimlane behavior.
