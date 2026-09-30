@@ -1138,20 +1138,20 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: empty swimlanes must collapse to thin bars (or hide) so the board shows only the columns, matching KanbanFlow's folded-swimlane behavior.
 
 ### KF-202 — Folded swimlanes must be vertical strips with rotated labels, not horizontal bars [HIGH | divergent | Board]
-- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- Status: FIXED 2026-09-30 (watchdog code-triage vs origin/main 8cc826a: folded lanes render as `.folded-strip` side strips with `.swimlane-name { writing-mode: vertical-rl }`; templates/board.html + static/style.css)
 - ChipFlow behavior: KF-201 fix renders empty/folded swimlanes as thin horizontal bars across the board.
 - KanbanFlow behavior: folded swimlanes render as thin VERTICAL strips with rotated (vertical) text labels — "PERSONAL TO-DO" as a vertical strip between columns, "BACKLOG" as a vertical strip on the far right edge.
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
 - Fix direction: change `.swimlane-row--collapsed` from horizontal bars to vertical strips with `writing-mode: vertical-rl` labels, positioned as side strips like KanbanFlow.
 
 ### KF-203 — Column headers lack gray background bar and right-edge count badges [MED | divergent | Board]
-- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- Status: FIXED 2026-09-30 (watchdog code-triage vs origin/main 8cc826a: `.columnHeader { background: #eef0f2 }` + `.columnHeader-countBadge` absolute right; templates/board.html renders badge; app.js updateColumnCount refreshes it)
 - KanbanFlow: column headers sit on a light gray background bar spanning the board width; each column has a small count badge ("0") on the right edge of its header cell.
 - ChipFlow: column headers have no gray bar background; counts render inline with the name ("Work To-do 0").
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
 
 ### KF-204 — Menu button lacks "Menu" text label [LOW | divergent | Board]
-- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- Status: FIXED 2026-09-30 (watchdog code-triage vs origin/main 8cc826a: templates/board.html renders `☰ Menu` text in #board-menu-btn)
 - KanbanFlow: board header right side shows "☰ Menu" (hamburger icon + "Menu" text).
 - ChipFlow: shows only a hamburger icon with no text.
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
@@ -1163,21 +1163,21 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
 
 ### KF-207 — PATCH task with empty color_id does not clear the color assignment [MED | divergent | Board]
-- Status: OPEN 2026-09-30 (filed from gate-8 adversarial API test)
+- Status: FIXED 2026-09-30 (watchdog code-triage vs origin/main 8cc826a: routes.rs update_task maps empty string to color_id=Some(None); db.rs update_task sets slot to null on Some(None))
 - ChipFlow behavior: `PATCH /api/tasks/{id}` with `{"color_id":""}` leaves the task's color unchanged (card keeps `taskColor-green taskBorderColor-green`, `data-color-value="green"` in both the PATCH response fragment and the board HTML).
 - Expected behavior: per the OpenAPI schema for UpdateTaskInput, "empty string clears the assignment (back to the legacy size-based coloring)."
 - Evidence: gate-8 verification 2026-09-30 12:2x CDT on test instance; task dc2b3cb3-4a73-465f-ac6d-3652d9749297 on Pomodoro-template board. Set yellow on create (card showed taskColor-yellow), PATCHed to green (card showed taskColor-green), PATCHed with empty string (card STILL showed taskColor-green in fragment and board HTML).
 - Fix direction: treat empty-string color_id in the PATCH handler as a clear (set color slot to null) instead of ignoring it.
 
 ### KF-206 — Green "+" buttons do nothing when all swimlanes are collapsed [HIGH | functional | Board]
-- Status: OPEN 2026-09-30 (reported by Chip 12:17 CDT)
+- Status: FIXED 2026-09-30 (watchdog code-triage vs origin/main 8cc826a: initAddTask has no early return; KF-208 floating popup submits via fetch POST /api/tasks and unhides/inserts into the column task-list; folded strips render hidden .task-list divs as fallback)
 - ChipFlow behavior: clicking the green "+" in a column header does nothing when all swimlanes are collapsed/empty.
 - Root cause: `initAddTask()` in `static/app.js` does `document.querySelector('.task-list[data-column-id="..."]')` and returns early if null. Collapsed swimlane rows (KF-201) render as `<tr><th colspan>` with NO `<td>` cells and NO `.task-list` divs. When all swimlanes are collapsed, the page has zero `.task-list` elements, so the handler exits silently.
 - Fix direction: when no `.task-list` exists for the column, fall back to creating the task via the API (fetch POST) using the first available swimlane, or ensure collapsed rows still render hidden task-list containers.
 - Evidence: Chip 2026-09-30 12:17 CDT "green plus buttons do nothing now".
 
 ### KF-208 — Column "+" quick-add popup opens out of view [HIGH | fixed | Board]
-- Status: FIXED 2026-09-30 (verified in local browser battery, not yet deployed)
+- Status: FIXED 2026-09-30, deployed to production as build 8cc826a (verified live 14:45 CDT)
 - ChipFlow behavior: clicking the green "+" in a column header clones the add-task form into the first `.task-list` in DOM order for that column. With folded swimlane strips (KF-202), that task-list lives inside the narrow left folded strip, so the form renders squeezed and half-obscured out of view — the "Task name" popup is cut off at the left edge of the board.
 - KanbanFlow behavior: quick-add opens as a floating popup anchored near the clicked "+", fully within the viewport.
 - Evidence: Chip's screenshot 2026-09-30 14:09 CDT ("green plus makes the popup show somewhere out of view").
@@ -1185,7 +1185,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Verification 2026-09-30 ~14:35 CDT (Playwright, local :3100): popup at (412,132) 272x106 fully in view at 1600x900; submit created the card in the column, header badge went 3->4, popup closed. Screenshots: /tmp/kf208-popup.png, /tmp/kf210-full.png.
 
 ### KF-209 — Floating popups are not draggable [MED | fixed | Board]
-- Status: FIXED 2026-09-30 (verified in local browser battery, not yet deployed)
+- Status: FIXED 2026-09-30, deployed to production as build 8cc826a (verified live 14:45 CDT)
 - ChipFlow behavior: the quick-add popup cannot be moved; it stays where it opened.
 - Expected behavior: Chip — "it would be great to be able to drag the popups" (KanbanFlow parity).
 - Fix: reusable `makeDraggable` helper (drag by any non-interactive popup area, clamped to viewport) applied to the quick-add popup. Also fixed a real drag bug found in testing: releasing a drag/text-selection outside the popup fired a click on the common ancestor (body), which the outside-click dismiss treated as "click away" and removed the popup mid-drag — the dismiss handler now ignores clicks whose mousedown was >6px away (i.e. drags).
@@ -1198,3 +1198,37 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: Chip's screenshot 2026-09-30 14:09 CDT ("the colors should be anchored to the bottom like with the kanbanflow tool").
 - Fix: `.board-wrap` padding-bottom 0, legend padding-bottom 0, legend `position: sticky; bottom: 0` with opaque background and z-index 6. Additionally gave `.board-wrap` `max-height: calc(100vh - 8rem)` so tall boards scroll *inside* the wrap (previously the page scrolled and the legend rode the content down) — header stays pinned at top, legend pinned at bottom while cards scroll, matching KanbanFlow.
 - Verification 2026-09-30 ~14:40 CDT: short board legend bottom == wrap bottom (gap 0px); tall board (25 cards) scrolled mid-way: header row pinned at wrap top, legend pinned at wrap bottom (809-855 == wrap bottom 855); document does not scroll. Screenshots: /tmp/kf210-full.png, /tmp/kf210-mid.png, /tmp/kf210-scrolled2.png.
+
+### KF-211 — Board columns are fixed 280px; KanbanFlow columns are fluid and fill the viewport [MED-HIGH | fixed | Board]
+- Status: FIXED 2026-09-30 (verified in 3 browser rounds; final round: 1100px viewport → table computed min-width 1270px, all columns exactly 280px, wrap scrolls horizontally; 1600px → columns 347px equal share, zero dead space edge to edge. Report: .dev/evidence/verifier-2026-09-30-kf211-213c.md)
+- ChipFlow behavior (DOM-measured): `.columnHeader` th width = 280px exactly; `.board-table` = 1270px wide on a 1600px viewport. The BACKLOG strip ends at ~x=1289; the remaining ~290px on the right is dead gray space. Same at 1366x768 (table 1264px — still fixed, still not filling).
+- KanbanFlow behavior: 4 columns + PERSONAL TO-DO/BACKLOG strips fill the window edge to edge (~780px/column at 2880 wide; ~435px/column scaled to 1600) with zero dead space and no horizontal scrollbar.
+- Evidence: `.dev/evidence/visual-2026-09-30.md`, screenshots `cf-overview-1600.png`, `cf-overview-1366.png`. Reference: dispositive screenshot (live KanbanFlow unreachable from VM, ERR_EMPTY_RESPONSE).
+- Fix direction: make board columns fluid (flex grow / table-layout auto with min-widths) so the table fills the viewport width edge to edge; keep folded strips narrow.
+
+### KF-212 — Pomodoro legend is not full-bleed [MED | fixed | Board]
+- Status: FIXED 2026-09-30 (verified: legend x=0 to viewport edge at 1600 and 1366, 0px gaps; KF-210 bottom pin intact. Report: .dev/evidence/verifier-2026-09-30-kf211-213.md)
+- ChipFlow behavior (DOM-measured): `FOOTER.color-legend` x=19, w=1334 on a 1600 viewport — ends at x=1353, leaving a ~247px gray gap on the right (19px inset left). KF-210 fixed the vertical anchoring (legend is flush at the bottom); this is the horizontal extent only.
+- KanbanFlow behavior: the legend spans the full window width, edge to edge.
+- Evidence: `.dev/evidence/visual-2026-09-30.md`, screenshot `cf-overview-1600.png`.
+- Fix direction: legend spans the full board width (0 inset), edge to edge.
+
+### KF-213 — Top-bar controls lack button wells [LOW | fixed | Board]
+- Status: FIXED 2026-09-30 (verified: .boards-btn and bell/?/avatar wells compute #1f2937 with 6px radius; duplicate .boards-btn rules merged after KF-174's background:none was found overriding. Report: .dev/evidence/verifier-2026-09-30-kf211-213b.md)
+- ChipFlow behavior: "☰ Boards" is bare text; bell / "?" / avatar are bare icons with no container.
+- KanbanFlow behavior: "☰ Boards" sits inside a dark rounded button; bell / "?" / avatar sit in rounded-square button wells.
+- Evidence: `.dev/evidence/visual-2026-09-30.md`, screenshots `cmp-kf-topbar.png` vs `cmp-cf-topbar.png`. (KF-023/030/031 cover control presence; this is styling only.)
+- Fix direction: wrap top-bar controls in dark rounded button wells matching KanbanFlow.
+
+### KF-214 — No UI affordance to clear a task's color [MED | open | Board]
+- Status: OPEN 2026-09-30 (filed by functional-battery worker, session 46937944)
+- ChipFlow behavior: API `PATCH /api/tasks/:id` with `{"color_id": ""}` clears correctly (HTTP 200, `color_id: null` on subsequent GET; `{"color_id": null}` also clears). But the UI offers no clearing path: the card context-menu Color submenu lists exactly 10 colors (1 Pomodoro, 2 Pomodori, 3 Pomodori, >3 Pomodori, Orange, Purple, Magenta, Cyan, Brown, White) with no "No color"/clear entry, and the task edit modal exposes no color controls at all.
+- KanbanFlow behavior: TBD — check the golden-master board's color menu for a clear/no-color option.
+- Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-color-submenu.png`.
+- Fix direction: add a "No color" entry to the Color submenu (and/or color controls in the task edit modal) that PATCHes `color_id: ""`.
+
+### KF-215 — Filter panel covers its own toggle button [LOW | open | Board]
+- Status: OPEN 2026-09-30 (filed by functional-battery worker, session 46937944)
+- ChipFlow behavior: open `#filter-panel` (300px wide, x=1300+) overlays `#filter-btn` (x~1426), so the button can't toggle it closed while open — closing requires x or Escape.
+- KanbanFlow behavior: TBD — flag for visual worker to compare against the golden master.
+- Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-filter-open.png`.
