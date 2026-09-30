@@ -979,3 +979,25 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: Board tabs "[☰ Boards] [General] [+]" — the "General" tab duplicates the board name in the light bar below, and the "+" is extra chrome.
 - Evidence: /tmp/cf-v2.png (2026-09-30 00:32 CDT) vs /tmp/kf-f001.jpg.
 - Not a duplicate: KF-023 added tabs as a feature; this defect corrects to KanbanFlow parity.
+
+### KF-175 — Filter uses radio buttons; KanbanFlow uses dropdowns [MEDIUM | visual | Filter]
+- KanbanFlow reference (video frame f105, 2026-09-30): Filter panel has User/Task/Date as DROPDOWNS ("Show all"). Compact.
+- ChipFlow behavior: USER/COLOR/DATE sections use radio buttons (verbose, long scrolling list).
+- Evidence: /tmp/kf-f105.jpg vs /tmp/cf-filter.png (2026-09-30).
+- Not a duplicate: no existing defect covers filter control type.
+
+### KF-176 — Filter missing "Remember filter" toggle and Bookmarks [MEDIUM | functional | Filter]
+- KanbanFlow reference (video frame f105): Filter panel has "Remember filter" toggle and "Bookmarks (0)" at bottom.
+- ChipFlow behavior: No remember-filter toggle visible; no bookmarks section.
+- Evidence: /tmp/kf-f105.jpg vs /tmp/cf-filter.png.
+- Not a duplicate: no existing defect covers these filter features.
+
+### KF-177 — Timer popup cut off on right edge [MEDIUM | visual | Timer]
+- KanbanFlow reference (video frame f030): Timer popup fully visible, positioned top-right with margin.
+- ChipFlow behavior: Timer popup extends beyond viewport right edge, content cut off.
+- Evidence: /tmp/cf-timer2.png (2026-09-30).
+- Not a duplicate: no existing defect covers timer popup positioning.
+
+### KF-176 — CORRECTION: Remember filter and Bookmarks exist [INVALID]
+- Correction (2026-09-30): The "Remember filter" checkbox and "Bookmarks (0)" DO exist in the filter panel, at the bottom below the scroll viewport. The screenshot /tmp/cf-filter.png was scrolled to the top.
+- Status: INVALID - not a defect.
