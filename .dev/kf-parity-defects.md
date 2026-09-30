@@ -1232,22 +1232,22 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-color-submenu.png`; golden-master color-picker screenshot.
 - OPEN QUESTION (needs a dedicated check): the KanbanFlow worker reported right-clicking a card opens NOTHING — if true, ChipFlow's whole card right-click context menu (Color/Move/etc.) may be a deviation. Verify against the video catalog and live board before acting.
 
-### KF-215 — Filter panel covers its own toggle button [LOW | open | Board]
-- Status: OPEN 2026-09-30 (filed by functional-battery worker, session 46937944)
+### KF-215 — Filter panel covers its own toggle button [LOW | FIXED | Board]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - ChipFlow behavior: open `#filter-panel` (300px wide, x=1300+) overlays `#filter-btn` (x~1426), so the button can't toggle it closed while open — closing requires x or Escape.
 - KanbanFlow behavior: CONFIRMED 2026-09-30 on the golden-master board — the filter is a RIGHT-DOCKED sidebar (~245px wide, full viewport height starting just below the top black header bar, y≈36) and the Filter funnel toggle stays fully visible and clickable in the top toolbar (~x=1514, y≈47); the panel never covers it. ChipFlow's floating 300px panel overlaying the toggle is a real deviation.
 - Evidence: `.dev/evidence/functional-2026-09-30.md`, screenshot `func-filter-open.png`; golden-master filter-panel screenshot.
 - Fix direction: dock the filter panel to the right edge below the top bar (like KanbanFlow) instead of floating it over the toggle.
 
-### KF-216 — Hour-based time estimates not expressible [MED-HIGH | open | Task modal]
-- Status: OPEN 2026-09-30 (filed from golden-master mirror worker; the KanbanFlow golden master uses 4h/6h/3h/8h estimates)
+### KF-216 — Hour-based time estimates not expressible [MED-HIGH | FIXED | Task modal]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - ChipFlow behavior: the estimate field is pomodori size 1–4 only; there is no field or endpoint for hour-based estimates, so the fixture's 4h/6h/3h/8h/8h estimates could not be mirrored (left at default, not faked).
 - KanbanFlow behavior: task time estimates are entered in hours (golden master: tasks 1, 6, 9, 10, 11).
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (P1).
 - Fix direction: generic parity requires hour-based estimates; reconcile with Chip's Pomodoro sizing afterward.
 
-### KF-217 — Filter Color dropdown shows hardcoded pomodoro options, not the board's palette [MED | open | Filter]
-- Status: OPEN 2026-09-30 (filed from golden-master mirror worker)
+### KF-217 — Filter Color dropdown shows hardcoded pomodoro options, not the board's palette [MED | FIXED | Filter]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - ChipFlow behavior: Filter → Color offers 4 hardcoded pomodoro options; purple/orange/cyan/magenta cards are unfilterable even when the board palette contains them.
 - KanbanFlow behavior: filter Color section lists the board's palette verbatim (golden-master reference: Show all, Yellow, Green, Blue, Red, Orange, Purple, Magenta, Cyan — see tracker line 756).
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (P3).
@@ -1258,21 +1258,21 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: To Do shows a "1 overdue task" indicator under/beside the header (golden-master board, task 7 due Sep 25).
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (O1).
 
-### KF-219 — Card flagged overdue before its due time [MED | open | Cards]
-- Status: OPEN 2026-09-30 (filed from golden-master mirror worker; INDEPENDENTLY CONFIRMED 2026-09-30 by the visual verifier — ChipFlow flagged the Sep-30 5PM card overdue-red at ~16:00 CDT while KanbanFlow counts exactly 1 overdue task, the Sep-25 one)
+### KF-219 — Card flagged overdue before its due time [MED | FIXED | Cards]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - ChipFlow behavior: the Sep-30 5:00 PM due card ("Implement dark mode toggle") already carried `card-due-overdue` at ~15:45 CDT, hours before its due time.
 - KanbanFlow behavior: the golden-master board shows exactly 1 overdue task (the Sep-25 one); the Sep-30 card is not flagged overdue.
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (O2).
 - Fix direction: overdue flagging should compare against the full due timestamp, not the due date.
 
-### KF-220 — agents.md documents wrong column-move schema [LOW | open | Docs]
-- Status: OPEN 2026-09-30 (filed from golden-master mirror worker)
+### KF-220 — agents.md documents wrong column-move schema [LOW | FIXED | Docs]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - agents.md says column move takes `{"to_index":2}`; the real schema requires `{"position":N}` (the generated OpenAPI annotations are correct).
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (D1).
 - Fix direction: correct agents.md (and audit agents/skill.md + agents.json for the same error).
 
-### KF-221 — REST API ergonomics gaps found during golden-master mirroring [LOW | open | API]
-- Status: OPEN 2026-09-30 (filed from golden-master mirror worker)
+### KF-221 — REST API ergonomics gaps found during golden-master mirroring [LOW | FIXED | API]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - Gaps: (a) `POST /api/tasks` returns an HTML card fragment — the id must be parsed from `data-task-id`; (b) no JSON read endpoint for comments (must scrape `/api/tasks/{id}/modal`); (c) columns list returns only `{id,name}` — no `wip_limit`/`is_done`; (d) login Set-Cookie carries `Secure`, so cookie auth over plain http silently drops it; (e) comments created via API are attributed to `api-token` with no way to attribute to a user.
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (D2–D5, P4).
 - Note: the mirror worker's P2 (legend hardcoded to 4 pomodoro segments) is NOT filed separately — it is entangled with KF-205/KF-121 (both divergent, based on Chip's customized board). The visual verifier must first establish what a *generic* KanbanFlow board's footer actually shows on the golden-master board, then decide.
