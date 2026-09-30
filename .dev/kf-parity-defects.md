@@ -1162,7 +1162,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow: no legend bar visible.
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
 
-### KF-206 — PATCH task with empty color_id does not clear the color assignment [MED | divergent | Board]
+### KF-207 — PATCH task with empty color_id does not clear the color assignment [MED | divergent | Board]
 - Status: OPEN 2026-09-30 (filed from gate-8 adversarial API test)
 - ChipFlow behavior: `PATCH /api/tasks/{id}` with `{"color_id":""}` leaves the task's color unchanged (card keeps `taskColor-green taskBorderColor-green`, `data-color-value="green"` in both the PATCH response fragment and the board HTML).
 - Expected behavior: per the OpenAPI schema for UpdateTaskInput, "empty string clears the assignment (back to the legacy size-based coloring)."
