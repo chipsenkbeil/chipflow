@@ -1001,3 +1001,56 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 ### KF-176 — CORRECTION: Remember filter and Bookmarks exist [INVALID]
 - Correction (2026-09-30): The "Remember filter" checkbox and "Bookmarks (0)" DO exist in the filter panel, at the bottom below the scroll viewport. The screenshot /tmp/cf-filter.png was scrolled to the top.
 - Status: INVALID - not a defect.
+
+### KF-178 — Board actions in dark topbar; KanbanFlow puts Invite/Timer/Filter/Edit/Menu in the gray board-header row [HIGH | visual | Board]
+- KanbanFlow reference (live comparison 2026-09-30): two-row header — dark top bar, then a GRAY row with board name + member avatar + Invite (+) + Timer (clock icon) + Filter + Edit-board-layout (pencil) + Menu. The dark topbar does NOT carry these actions.
+- ChipFlow behavior (build 943d79c3): the KF-173 fix removed the light toolbar and moved Invite/Timer pill/Filter/Edit/Menu into the dark topbar; the gray row carries only the board name.
+- Evidence: battery Part C items 1–3 (2026-09-30). NOTE conflicting evidence: KF-173 was filed from video frames claiming actions live in the dark topbar; the 2026-09-29 live handoff (KF-132/KF-133: "Timer is a clock icon in the BOARD BAR", "Board bar: Invite (+), Timer (clock), Filter, Edit layout (pencil), Menu") agrees with this defect. Two live references beat the video-frame reading — KF-173's placement premise is superseded.
+- Fix direction: restore the gray board-name row carrying board name + avatar + Invite + Timer pill + Filter + Edit layout + Menu; keep the dark topbar to Boards button / brand / user menu.
+
+### KF-179 — Task cards full-width tinted; KanbanFlow cards are compact with color as a left-edge stripe [HIGH | visual | Cards]
+- KanbanFlow reference (live comparison 2026-09-30): compact cards, task color shown as a left-edge stripe, not a full-card tint.
+- ChipFlow behavior: cards render full-width pale background tint + colored border (taskColor-* classes).
+- Evidence: battery Part C item 5 (2026-09-30).
+
+### KF-180 — Board layout editor "Arrange columns and swimlanes here" area is empty; drag-reorder impossible [HIGH | functional | Columns]
+- Repro: Menu → Board layout. The arrange area lists no existing columns/swimlanes, so drag-reorder cannot be performed. Only Move left/right in the column ⋮ context menu works.
+- Evidence: battery Part D item D2 (2026-09-30).
+
+### KF-181 — Add-column Position ignored ("At the beginning" appends last) [HIGH | functional | Columns]
+- Repro: Menu → Board layout → + Add column → Name "X", Position "At the beginning" → Add. Result: the column appears LAST, not first.
+- Evidence: battery Part D item D1 (2026-09-30).
+
+### KF-182 — Column headers left-aligned name+count with "+" at right; KanbanFlow centers name, centered green "+", vertical separators [MEDIUM | visual | Columns]
+- KanbanFlow reference (live comparison 2026-09-30): column name centered, a centered green "+" add button, vertical separators between columns.
+- ChipFlow behavior: name+count left-aligned, green "+" at the header's right edge. (KF-168 centered header text but the "+" placement and separators still diverge.)
+- Evidence: battery Part C item 4 (2026-09-30).
+
+### KF-183 — Color legend bar always visible; KanbanFlow shows no legend by default (opt-in toggle) [MEDIUM | visual | Board]
+- KanbanFlow reference (live comparison 2026-09-30): no color legend bar on the board by default; the legend is an opt-in menu toggle.
+- ChipFlow behavior: the color legend bar always renders at the board bottom.
+- Evidence: battery Part C item 6 (2026-09-30).
+
+### KF-184 — Task delete uses native window.confirm() instead of the styled in-page confirmation dialog [MEDIUM | consistency | Cards]
+- ChipFlow behavior: card context-menu Delete and task-modal Delete gate on native window.confirm() (static/app.js:501, :964). In automation environments the native dialog auto-dismisses so deletion silently does nothing (this is why the battery reported D3 "task deletion completely broken"); in real browsers the confirm appears and deletion works (server DELETE verified working, cf. KF-148).
+- KanbanFlow parity / consistency: column delete (KF-047 pattern), swimlane delete (KF-160), and token revoke (KF-146) all use the styled in-page #confirm-dialog. Task delete is the only remaining native confirm.
+- Fix direction: route task delete through showConfirmDialog like the others.
+
+### KF-185 — Card does not re-render after its name is edited in the task modal until page reload [LOW | visual | Cards]
+- Repro: open task modal, edit name, Ctrl+Enter (saves). The board card still shows the old name until reload.
+- Evidence: battery Part D item D5 (2026-09-30).
+
+### KF-186 — "Y" (manual time) and "E" (time estimate) shortcuts missing from the Keyboard shortcuts reference dialog [LOW | functional | Shortcuts]
+- Both shortcuts work (Y opens "Add time manually", E opens "Add time estimate") but neither is documented in the shortcuts dialog.
+- Evidence: battery Part D item D6 (2026-09-30).
+
+### KF-187 — Icon glyphs render as tofu "☐" in the test browser (Boards button, Menu button, swimlane toggles, column ⋮) [LOW | visual | Board]
+- Observation (2026-09-30 battery): ☰ (U+2630), ⋮ (U+22EE) and related glyphs rendered as empty boxes in the managed test browser.
+- Likely a sandbox font-availability artifact, not a code defect: the glyphs are standard Unicode present in system fonts on real devices, and the page uses the normal system font stack. VERIFY ON A REAL DEVICE before treating as a code defect; if real, replace the entities with inline SVG icons.
+- Evidence: battery Part C item 7 / D4 (2026-09-30).
+
+### KF-188 — Comment/attachment/time-entry deletes still use native window.confirm() [LOW | consistency | Task modal]
+- Same class as KF-184 (which covered task delete): modal sub-view deletes gate on native window.confirm(), which auto-dismisses under automation so deletion silently does nothing. KanbanFlow parity/consistency: route through the styled in-page #confirm-dialog like task/column/swimlane deletes.
+- Call sites (static/app.js): deleteModalComment (comment delete), deleteModalAttachment (attachment delete), deleteTimeEntry (time-entry delete).
+- Evidence: worker candidate report on the KF-184 fix batch (2026-09-30), verified by grep in the source tree.
+- Fix direction: wrap each DELETE in showConfirmDialog like deleteCardTask/deleteModalTask.
