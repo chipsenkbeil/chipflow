@@ -1293,8 +1293,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - "Collapse" spec (verified live): column becomes a narrow white vertical strip (~20–24px), full task-area height; count badge at top (RED when WIP exceeded, tooltip "Task count: N / Click to expand"; black/dark otherwise); column name vertical, rotated 90° CCW (reads bottom-to-top), UPPERCASE via CSS; collapsed strips also show the overdue indicator when applicable ("1 overdue task" + warning line, tooltip "Overdue tasks: 1 / Total tasks: 5 / Click to expand"); click anywhere on the strip expands it. (No column collapse exists in ChipFlow today — see also corrected KF-039/KF-040.)
 - Fix direction: match the 3-item menu; "Collapse" needs a working column-collapse implementation (no reachable fold UI/API/JS exists today — treat as unimplemented); determine what "Show details" does on the live board before implementing.
 
-### KF-224 — Cards lack KanbanFlow's icon row and inline subtasks [LOW-MED | open | Cards]
-- Status: OPEN 2026-09-30 (filed by visual-comparison worker)
+### KF-224 — Cards lack KanbanFlow's icon row and inline subtasks [LOW-MED | verified | Cards]
+- Status: VERIFIED 2026-09-30 — independent verifier passed (17/17 behaviors: icon row order/tooltips/omission, due-line markup `Due: <strong>Friday 5:00 PM</strong> <span class="task-dueDateColumn">(Done)</span>`, due_done round-trip both directions, inline subtasks undone-first + `2 hidden (2 done)` expand, section toggles + localStorage persistence, label clicks don't open modal, rendered screenshot visually identical to golden-master reference; static checks green: node --check, fmt --check, build, clippy 0 warnings, 75/75 tests; regressions PASS: KF-223 column menu, filter panel, board render). Deploy pending; will mark FIXED with the release SHA after green-box deploy + version check.
 - ChipFlow behavior: cards show only a due chip + assignee avatar + logged time.
 - KanbanFlow behavior: cards show an icon row (description / due date / subtasks / comments / time), a "Due: Friday 5:00 PM (Done)" line, and inline subtask checkboxes with a "2 hidden (2 done)" summary.
 - FULL SPEC (verified live 2026-09-30 on the golden-master board, "Build payment webhook handler" card — authoritative):
@@ -1303,3 +1303,10 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
   3. Inline subtasks: `<ul class="subTasks">` — visible rows are empty square checkboxes (custom, hidden native input) + name; below, smaller gray summary "2 hidden (2 done)" (title "Click to expand subtasks"). Dotted orange divider between due dates and subtasks.
   4. Color presentation: FULL-CARD light tint + solid colored outer border (~1–2px, rounded corners); dotted section dividers tinted with the card color. (NOT a left-edge stripe — see corrected KF-179.)
 - Evidence: `.dev/evidence/visual-compare-golden-2026-09-30.md`; card-detail capture 2026-09-30 (screenshot + element markup).
+
+### KF-225 — Task modal dialog save leaves stale card markup on the board [LOW-MED | open | Task modal]
+- Status: OPEN 2026-09-30 (found by KF-224 independent verifier; pre-existing — verified via `git show 2d6d34b~1` that it predates KF-224, affected due_at/due_repeat edits before)
+- ChipFlow behavior: the due-date dialog's `applyToSelected` success handler never sets `modalDirty`, so after any dialog save (due date edits, the new "Mark as done" checkbox, etc.) the background board card keeps stale markup until a full page reload.
+- KanbanFlow behavior: (parity expectation) the board card reflects dialog edits immediately after save.
+- Evidence: `.dev/evidence/verifier-2026-09-30-kf224.md` — PATCH succeeds and DB is correct; only the rendered card is stale.
+- Fix direction: set `modalDirty = true` in `applyToSelected`'s success handler (one-line, suggested by the verifier).
