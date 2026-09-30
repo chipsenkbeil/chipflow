@@ -1157,7 +1157,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
 
 ### KF-205 — Missing bottom Pomodoro color legend bar [MED | divergent | Board]
-- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- Status: FIXED 2026-09-30 (deployed in 4fa15398; legend visible in Chip's screenshot 2026-09-30 14:09 CDT showing all four Pomodoro segments)
 - KanbanFlow: bottom of board shows a color legend bar ("1 Pomodoro" yellow, "2 Pomodori" green, "3 Pomodori" blue, ">3 Pomodori" pink/red).
 - ChipFlow: no legend bar visible.
 - Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
@@ -1175,3 +1175,26 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Root cause: `initAddTask()` in `static/app.js` does `document.querySelector('.task-list[data-column-id="..."]')` and returns early if null. Collapsed swimlane rows (KF-201) render as `<tr><th colspan>` with NO `<td>` cells and NO `.task-list` divs. When all swimlanes are collapsed, the page has zero `.task-list` elements, so the handler exits silently.
 - Fix direction: when no `.task-list` exists for the column, fall back to creating the task via the API (fetch POST) using the first available swimlane, or ensure collapsed rows still render hidden task-list containers.
 - Evidence: Chip 2026-09-30 12:17 CDT "green plus buttons do nothing now".
+
+### KF-208 — Column "+" quick-add popup opens out of view [HIGH | fixed | Board]
+- Status: FIXED 2026-09-30 (verified in local browser battery, not yet deployed)
+- ChipFlow behavior: clicking the green "+" in a column header clones the add-task form into the first `.task-list` in DOM order for that column. With folded swimlane strips (KF-202), that task-list lives inside the narrow left folded strip, so the form renders squeezed and half-obscured out of view — the "Task name" popup is cut off at the left edge of the board.
+- KanbanFlow behavior: quick-add opens as a floating popup anchored near the clicked "+", fully within the viewport.
+- Evidence: Chip's screenshot 2026-09-30 14:09 CDT ("green plus makes the popup show somewhere out of view").
+- Fix: the add-task form now renders as a floating `position: fixed` popup anchored under the clicked "+" button, clamped to the viewport; submits via fetch POST /api/tasks (urlencoded — parse_body rejects multipart) and inserts the returned card HTML into the column's task-list; updates the count (also fixed `updateColumnCount` to refresh `.columnHeader-countBadge` on non-WIP columns); closes on Add/Cancel/Escape/outside click; toggle on re-click.
+- Verification 2026-09-30 ~14:35 CDT (Playwright, local :3100): popup at (412,132) 272x106 fully in view at 1600x900; submit created the card in the column, header badge went 3->4, popup closed. Screenshots: /tmp/kf208-popup.png, /tmp/kf210-full.png.
+
+### KF-209 — Floating popups are not draggable [MED | fixed | Board]
+- Status: FIXED 2026-09-30 (verified in local browser battery, not yet deployed)
+- ChipFlow behavior: the quick-add popup cannot be moved; it stays where it opened.
+- Expected behavior: Chip — "it would be great to be able to drag the popups" (KanbanFlow parity).
+- Fix: reusable `makeDraggable` helper (drag by any non-interactive popup area, clamped to viewport) applied to the quick-add popup. Also fixed a real drag bug found in testing: releasing a drag/text-selection outside the popup fired a click on the common ancestor (body), which the outside-click dismiss treated as "click away" and removed the popup mid-drag — the dismiss handler now ignores clicks whose mousedown was >6px away (i.e. drags).
+- Verification 2026-09-30 ~14:35 CDT: dragged popup from (412,132) to (632,292); popup survived and stayed in view. Screenshot: /tmp/kf209-dragged.png.
+
+### KF-210 — Pomodoro legend floats above the bottom instead of anchored flush [MED | fixed | Board]
+- Status: FIXED 2026-09-30 (verified in local browser battery, not yet deployed)
+- ChipFlow behavior: the color legend had `margin-top: auto` but sat above a band of empty gray — `.board-wrap` kept `padding-bottom: 2rem` and the legend itself had bottom padding, so the colored segments never sat flush at the board's bottom edge; the legend also scrolled away with content instead of staying pinned.
+- KanbanFlow behavior: the legend bar is anchored flush to the bottom of the board and stays visible.
+- Evidence: Chip's screenshot 2026-09-30 14:09 CDT ("the colors should be anchored to the bottom like with the kanbanflow tool").
+- Fix: `.board-wrap` padding-bottom 0, legend padding-bottom 0, legend `position: sticky; bottom: 0` with opaque background and z-index 6. Additionally gave `.board-wrap` `max-height: calc(100vh - 8rem)` so tall boards scroll *inside* the wrap (previously the page scrolled and the legend rode the content down) — header stays pinned at top, legend pinned at bottom while cards scroll, matching KanbanFlow.
+- Verification 2026-09-30 ~14:40 CDT: short board legend bottom == wrap bottom (gap 0px); tall board (25 cards) scrolled mid-way: header row pinned at wrap top, legend pinned at wrap bottom (809-855 == wrap bottom 855); document does not scroll. Screenshots: /tmp/kf210-full.png, /tmp/kf210-mid.png, /tmp/kf210-scrolled2.png.
