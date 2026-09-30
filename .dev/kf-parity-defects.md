@@ -1136,3 +1136,42 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: empty/collapsed swimlanes ("Personal To-do", "Backlog") render as a vertical grid sidebar with labels rotated, separate from the main column area. In KanbanFlow these were folded/collapsed and the board was just the columns.
 - Evidence: Chip's screenshots 2026-09-30 11:15 CDT; report "those sections were just empty and folded to be collapsed. You seem to have made this weird grid thing."
 - Fix direction: empty swimlanes must collapse to thin bars (or hide) so the board shows only the columns, matching KanbanFlow's folded-swimlane behavior.
+
+### KF-202 — Folded swimlanes must be vertical strips with rotated labels, not horizontal bars [HIGH | divergent | Board]
+- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- ChipFlow behavior: KF-201 fix renders empty/folded swimlanes as thin horizontal bars across the board.
+- KanbanFlow behavior: folded swimlanes render as thin VERTICAL strips with rotated (vertical) text labels — "PERSONAL TO-DO" as a vertical strip between columns, "BACKLOG" as a vertical strip on the far right edge.
+- Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
+- Fix direction: change `.swimlane-row--collapsed` from horizontal bars to vertical strips with `writing-mode: vertical-rl` labels, positioned as side strips like KanbanFlow.
+
+### KF-203 — Column headers lack gray background bar and right-edge count badges [MED | divergent | Board]
+- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- KanbanFlow: column headers sit on a light gray background bar spanning the board width; each column has a small count badge ("0") on the right edge of its header cell.
+- ChipFlow: column headers have no gray bar background; counts render inline with the name ("Work To-do 0").
+- Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
+
+### KF-204 — Menu button lacks "Menu" text label [LOW | divergent | Board]
+- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- KanbanFlow: board header right side shows "☰ Menu" (hamburger icon + "Menu" text).
+- ChipFlow: shows only a hamburger icon with no text.
+- Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
+
+### KF-205 — Missing bottom Pomodoro color legend bar [MED | divergent | Board]
+- Status: OPEN 2026-09-30 (filed from Chip's KanbanFlow comparison screenshot)
+- KanbanFlow: bottom of board shows a color legend bar ("1 Pomodoro" yellow, "2 Pomodori" green, "3 Pomodori" blue, ">3 Pomodori" pink/red).
+- ChipFlow: no legend bar visible.
+- Evidence: Chip's KanbanFlow screenshot 2026-09-30 12:16 CDT vs ChipFlow screenshot 12:15 CDT.
+
+### KF-206 — PATCH task with empty color_id does not clear the color assignment [MED | divergent | Board]
+- Status: OPEN 2026-09-30 (filed from gate-8 adversarial API test)
+- ChipFlow behavior: `PATCH /api/tasks/{id}` with `{"color_id":""}` leaves the task's color unchanged (card keeps `taskColor-green taskBorderColor-green`, `data-color-value="green"` in both the PATCH response fragment and the board HTML).
+- Expected behavior: per the OpenAPI schema for UpdateTaskInput, "empty string clears the assignment (back to the legacy size-based coloring)."
+- Evidence: gate-8 verification 2026-09-30 12:2x CDT on test instance; task dc2b3cb3-4a73-465f-ac6d-3652d9749297 on Pomodoro-template board. Set yellow on create (card showed taskColor-yellow), PATCHed to green (card showed taskColor-green), PATCHed with empty string (card STILL showed taskColor-green in fragment and board HTML).
+- Fix direction: treat empty-string color_id in the PATCH handler as a clear (set color slot to null) instead of ignoring it.
+
+### KF-206 — Green "+" buttons do nothing when all swimlanes are collapsed [HIGH | functional | Board]
+- Status: OPEN 2026-09-30 (reported by Chip 12:17 CDT)
+- ChipFlow behavior: clicking the green "+" in a column header does nothing when all swimlanes are collapsed/empty.
+- Root cause: `initAddTask()` in `static/app.js` does `document.querySelector('.task-list[data-column-id="..."]')` and returns early if null. Collapsed swimlane rows (KF-201) render as `<tr><th colspan>` with NO `<td>` cells and NO `.task-list` divs. When all swimlanes are collapsed, the page has zero `.task-list` elements, so the handler exits silently.
+- Fix direction: when no `.task-list` exists for the column, fall back to creating the task via the API (fetch POST) using the first available swimlane, or ensure collapsed rows still render hidden task-list containers.
+- Evidence: Chip 2026-09-30 12:17 CDT "green plus buttons do nothing now".
