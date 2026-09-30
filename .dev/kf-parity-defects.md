@@ -1054,3 +1054,55 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Call sites (static/app.js): deleteModalComment (comment delete), deleteModalAttachment (attachment delete), deleteTimeEntry (time-entry delete).
 - Evidence: worker candidate report on the KF-184 fix batch (2026-09-30), verified by grep in the source tree.
 - Fix direction: wrap each DELETE in showConfirmDialog like deleteCardTask/deleteModalTask.
+
+### KF-189 — Cannot add attachments; "Add attachment" is inert [HIGH | broken | Task modal]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e, Part C): in the task modal, the "+ Add attachment" text is inert; Add → Attachment closes the menu and opens nothing.
+- Consequence: no attachment can ever be added; attachment delete is untestable (battery Part A item 7).
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: wire the Add → Attachment menu entry to a working add-attachment dialog/flow; verify an attachment can be added and appears on the task.
+
+### KF-190 — No board-creation UI; cannot create boards or instantiate templates [HIGH | missing | Board]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e, Part C/D): no board-creation UI anywhere — not in the Boards panel, not in any menu; /templates returns 404.
+- Consequence: cannot create boards or instantiate templates (Pomodoro, Kanban basics); blocked the battery's Part D persistence setup (no Persist-Board could be created). "Save board as template" works ("Board saved as a template." toast), but there is no way to create a board FROM a template.
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: restore/add a board-creation entry point (Boards drawer/panel) offering the template picker including the built-in Pomodoro and Kanban basics templates; ensure the /templates route exists if the picker needs it.
+
+### KF-191 — Task-card color style diverges: white + left stripe vs KanbanFlow full-card tint [HIGH | divergent | Cards]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e, Part A item 2 / Part B): cards render white with a 4px left-edge stripe (verified Red, Blue, Orange). Live KanbanFlow renders FULL-CARD color tints (verified: "Reference task" card entirely yellow #ffffe0).
+- Contradiction note: the KF-179 "fix" (white + stripe) rested on the 2026-09-30 03:10 battery's one-line reading. Two independent sources agree full-card tint is correct: the 2026-09-28 live-account review of KanbanFlow's own CSS (taskColor-{value} sets the card background; taskBorderColor-{value} the border — see fidelity-status.md Discovered behaviors), and this battery's live observation. KF-179 was a mis-fix; this defect reverts it.
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: cards render the task color as the full card background (taskColor-{value}) with the colored border (taskBorderColor-{value}); leave color-picker dots and modal tint unchanged.
+
+### KF-192 — Column-header "+" centered vs KanbanFlow right-edge [MEDIUM | divergent | Columns]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e, Part A item 5 / Part B): headers have centered name, centered green "+", vertical separators. Live KanbanFlow places the green "+" at the RIGHT EDGE of the header, not centered. The KF-182 fix got the "+" position wrong.
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: move the column-header add-task "+" to the right edge of the header (keep centered name + separators).
+
+### KF-193 — Column task count stale after card context-menu delete [MEDIUM | broken | Columns]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e): after deleting a card via the card context menu, the column header still showed "Do today 2" with 1 card remaining; the count corrected only after dialog close/re-render.
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: re-render/update the column header count when a card is deleted via the context menu, matching the modal-delete path.
+
+### KF-194 — Stopwatch stop unreliable: closing the "Why did you stop?" dialog leaves the timer running [HIGH | broken | Timer]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e, Part C): after stopping the stopwatch, the "Why did you stop?" interruption dialog appeared; closing it without choosing a reason left the timer running (header pill showed 0:42 while the popup said session 0:00); a reason had to be selected to fully stop.
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: make the stop deterministic — dismissing the why-stop dialog without a reason must still finalize the stop (discard or log consistently), and the header pill and popup must agree on timer state.
+
+### KF-195 — No logout control; "Signed in as admin" is static text [LOW | missing | Header]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e, Part C): no logout UI found — "Signed in as admin" is not clickable; GET /logout → 405 (POST only, so the server does support logout).
+- Design tension: logout UI was intentionally removed under KF-033; this battery files its absence as a parity gap (KanbanFlow has an account menu with sign-out).
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: make the account control open a menu (or add a control) with a working sign-out that POSTs /logout.
+
+### KF-196 — Hidden Boards-panel DOM nodes linger, causing spurious "obscured" actionability errors [LOW | broken | Board]
+- Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
+- ChipFlow behavior (2026-09-30 battery, build 248ce1e): hidden Boards-panel DOM nodes remain in the accessibility tree and intercept hits, producing spurious "obscured" actionability errors (e.g., blocked Boards button, Help button).
+- Evidence: verification battery completed 2026-09-30 07:09:44 CDT.
+- Fix direction: when the drawer/panel is hidden, remove it from hit-testing (display:none / visibility:hidden + aria-hidden, or detach from DOM) so it cannot obscure other controls.
