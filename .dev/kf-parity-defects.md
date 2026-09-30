@@ -961,3 +961,15 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: cards 6px radius, `.toolbar-btn { border-radius: 8px; }`, pill-style toolbar buttons. Reads as a "modern rounded web app" rather than KanbanFlow's flat utilitarian chrome.
 - Evidence: static/style.css vs live KanbanFlow demo board captured 2026-09-30.
 - Not a duplicate: no existing defect covers chrome roundness.
+
+### KF-172 — Persistent left Boards sidebar; KanbanFlow has no sidebar (board fills width) [CRITICAL | visual | Board]
+- KanbanFlow reference (video frames f001/f010/f030, 2026-09-30): The board fills the full viewport width. There is NO persistent left sidebar. The "Boards" button in the top bar opens a temporary overlay drawer, not a persistent sidebar.
+- ChipFlow behavior: `<aside class="boards-sidebar">` (KF-088) is always visible, pushing the board right by ~190px. This is the single largest structural deviation from KanbanFlow.
+- Evidence: /tmp/kf-f001.jpg, /tmp/kf-f010.jpg vs /home/hatch/workspace/cf-board2.png (2026-09-30).
+- Not a duplicate: KF-088 ADDED the sidebar based on a misreading; this defect corrects it.
+
+### KF-173 — Light board toolbar with Invite/Timer/Filter/Menu; KanbanFlow has minimal board header [HIGH | visual | Board]
+- KanbanFlow reference (video frames f001/f010, 2026-09-30): Below the dark top bar is a minimal light bar with just the board name "General" and a small icon. There is NO toolbar with Invite, Timer, Filter, Edit, Menu buttons. Those actions live in the dark top bar.
+- ChipFlow behavior: Light toolbar with "General" title, avatar, "+ Invite" button, timer pill, filter button, edit button, "Menu" button. This adds a whole extra chrome layer KanbanFlow doesn't have.
+- Evidence: /tmp/kf-f001.jpg vs /home/hatch/workspace/cf-board2.png (2026-09-30).
+- Not a duplicate: no existing defect covers the extra toolbar layer.
