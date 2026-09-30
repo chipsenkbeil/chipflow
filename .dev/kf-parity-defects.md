@@ -855,3 +855,109 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: managed-browser verification pass 2026-09-29 (build 1f4fb378); confirmed in source.
 - Not a duplicate: no existing defect covers the token list refresh.
 - Fix (2026-09-29): after creation, the client re-fetches the settings page and swaps `#token-list` in place (server-rendered, so date formatting stays consistent), re-binding the revoke buttons; no reload, so the one-time secret stays visible.
+
+### KF-151 — Only 4 task colors enabled by default (KanbanFlow enables its full 10-color standard palette) [severity unknown | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca ("Fix KF-151..KF-159 from final verification battery") after a `git reset --hard` destroyed the uncommitted .dev/ files. Code comment in the fix: "KF-151: KanbanFlow enables its standard palette by default, so all [10 colors enabled]". Fix: default enabled colors are now yellow, green, blue, red, orange, purple, magenta, cyan, brown, white (all 10). Regression test updated: colors_seed_with_pomodoro_defaults asserts all 10 enabled.
+- Fix commit: 4acaaca. Verified by the fix-verification battery.
+
+### KF-152 — Lone "Default" swimlane header shown (KanbanFlow's free tier renders no swimlane row) [severity unknown | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. Board page rendered the swimlane label row even for a board with only the structural "Default" lane (needed by KF-149 so column "+" buttons work). Fix: new `hide_swimlane_header` template flag (true when exactly one lane named "Default"); board.html skips the corner cell and the label cell when set. DB row kept.
+- Fix commit: 4acaaca. Verified by the fix-verification battery; KF-162's later fix preserves this behavior.
+
+### KF-153 — Board settings H1 hardcoded "Board settings: General" instead of naming the board [severity unknown | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. templates/board_settings.html rendered "Board settings: General" on every tab. Fix: H1 now renders "Board settings: {{ board_name }}".
+- Fix commit: 4acaaca. Verified by the fix-verification battery.
+
+### KF-154 — Board menu Settings opened account /settings instead of this board's settings [severity unknown | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. The board menu's Settings entry navigated to the account-level /settings page. Fix (app.js menuAction): now navigates to '/b/' + boardId + '/settings'.
+- Fix commit: 4acaaca. Verified by the fix-verification battery.
+
+### KF-155 — "Kanban basics" built-in template missing / unprotected [severity unknown | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. A second built-in template "Kanban basics" (10 standard colors, 3 columns To-do/In progress/Done with one Done column, 1 swimlane "Default") is seeded and protected from deletion (delete → RefusedBuiltIn). Fix also corrected the template seed lookup to match by name (BUILTIN_TEMPLATE_NAME) since there are now 2 built-ins. Regression test kanban_basics_builtin_template_shape added.
+- Fix commit: 4acaaca. Verified by the fix-verification battery.
+
+### KF-156 — Add/rename swimlane used window.prompt instead of an in-page dialog [HIGH | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. addSwimlane() and renameSwimlane() used window.prompt, which automation environments auto-dismiss, so the add-swimlane flow appeared dead. Fix: real in-page dialog (#swimlane-dialog) with Add/Rename modes, Enter-to-save, name-required validation; POST /api/swimlanes / PATCH /api/swimlanes/:id, reload on success.
+- Fix commit: 4acaaca. Verified by the fix-verification battery (22:40 entry).
+
+### KF-157 — Label save misreported success as failure (PATCH returns HTML fragment, parsed as JSON) [HIGH | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. The labels dialog's save() parsed PATCH /api/tasks/:id as JSON, but the endpoint returns the refreshed task card as an HTML fragment — so a successful save was misreported as a failure. Fix: parse as text (res.text()).
+- Fix commit: 4acaaca. The fix-verification battery verified the label save path.
+
+### KF-158 — Timer popup footer Settings button dead (TimerSettings not reachable from inline onclick) [severity unknown | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. The timer popup's footer Settings button calls TimerSettings.open() from an inline onclick handler, but TimerSettings was not exposed globally, so the button did nothing. Fix: window.TimerSettings = TimerSettings.
+- Fix commit: 4acaaca. Verified by the fix-verification battery.
+
+### KF-159 — Date filters were no-ops (due dates not evaluated; undated tasks not handled per KanbanFlow) [HIGH | filed 2026-09-29 ~22:15 CDT by final verification battery (build e2cc0197)]
+- RECONSTRUCTED 2026-09-29 23:30 CDT from fix commit 4acaaca. applyFilter treated date filters as no-ops ("Tasks carry no due dates" comment). Fix: task cards carry data-due-at (RFC3339, rendered from TaskView.due_at); new dateMatches() implements KanbanFlow parity — undated tasks hidden for every specific range, shown only by "Show all" or "No due date"; supports overdue/today/tomorrow/month:/year:/"due in N days".
+- Fix commit: 4acaaca. KF-159 regression verified PASS on the test instance (22:40 entry).
+
+### KF-160 — Swimlane Delete does nothing [HIGH | filed 2026-09-29 ~22:30 CDT by fix-verification battery (build 4acaaca)]
+- NOTE (2026-09-29 23:15 CDT reconstruction): full entry lost in the 23:10 `git reset --hard`. Known: swimlane menu Delete had no effect. Fix (63af405 "Fix KF-160..KF-162 from fix-verification battery"): styled in-page confirmation dialog ("Delete swimlane", Cancel/Delete, dimmed backdrop; replaced native confirm()); confirming deletes the lane and it stays gone after reload; deleting the last swimlane is refused with a "Could not delete swimlane." toast. VERIFIED by the 22:33 watchdog's browser battery on build 63af405 (KF-160 PASS). Restore repro details from the filing agent's context.
+
+### KF-161 — Column counts ignore filters [LOW | filed 2026-09-29 ~22:30 CDT by fix-verification battery (build 4acaaca)]
+- NOTE (2026-09-29 23:15 CDT reconstruction): full entry lost in the 23:10 `git reset --hard`. Known: column header counts showed unfiltered totals when a color filter hid cards. Fix in 63af405. PARTIALLY VERIFIED by the 22:33 watchdog's browser battery: filtering by color reduced the column header count (2→0 when both cards hidden); clearing the filter restored the true total (2). The partial-hide case (some cards visible) was not tested — the test instance was swapped mid-battery. Restore repro details from the filing agent's context.
+
+### KF-162 — Swimlane labels on right edge instead of left [LOW | filed 2026-09-29 ~22:30 CDT by fix-verification battery (build 4acaaca)]
+- NOTE (2026-09-29 23:15 CDT reconstruction): full entry lost in the 23:10 `git reset --hard`. Known: swimlane labels rendered on the right edge of their rows; KanbanFlow renders them vertically on the LEFT edge. Fix in 63af405. VERIFIED by the 22:33 watchdog's browser battery (KF-162 PASS — visual: labels render vertically on the left edge). Restore repro details from the filing agent's context.
+
+### KF-163 — No UI to save a board as a custom template [MEDIUM | missing | Templates]
+- KanbanFlow reference: board Menu → Save board as template.
+- ChipFlow behavior: neither the board Menu (Filter, Reports, Board layout, Settings, Members, Recycle bin, Dark mode, Color legend, Large task names, Help & feedback, Get Premium) nor board Settings (General/Layout/Colors/Task settings/Advanced/API & Webhooks/Add task from email) exposes save-as-template. The capability exists only as the documented API endpoint POST /api/boards/:id/save-as-template (per /agents.md).
+- Evidence: final-build battery 2026-09-29 (build 63af405) on test instance. The gate #8 "Additional features" criterion requires creating a board from a template AND saving a board as a template in a real browser.
+- Not a duplicate: no existing defect covers save-as-template UI.
+
+**KF-163 fix notes (2026-09-29):** the in-page dialog markup (#save-template-dialog) and the POST wiring (doSaveTemplate → POST /api/boards/:id/save-as-template) already existed from the earlier save-template work, but KF-122's removal of the invented toolbar button left them orphaned with no menu entry. Fix: added "Save board as template" (data-bm="save-template") to the board menu after "Color legend"; menuAction case opens the existing dialog via a new openSaveTemplateDialog() (also reused by the dead toolbar-button wiring). Verified: cargo fmt --check PASS, cargo build PASS (Askama recompile validates board.html), cargo clippy 0 warnings, cargo test all suites ok (0 failed), node --check app.js PASS. Live curl against a local throwaway DB: POST save-as-template → 200 {id}, GET /api/templates lists "KF163 template" (built_in: false) alongside the 2 built-ins, empty name → 400; board page HTML renders both the menu item and the dialog.
+
+### KF-164 — Save board as template silently drops tasks (template instantiation has 0 tasks) [MEDIUM | missing | Templates]
+- Save-as-template dialog says it saves the board's "columns, tasks, and settings"; built-in templates (e.g. Pomodoro board with "Pomodoro 1") ship with tasks. But a board created from a user-saved template contains the columns and 0 tasks.
+- ChipFlow behavior: board "KF163-FromTmpl" created from template "KF163-Tmpl" (saved from "KF163-Source" containing column "MyCol" and task "MyTask" in To-do) has "MyCol" but To-do count 0 — "MyTask" not carried over.
+- Evidence: final-build battery 2026-09-29 (build 3be56b3) on test instance. KF-163 UI (menu entry → dialog → toast → picker listing) all VERIFIED; this is the remaining gap in the save-template flow.
+- Repro: 1) New board from Blank → "KF163-Source". 2) Add task "MyTask" to To-do; add column "MyCol" via Edit board layout. 3) Board ☰ menu → "Save board as template" → name "KF163-Tmpl" → Save (toast confirms). 4) New board → select "KF163-Tmpl" → create. 5) Observe MyCol present, MyTask missing.
+- Not a duplicate: no existing defect covers task-carry-over in saved templates.
+
+**KF-164 fix notes (2026-09-29):** root cause: `Db::save_board_as_template` captured colors, columns, and swimlanes but not tasks; template application had no task restoration. Fix (commit d902459, pushed 5eea8a6, deployed to production 23:03 CDT): save-as-template now snapshots each task's name, description, size, color value, column/swimlane names, position, due date/repeat, subtasks, and labels; `apply_template` restores them with fresh per-instance state (no history/comments/attachments/assignments/completion/timer stats). Verified: cargo fmt --check clean, cargo build OK, cargo clippy --all-targets 0 warnings, cargo test 54/54 pass, node --check static/app.js clean; local E2E (template creation → source-board deletion → instantiation) confirmed a task with color, description, label, due date/repeat, and subtask survives. Final-build browser verification in progress (KF164-Source → KF164-Tmpl → KF164-Dest round trip).
+
+### KF-165 — Label filtering unavailable in Filter panel (labels input permanently disabled; clicking a card label chip opens the task dialog instead of filtering) [MEDIUM | missing | Board]
+- KanbanFlow reference: the board can be filtered by labels — clicking a label filters the board; the Filters panel has a Labels selector.
+- ChipFlow behavior: the Filter panel's Labels textbox is disabled with tooltip "Labels are not available yet" even after creating labels on tasks and reloading. Clicking a label chip on a card opens the task dialog instead of filtering.
+- Evidence: final verification battery 2026-09-29 23:13 CDT (build 5eea8a6) on test instance. Gate 2 check (h): created label "gate-label" on task "Reorder-B" (KF-157 label save/persistence verified PASS after reload), then Filter → Labels showed the disabled input. All other Gate 2 checks (a–g, i) passed: reorder, column rename/add/delete with confirm, WIP limit warning (3/2), swimlane add/rename/delete with confirm, timer start/stop + settings change (no pause control by design — KanbanFlow parity), date filter "Due today" hiding dateless tasks with counts counting only visible cards.
+- Repro: 1) Task dialog → Add → Label → type "gate-label" → Enter → Save. 2) Open Filter (funnel icon) → Labels section shows disabled input "Labels are not available yet". 3) Edit column → Labels: Show, then click the label chip on the card → task dialog opens, no filter applied.
+- Not a duplicate: no existing defect covers label filtering.
+- Fix (2026-09-29 ~23:55 CDT, commit 5fac2c1 "Add label filtering to board filter panel (KF-165)", pushed as origin/main df6f2dd, deployed to production — verified live df6f2dd ~23:20 CDT): TaskView gains `labels_json`, rendered as the card's `data-labels` JSON attribute (templates/task_card.html) so filtering works even when a column hides label chips. Filter panel Labels section now renders checkboxes populated from GET /api/boards/:id/labels (templates/board.html, BoardChrome.loadFilterLabels). applyFilter hides cards missing any checked label (AND semantics, KanbanFlow parity); isFiltering, remember-filter save/restore (async restore via _pendingLabelFilter), and the filter change listener all include labels. Clicking a card's label chip now toggles its label filter (opens the filter panel with the label checked) instead of opening the task dialog; chips get cursor:pointer. Project checks green: cargo fmt --check, cargo build, cargo clippy --all-targets (0 warnings), cargo test (54 passed), node --check static/app.js. Browser verification of the fix in progress on the resumed final battery.
+
+### KF-166 — Task cards use 2px borders + drop shadow; KanbanFlow cards are 1px flat with no shadow [HIGH | visual | Board]
+- KanbanFlow reference (fresh capture 2026-09-30): task cards are "full pastel-colored rectangles with thin darker-colored borders and slightly rounded corners. No shadows."
+- ChipFlow behavior: `.task-card { border: 2px solid; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }` plus a stronger hover shadow. Cards look heavy/chunky vs KanbanFlow's flat utilitarian cards.
+- Evidence: static/style.css lines 476-484 vs live KanbanFlow demo board (kanbanflow.com/board/UTTNB5) captured 2026-09-30.
+- Not a duplicate: no existing defect covers card border weight/shadow.
+
+### KF-167 — Card titles semibold 14.4px; KanbanFlow card text is regular ~12px [HIGH | visual | Board]
+- KanbanFlow reference (fresh capture 2026-09-30): "Text is small (~12px) dark sans-serif (Arial/Trebuchet-like)... bold only on column headers and board name."
+- ChipFlow behavior: `.card-title { font-weight: 600; font-size: 0.9rem; }` (~14.4px semibold). Every card shouts vs KanbanFlow's quiet dense text.
+- Evidence: static/style.css line 487 vs live KanbanFlow demo board captured 2026-09-30.
+- Not a duplicate: no existing defect covers card title weight/size.
+
+### KF-168 — Column headers left-aligned; KanbanFlow centers bold column names [MEDIUM | visual | Board]
+- KanbanFlow reference (fresh capture 2026-09-30): "light gray header bars with centered bold black column names."
+- ChipFlow behavior: `.columnHeader { text-align: left; }`, `.columnHeader-name { font-weight: 600; font-size: 0.92rem; }`. Names sit left, not centered, and are 600-weight rather than bold black.
+- Evidence: static/style.css lines 224, 243-250 vs live KanbanFlow demo board captured 2026-09-30.
+- Not a duplicate: no existing defect covers header alignment.
+
+### KF-169 — Top dark bar ~50px tall; KanbanFlow's is a slim ~30px bar [MEDIUM | visual | Board]
+- KanbanFlow reference (fresh capture 2026-09-30): "dark charcoal/black bar (~30px)."
+- ChipFlow behavior: `.topbar { padding: 0.6rem 1.2rem; }` with a 2rem (32px) avatar in the flow — total bar height ~50px+. Eats vertical space and feels heavier than KanbanFlow's slim strip.
+- Evidence: static/style.css lines 38-48 vs live KanbanFlow demo board captured 2026-09-30.
+- Not a duplicate: no existing defect covers topbar height.
+
+### KF-170 — Cards too spacious (padding + 8px gaps); KanbanFlow stacks cards tightly [MEDIUM | visual | Board]
+- KanbanFlow reference (fresh capture 2026-09-30): "Cards are compact and stack tightly edge-to-edge... dense, utilitarian... maximal information density."
+- ChipFlow behavior: `.task-card { padding: 0.45rem 0.55rem; }` (~7px/9px), `.task-list { gap: 0.5rem; }` (8px between cards), `.board-cell { padding: 0.5rem; }`. The board feels airy where KanbanFlow is dense.
+- Evidence: static/style.css lines 476-481, 388-393, 373-380 vs live KanbanFlow demo board captured 2026-09-30.
+- Not a duplicate: no existing defect covers card density/spacing.
+
+### KF-171 — Over-rounded UI chrome (6px cards, 8px buttons, pill toolbar); KanbanFlow is minimally rounded [LOW | visual | Board]
+- KanbanFlow reference (fresh capture 2026-09-30): "No large display type, no rounded 'pill' UI... slightly rounded corners" on cards only.
+- ChipFlow behavior: cards 6px radius, `.toolbar-btn { border-radius: 8px; }`, pill-style toolbar buttons. Reads as a "modern rounded web app" rather than KanbanFlow's flat utilitarian chrome.
+- Evidence: static/style.css vs live KanbanFlow demo board captured 2026-09-30.
+- Not a duplicate: no existing defect covers chrome roundness.
