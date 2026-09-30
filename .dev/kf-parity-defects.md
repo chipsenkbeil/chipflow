@@ -973,3 +973,9 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: Light toolbar with "General" title, avatar, "+ Invite" button, timer pill, filter button, edit button, "Menu" button. This adds a whole extra chrome layer KanbanFlow doesn't have.
 - Evidence: /tmp/kf-f001.jpg vs /home/hatch/workspace/cf-board2.png (2026-09-30).
 - Not a duplicate: no existing defect covers the extra toolbar layer.
+
+### KF-174 — Board tabs in topbar; KanbanFlow has just a "Boards" button [MEDIUM | visual | Board]
+- KanbanFlow reference (video frames f001/f010, 2026-09-30): Dark topbar left side has a single "☰ Boards" button. No tabs.
+- ChipFlow behavior: Board tabs "[☰ Boards] [General] [+]" — the "General" tab duplicates the board name in the light bar below, and the "+" is extra chrome.
+- Evidence: /tmp/cf-v2.png (2026-09-30 00:32 CDT) vs /tmp/kf-f001.jpg.
+- Not a duplicate: KF-023 added tabs as a feature; this defect corrects to KanbanFlow parity.
