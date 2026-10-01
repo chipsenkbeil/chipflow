@@ -1355,7 +1355,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/verifier-KF-229-20261001T0219Z.md` (stopwatch count-up check: chip text "0:03"); screenshot `.dev/evidence/verifier-KF-229-stopwatch.png`.
 - Status: FIXED 2026-10-01T02:53:00Z — deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-231.md
 
-### KF-232 — Timer pill keeps stale running state after UI stop (frozen "24:59", red stop icon, stale tab title) [LOW | OPEN | Timer]
+### KF-232 — Timer pill keeps stale running state after UI stop (frozen "24:59", red stop icon, stale tab title) [LOW | FIXED | Timer]
 - Status: OPEN — filed 2026-10-01 by the final golden-master battery (browser-verified on deployed build 91230ec8e450c61bd9a74d60cd7f728000d94fdf, local tree identical: `git diff 91230ec8 HEAD -- src/ static/ templates/` empty).
 - ChipFlow behavior: start a pomodoro via the UI (task modal → Timer → Start Pomodoro), click the timer pill to open the popup, click Stop, then close the popup (click outside). The pill keeps class `running`, the red stop-square icon, the frozen text "24:59", and the tab title stays "24:59 ChipFlow Golden Master — ChipFlow". The underlying stop works — server `/api/timer/status` phase and `TimerUI.state.phase` are both `idle`, tick cleared.
 - KanbanFlow behavior: after stopping a session the timer control returns to the idle state (green play icon, full "25:00" duration, normal tab title).

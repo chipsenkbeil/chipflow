@@ -87,3 +87,11 @@
 - Verified: chipflow.service active; green-box-local /api/v1/version build_sha = 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc (exact match).
 - Public URL from VM: "Empty reply from server" (known VM egress issue).
 - Tracker KF-232 marked FIXED; evidence .dev/evidence/deploy-20261001-kf-232.md.
+
+## 2026-10-01T05:45:00Z — Final golden-master battery, run C (final-battery worker)
+- Build under test: 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc (green-box /api/v1/version; local tree diff empty → local debug build = deployed code).
+- Pre-battery tracker re-audit: 232 unique KF sections (KF-143 reserved, KF-176 dup); Totals declaration (149 actionable KF-001–KF-150 all FIXED, 2026-09-29) credible; 43 defects lacked paper trails but spot-checks (KF-020/025/029/030/031/040/054/114) all fixed in tree. Queue empty → battery ran.
+- Results: 11/11 visual, 17/17 timer, 21/21 interaction, storage (restart persistence) PASS, templates (Pomodoro template create + save-as-template) PASS. **0 new defects.**
+- KF-232 verified FIXED on 66f84da via exact repro (start → pill → popup → Stop → click-outside close → pill 25:00, no running class, title normal). An earlier apparent repro was a harness artifact (popup auto-closes on Start; leaked server timer from a crashed run).
+- Evidence: .dev/evidence/final-battery-20261001c.md. Harness in workflow-run-fae9441bdb134e29b29dc10eadf8fb26/work/ (battery_visual.py, battery_timer.py, battery_interact.py, mirror_golden.py, battery_lib.py).
+- Test server stopped; test DB .dev/test-dbs/final-battery-20261001.redb deleted.
