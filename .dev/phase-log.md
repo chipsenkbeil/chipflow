@@ -95,3 +95,15 @@
 - KF-232 verified FIXED on 66f84da via exact repro (start → pill → popup → Stop → click-outside close → pill 25:00, no running class, title normal). An earlier apparent repro was a harness artifact (popup auto-closes on Start; leaked server timer from a crashed run).
 - Evidence: .dev/evidence/final-battery-20261001c.md. Harness in workflow-run-fae9441bdb134e29b29dc10eadf8fb26/work/ (battery_visual.py, battery_timer.py, battery_interact.py, mirror_golden.py, battery_lib.py).
 - Test server stopped; test DB .dev/test-dbs/final-battery-20261001.redb deleted.
+
+## 2026-10-01T20:31:00Z — Release KF-241: folded-column WIP-violation styling (release worker)
+- Full check suite on master HEAD (afcf151): node --check OK, cargo fmt --check OK, cargo build OK, cargo clippy --all-targets 0 warnings, cargo test 77 passed / 0 failed. All green.
+- Pushed via .dev/push_via_api.py (Git Data API; remote branch is `main`, not `master` — first attempt with `master` failed on matching-refs lookup), 4 commits from exact-tree worktrees so uncommitted tracker/heartbeat edits did not contaminate blobs; per-commit remote trees re-verified against local trees:
+  - ecd1e2c5 (Final bookkeeping: KF-232 header FIXED, battery run C)
+  - 4c4e1476 (File exhaustive golden-master audit defects KF-233..KF-318, all OPEN)
+  - 55826692 (Fix folded-column WIP-violation styling, KF-241)
+  - 6089eab3 (Fix folded-column WIP warning JS path, KF-241) — **release SHA 6089eab39ea298d2337fb7af99ea1aa9294d2c6b**
+- Deployed on green-box: NAR hash sha256-hEnCFdhI9/11daD5PCBC8Lm6ZKATMVJa3HMKunTjYAM= (prefetch --unpack --json, cross-confirmed with nix hash path --sri); slot file /home/senkwich/homelab-chipflow-94/modules/chipflow.nix rev+hash lines only (diff showed exactly 2 lines changed); dry-activate showed chipflow.service as sole affected unit; switch completed (exit 0).
+- Verified: chipflow.service active; green-box-local /api/v1/version build_sha = 6089eab39ea298d2337fb7af99ea1aa9294d2c6b (exact match).
+- Public URL from VM: "curl: (52) Empty reply from server" (known VM egress issue).
+- Tracker KF-241 marked FIXED; evidence .dev/evidence/deploy-20261001-kf-241.md.

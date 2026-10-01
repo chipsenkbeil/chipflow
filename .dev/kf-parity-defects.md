@@ -1428,6 +1428,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: violated strip count is DARKRED (same `#8B0000` family as the unfolded header), a `#ff8080` red line spans the strip width under the header, and the strip body carries only the vertical column name (GM-040).
 - Fix direction: align the folded-strip WIP styling with the unfolded header's darkred treatment, add the full-width `#ff8080` line, and remove the spurious red "5" from the strip body.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-040.md`; `.dev/evidence/kf-drafts/v2-evidence/g5zoom.png` (KanbanFlow) vs `c5zoom.png` (ChipFlow); `v2-evidence/boardb-final2.png`.
+- Status: FIXED 2026-10-01T20:31:00Z — deployed 6089eab39ea298d2337fb7af99ea1aa9294d2c6b, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-241.md
 
 ### KF-242 — Card icon row missing description and subtask icons (3 of 5) [MEDIUM | OPEN | Task cards]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
