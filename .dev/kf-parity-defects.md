@@ -1330,6 +1330,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: apply the KF-227 `de_opt_opt` deserializer to `UpdateColumnInput.wip_limit` and add the clear arm in the column PATCH handler; keep the doc/OpenAPI text accurate.
 
 ### KF-229 — Timer pill never shows countdown or play/stop glyph [MEDIUM | OPEN | Timer]
+- Status: IN_PROGRESS (2026-10-01 02:13 UTC — direct-dispatch builder implementing; pipeline planner: skip this defect)
 - Status: OPEN — filed 2026-10-01 from the final golden-master battery (browser-verified on the deployed tree, build c3307b7).
 - ChipFlow behavior: `TimerUI.updatePill` (static/app.js ~2389) writes the countdown text and play/stop glyph into `#timer-pill-icon` / `#timer-pill-time` child elements, but KF-209 replaced the pill's contents with a bare clock SVG (KanbanFlow parity) — those child elements no longer exist in templates/board.html. The writes are null-guarded so they silently do nothing: the pill never shows a countdown and never swaps play/stop while a session runs.
 - KanbanFlow behavior: the header pill shows the live countdown (v3-e022, v9-e002).
@@ -1343,3 +1344,11 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the column menu includes "Delete column" (with confirmation when the column holds tasks).
 - Fix direction: add a Delete item to the column menu (wiring the existing `deleteColumn`, which already handles the non-empty-column confirm copy) or add a delete affordance to the layout-edit view's column list. Also decide what happens to the vestigial hidden ⋮ button (`button.columnHeader-menu`, display:none) — KF-038 removed it but the markup remains.
 - Evidence: `.dev/evidence/final-battery-20261001.md` (column-delete section); screenshot `.dev/evidence/final-battery-column-menu.png`.
+
+### KF-231 — Timer chip minutes not zero-padded: "0:03" vs KanbanFlow's "00:02" [LOW | OPEN | Timer]
+- Status: OPEN — filed 2026-10-01 by the KF-229 independent verifier (browser-verified on the KF-229 fix tree, commit 667b66d).
+- ChipFlow behavior: a running stopwatch shows the chip counting up as "0:03", "0:04" — `TimerUI.fmt` (static/app.js:2362) zero-pads the minutes only when hours > 0 (`var mm = (h > 0 && m < 10 ? '0' : '') + m;`), so any sub-10-minute value renders as "M:SS".
+- KanbanFlow behavior: the running stopwatch chip shows "00:02" (video evidence v9-e002: "the session appears as a running \"00:02\" chip in the top bar"; `.dev/kf-video-catalog/v9.md` line 19). Minutes are zero-padded to two digits.
+- Scope note: pre-existing behavior, not introduced by KF-209 or the KF-229 fix; correctly out of KF-229's scope (KF-229 was the pill showing nothing at all). `fmt()` is shared by the pill, timer popup, tab title, and card live badge — changing it aligns all of them, but direct video evidence exists only for the chip; the builder should confirm the other surfaces against KanbanFlow before or while changing the shared formatter.
+- Fix direction: in `TimerUI.fmt`, always zero-pad minutes (`(m < 10 ? '0' : '') + m`), yielding "00:03", "24:57", "1:05:03" — matching KanbanFlow's chip format for the observed cases.
+- Evidence: `.dev/evidence/verifier-KF-229-20261001T0219Z.md` (stopwatch count-up check: chip text "0:03"); screenshot `.dev/evidence/verifier-KF-229-stopwatch.png`.
