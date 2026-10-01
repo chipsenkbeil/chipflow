@@ -1328,3 +1328,18 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `UpdateColumnInput.wip_limit: Option<Option<i64>>` lacks a `deserialize_with`, so stock serde collapses JSON null to absent (unchanged); the field's doc comment and the OpenAPI description claim "JSON null clears the limit", which is false.
 - Expected behavior: either null actually clears the limit (same `de_opt_opt` pattern as KF-227) or the docs/schema stop claiming it does.
 - Fix direction: apply the KF-227 `de_opt_opt` deserializer to `UpdateColumnInput.wip_limit` and add the clear arm in the column PATCH handler; keep the doc/OpenAPI text accurate.
+
+### KF-229 — Timer pill never shows countdown or play/stop glyph [MEDIUM | OPEN | Timer]
+- Status: OPEN — filed 2026-10-01 from the final golden-master battery (browser-verified on the deployed tree, build c3307b7).
+- ChipFlow behavior: `TimerUI.updatePill` (static/app.js ~2389) writes the countdown text and play/stop glyph into `#timer-pill-icon` / `#timer-pill-time` child elements, but KF-209 replaced the pill's contents with a bare clock SVG (KanbanFlow parity) — those child elements no longer exist in templates/board.html. The writes are null-guarded so they silently do nothing: the pill never shows a countdown and never swaps play/stop while a session runs.
+- KanbanFlow behavior: the header pill shows the live countdown (v3-e022, v9-e002).
+- Not a total loss: the running card gets its outline + live badge and the tab title counts down, so timer state is still visible elsewhere — the board-bar pill alone is dead.
+- Fix direction: rewrite `updatePill` to target the SVG (e.g. swap the icon path for play/stop states and/or render the remaining time as text next to the clock icon, KanbanFlow-parity), or restore the `#timer-pill-icon`/`#timer-pill-time` spans inside the pill.
+- Evidence: `.dev/evidence/final-battery-20261001.md` (timer section).
+
+### KF-230 — Column delete is unreachable in the UI; deleteColumn() is dead code [MEDIUM | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 from the final golden-master battery (browser-verified on the deployed tree, build c3307b7).
+- ChipFlow behavior: the column menu (right-click, KF-038/KF-223) offers exactly three items — Edit, Collapse, Show details. There is no Delete item; the layout-edit view offers only Add column / Add swimlane / drag-reorder; and `deleteColumn()` (static/app.js:814, with the KF-047 styled confirm dialog and the "server will refuse until tasks are moved" message) is never called from anywhere — grep over static/app.js and templates/ finds zero callers. The server-side `DELETE /api/columns/:id` endpoint exists and works, but no UI entry point reaches it, so a column created in the UI can never be deleted in the UI.
+- KanbanFlow behavior: the column menu includes "Delete column" (with confirmation when the column holds tasks).
+- Fix direction: add a Delete item to the column menu (wiring the existing `deleteColumn`, which already handles the non-empty-column confirm copy) or add a delete affordance to the layout-edit view's column list. Also decide what happens to the vestigial hidden ⋮ button (`button.columnHeader-menu`, display:none) — KF-038 removed it but the markup remains.
+- Evidence: `.dev/evidence/final-battery-20261001.md` (column-delete section); screenshot `.dev/evidence/final-battery-column-menu.png`.
