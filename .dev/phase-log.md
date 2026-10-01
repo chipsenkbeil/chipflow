@@ -62,3 +62,10 @@
 - green-box: NAR hash sha256-LZhQtkDG3VlrBcgimrvkhzJA5RLQC+UsGfE0Y7coIzg= computed + cross-confirmed on green-box; slot rev/hash lines only; dry-activate showed chipflow.service as sole affected unit; switch applied
 - Verification: chipflow.service active; green-box-local /api/v1/version build_sha == c3307b7; public URL from this VM empty reply (known VM-egress issue)
 - KF-218, KF-225, KF-226, KF-227, KF-228 FIXED and DEPLOYED in c3307b7. Remaining OPEN: none from this batch.
+
+- 2026-10-01 02:53 UTC: RELEASE COMPLETE for KF-231 (report: .dev/evidence/deploy-20261001-kf-231.md)
+- Release SHA: 91230ec8e450c61bd9a74d60cd7f728000d94fdf — pushed via .dev/push_via_api.py; local master had diverged from origin/main (KF-229 release replay on both sides since merge-base) so the aborted rebase was replaced with the tree-match approach: local commit 1d2df19^{tree} == origin/main^{tree}, diff pushed as one squashed commit 91230ec8. Payload: KF-231 fix (TimerUI.fmt zero-pad) + KF-230 fix (column Delete menu wired; KF-230's own release cycle will handle its tracker status) + verifier handoff.
+- Pre-push checks: node --check OK, cargo fmt --check OK, cargo build OK, clippy 0 warnings, cargo test all pass
+- green-box: NAR hash sha256-K49wYMTREcbR10xzyjKDk9T348HwyKS4hpI5R/LXl9o= computed + cross-confirmed (nix hash path --sri match); modules/chipflow.nix rev+hash lines only (verified via diff); dry-activate showed only chipflow.service affected; switch applied
+- Verification: chipflow.service active; green-box-local /api/v1/version build_sha == 91230ec8e450c61bd9a74d60cd7f728000d94fdf; public URL from this VM returned empty body (known VM-egress issue)
+- KF-231 marked FIXED in tracker. Note: KF-230 fix was DEPLOYED in this same push but remains to be marked FIXED/VERIFIED by its own pipeline cycle.
