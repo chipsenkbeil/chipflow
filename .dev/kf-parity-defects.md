@@ -13,6 +13,7 @@
 - By category: broken 35 · divergent 70 · missing 44
 - By surface: timer 28 · header 14 · columns 21 · cards 7 · task modal 21 · settings 20 · reports 6 · cross-surface 11 · board 10 · colors 5 · legend 2 · swimlanes 1 · filter 1 · menu 1 · api 1
 - Status as of 2026-09-29 ~18:25 CDT: **all 149 actionable defects FIXED** (KF-143 reserved, not actionable). The original 2026-09-28/29 audit covered the first 103; KF-104+ were filed by later browser passes.
+- **2026-10-01 exhaustive golden-master audit**: 171 KanbanFlow UI elements inventoried (checklist `.dev/golden-master-coverage.md`), every element verified against a golden master in five independent waves plus adversarial spot-checks. **86 new defects filed KF-233–KF-318, all OPEN**: severity high 5 · medium 38 · low 33. Evidence: `.dev/evidence/golden-masters/`, `.dev/evidence/kf-drafts/`. 18 elements remain unobservable from this environment (live timer states, hover/mid-drag, transient toasts — no KanbanFlow access); they are known gaps, not guesses.
 
 ## Timer (KF-001–KF-021)
 
@@ -1364,3 +1365,602 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Severity: LOW (visual only; timer itself stops correctly). Repro: any UI stop via the pill popup.
 - Evidence: `.dev/evidence/final-battery-v4d-stale-pill.png` (pill showing "24:59" + red stop icon while idle); trace log in the battery report `.dev/evidence/final-battery-20261001b.md`.
 - Status: FIXED 2026-10-01T04:25:09Z — deployed 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-232.md
+
+### KF-233 — Boards button and top-bar colors differ (#111827/#1f2943 vs #333333/#515151; 31px vs ~47px tall) [MEDIUM | OPEN | Top bar]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: dark top bar bg `#111827`, 40px tall; "☰ Boards" button bg `#1f2943`, rect ≈ (16,4,99,31) CSS px at 1440w — a 31px button vertically centered with ~4px margins.
+- KanbanFlow behavior: dark top bar bg `#333333`, 38px tall; "☰ Boards" button bg `#515151`, rect ≈ (11,5,113,47) CSS px — ~47px tall, filling the bar nearly edge-to-edge vertically (GM-001).
+- Fix direction: restyle the bar bg to `#333333`, the button bg to `#515151`, and make the button fill the bar's height.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-001.md`; `.dev/evidence/kf-drafts/v1-evidence/cmp-GM-001.png` (zoomed side-by-side), `cf-1600.png`; golden `.dev/evidence/golden-masters/top-bar/GM-001-boards-button.png`.
+
+### KF-234 — Member avatar is dark circle/white initials, not white circle + brown-initials disc [LOW | OPEN | Top bar]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: avatar is the initials "VE" in white directly on the dark button (no white circle); button bg dark navy.
+- KanbanFlow behavior: avatar is a white circle containing a smaller brown circle with "CS" initials (white outer ring, brown inner disc) (GM-005).
+- Fix direction: render the white-circle + brown-initials disc avatar instead of bare initials on the dark button.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-005.md`; `.dev/evidence/kf-drafts/v1-evidence/cmp-GM-005.png`, `cf-1600.png`; golden `.dev/evidence/golden-masters/top-bar/GM-005-member-avatar.png`.
+
+### KF-235 — Bell icon is yellow emoji glyph, not white outline bell [LOW | OPEN | Top bar]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: notifications button shows a yellow 🔔 emoji glyph on the dark button (32×32 CSS px at (1302,4)).
+- KanbanFlow behavior: notifications button shows a white outline bell icon on a `#505050` button (GM-007).
+- Fix direction: replace the emoji with a white outline bell icon matching the master.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-007.md`; `.dev/evidence/kf-drafts/v1-evidence/cmp-GM-007.png`, `cf-1600.png`; golden `.dev/evidence/golden-masters/top-bar/GM-007-bell-icon.png`.
+
+### KF-236 — Top bar has no chart/reports icon (15 destinations only via ☰ Menu → Reports) [MEDIUM | OPEN | Top bar]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the top bar has no chart/reports icon at all (top bar = Boards / brand / bell / ? / account). The 15 destinations are reachable only via the board ☰ Menu → Reports submenu — and that submenu's order was verified verbatim-correct.
+- KanbanFlow behavior: the top bar carries a chart icon whose dropdown lists the 15 report destinations: Pomodoro statistics, Time spent, Print, Board history, Burndown, Calendar, Cumulative flow, Cycle & lead time, Due date performance, Monte Carlo forecasting, Task count, Throughput, Time estimate, Time in column, Export (GM-128).
+- Fix direction: add the chart icon to the top bar opening the reports dropdown; not a duplicate of KF-030/KF-031 (bell/help icons, which are present).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-128.md`.
+
+### KF-237 — Board-tab row styling: gray `#e8eaed` vs `#f2f2f2`; avatar styling; invite "+" bare glyph vs white circle button [MEDIUM | OPEN | Board header row]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge of V1:KF-237 (GM-002/GM-015) + V1:KF-238 (GM-016).
+- ChipFlow behavior: gray row bg `#e8eaed`; board name "General" bold black; member avatar is a dark-navy circle with white "VE" (no white ring); invite "+" (`button#invite-btn` at (134,46,27,29)) is a bare dark text glyph with no button chrome; dark bar above is `#111827`.
+- KanbanFlow behavior: gray row bg `#f2f2f2`; member avatar is a white circle with brown "CS"; invite "+" is a white circle button containing a dark "+"; dark bar above is `#333333` (GM-002, GM-015, GM-016 — the latter a zoomed crop of the same invite control).
+- Fix direction: restyle the gray row bg, avatar, and invite button chrome per the masters.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-002.md`, `.dev/evidence/kf-drafts/kf-draft-v1-GM-016.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-002.png`, `vs-GM-015.png`, `vs-GM-016.png`; candidate `cf-2880.png`.
+
+### KF-238 — Menu hamburger is thin outline bars, not thick solid bars [LOW | OPEN | Board header row]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: `button#board-menu-btn` at (1348,46,72,29) shows three thin outline-style bars + "Menu" text.
+- KanbanFlow behavior: three thick solid dark bars + bold "Menu" text (GM-020; true box (2688,56,2878,136)).
+- Fix direction: redraw the hamburger as thick solid bars.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-020.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-020.png`; candidate `cf-2880.png`.
+
+### KF-239 — Timer pill lives in gray board row as light pill, not in dark top bar as dark chip [MEDIUM | OPEN | Board header row]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: `button#timer-pill` at (1168,46,89,28) in the GRAY board-header row; light pill bg `#e8eaed`; pomodoro idle shows green ▶, dark "25:00", gray ▾; stopwatch idle shows red ■, "00:00", ▾.
+- KanbanFlow behavior: the idle pill sits in the DARK TOP BAR at top-right — a dark chip with green ▶, "25:00", ⌄ (pomodoro) or red ■, "00:00", ⌄ (stopwatch) (GM-009, GM-010; KF-098 verified 2026-09-29).
+- Fix direction: move the timer pill into the dark top bar and restyle it as a dark chip.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-009.md`; `.dev/evidence/kf-drafts/v1-evidence/cf-timerpill-3x.png`, `cf-swpill-3x.png`.
+
+### KF-240 — Boards drawer is white panel; selection highlight blue `#e0e7ff`, not green indicator [LOW | OPEN | Boards drawer]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: drawer is a WHITE panel (~440 CSS px wide) with header "Boards" + green "+ New board" button, search box ("Search boards" ✓), hint text "Drag to add to Favorites" ✓, "FAVORITES" and "ALL BOARDS" sections; the active board row is highlighted light INDIGO/BLUE `#e0e7ff`.
+- KanbanFlow behavior: v8.md persistent context calls the drawer a "dark sidebar"; v3.md S1 records the "General" row selected "with a green indicator" (GM-022, GM-026).
+- Fix direction: drawer styling and a green selection indicator; not a duplicate of KF-172/KF-174 (drawer existence/behavior, which passed).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-022.md`; `.dev/evidence/kf-drafts/v1-evidence/cf-drawer-left.png`.
+
+### KF-241 — Folded-column WIP-violation styling wrong: black count, missing `#ff8080` line, spurious red "5" in strip body [HIGH | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior (reproduced: "To Do" folded, `collapsed:true`, `wip_limit:3`, 5 tasks): (1) the violated strip-header count "5" renders in near-black/gray (107,114,128) — the unfolded header's "5 / 3" correctly renders darkred `#8B0000` (139,0,0), so the strip uses a different code path; (2) the red warning line under the strip header (`#ff8080` (255,128,128) spanning the full strip width in KF) is entirely absent; (3) a red "5" renders inside the strip body next to the vertical "TO DO" text — KanbanFlow has no such element.
+- KanbanFlow behavior: violated strip count is DARKRED (same `#8B0000` family as the unfolded header), a `#ff8080` red line spans the strip width under the header, and the strip body carries only the vertical column name (GM-040).
+- Fix direction: align the folded-strip WIP styling with the unfolded header's darkred treatment, add the full-width `#ff8080` line, and remove the spurious red "5" from the strip body.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-040.md`; `.dev/evidence/kf-drafts/v2-evidence/g5zoom.png` (KanbanFlow) vs `c5zoom.png` (ChipFlow); `v2-evidence/boardb-final2.png`.
+
+### KF-242 — Card icon row missing description and subtask icons (3 of 5) [MEDIUM | OPEN | Task cards]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior (task with description, due date, 2 subtasks, comment, 2.5h logged, one assignee): the attribute icon row shows only 3 icons — calendar, comment, clock.
+- KanbanFlow behavior: the icon row shows 5 icons in order — description (document), calendar (due), subtask list, comment, clock (time). The description icon is missing even though the task has a description; the subtask icon is missing even though the task has 2 subtasks (the "2 hidden (2 done)" subtask section on the card still renders — only the icon is absent) (GM-069).
+- Fix direction: render the description and subtask icons whenever the task has a description/subtasks, matching the 5-icon order.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-069-icons.md`; `.dev/evidence/kf-drafts/v2-evidence/boardb-final2.png`; golden `.dev/evidence/golden-masters/task-cards/GM-069-card-due-subtasks-time-attributes.png`.
+
+### KF-243 — Assignee avatar sits at end of card icon row instead of top-right of title row [LOW | OPEN | Task cards]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the assignee avatar ("A") renders at the right end of the attribute icon row, below the title.
+- KanbanFlow behavior: the assignee avatar sits at the top-right of the card's title row, aligned with the task name (GM-069).
+- Fix direction: move the assignee avatar to the top-right of the card title row.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-069-avatar.md`; `.dev/evidence/kf-drafts/v2-evidence/boardb-final2.png`; golden `.dev/evidence/golden-masters/task-cards/GM-069-card-due-subtasks-time-attributes.png`.
+
+### KF-244 — Card due line renders orange-brown instead of dark text [LOW | OPEN | Task cards]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior (task due 2026-10-02 17:00, `due_done:true`): the card's "Due: Friday 5:00 PM (Done)" line renders in an orange-brown hue.
+- KanbanFlow behavior: the equivalent due line renders in dark/near-black text (GM-069).
+- Fix direction: render the card due line in dark text.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-069-dueline.md`; `.dev/evidence/kf-drafts/v2-evidence/boardb-final2.png`; golden `.dev/evidence/golden-masters/task-cards/GM-069-card-due-subtasks-time-attributes.png`.
+
+### KF-245 — Card border is near-black instead of a color-matched shade of the card face [MEDIUM | OPEN | Task cards]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior (green "Retro categorization" task; also orange "webhook" task): every card renders a 1px border in near-black (31,41,55) regardless of card color.
+- KanbanFlow behavior: the border is a shade matched to the card's color — green card → (124,211,64) border; orange card → (250,162,0) border. Face colors already match (green (225,254,199) vs (219,255,194), Δ≤6) (GM-051, GM-052, GM-053).
+- Fix direction: derive each card's border color from its face color instead of the fixed dark value.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-051-border.md`; `.dev/evidence/kf-drafts/v2-evidence/g-corner.png` (KanbanFlow) vs `c-corner.png` (ChipFlow); goldens `.dev/evidence/golden-masters/task-cards/GM-05{1,2,3}-*.png`.
+### KF-246 — Layout editor missing the green "Add column" button at the right end of the column list [LOW | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior (opened via the board-bar "Edit board layout" pencil): header "Layout: <board>" ✓; blue "+ Add column" and "+ Add swimlane" buttons in the header ✓; columns listed in board order ✓ — but there is NO green "Add column" button at the right end of the column list (only "← Back to board" below the lists), and the header's Add-column button is blue, not green.
+- KanbanFlow behavior (GM-043 verbatim catalog): header "Layout: General" with buttons Add column, Add swimlane; column list in board order; green Add column button at right.
+- Fix direction: add the green "Add column" button at the right end of the column list per GM-043.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-043.md`; `.dev/evidence/kf-drafts/v2-evidence/c-layoutview3.png`; golden `.dev/evidence/golden-masters/columns/GM-043-layout-editor.md`.
+
+### KF-247 — Layout editor is a full-page in-board view, not a modal dialog over the dimmed board [MEDIUM | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the layout editor is a full-page in-board view (`#layout-view`) — none of the modal chrome (Collapse all/Expand all, gear icons, green settings buttons, OK/Cancel) exists. (Settings access exists elsewhere: the column ⋮ menu offers Edit/Collapse/Show details/Delete/Rename/Move up/Move down — verified via right-click.) Distinct from KF-246 (structure vs one button).
+- KanbanFlow behavior: the layout editor is a modal dialog over the dimmed board with "Collapse all"/"Expand all", per-item gear icons, green "Column settings"/"Swimlane settings" buttons, and OK/Cancel (GM-157).
+- Fix direction: rebuild the layout editor as a modal dialog per GM-157; live-browser check still needed for drag-reorder (SortableJS and htmx were both `undefined` in the sandbox, jsdelivr unreachable — not filed as a defect).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-157.md`; `/tmp/gm-verify-v5/cand-layout-*.png` (scratch; not archived).
+
+### KF-248 — Collapsed swimlane strip at board edge, title-case, ~30px vs interleaved/UPPERCASE/70px; extra "…" control [MEDIUM | OPEN | Swimlanes]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the collapsed "Personal to-do" strip renders at the RIGHT edge of the board (and "Default" at the left edge), ~30 CSS px wide, bg `#f3f4f6`; vertical label is title-case "Personal to-do" (rotated, reads bottom-to-top); strip head has green "+", "0", and a "…" at the bottom.
+- KanbanFlow behavior: the collapsed "PERSONAL TO-DO" strip is INTERLEAVED BETWEEN columns (at the swimlane's column position), 70 CSS px wide; vertical label is UPPERCASE dark gray; strip head has green "+" and "0" only (GM-030).
+- Fix direction: interleaved placement at the swimlane's column position, 70px width, uppercase label, remove the extra "…" control. (Position also tracked under KF-131/KF-162.)
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-030.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-030.png` (left=KanbanFlow, right=ChipFlow), `rightedge.png`.
+
+### KF-249 — Color legend strip 29px vs 38px; all 4 segment colors differ; not flush to viewport bottom [MEDIUM | OPEN | Color legend]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: legend strip is 29px tall; segment fills `#ffffe0 / #e4ffd1 / #d6e9ff / #ffe0e3`; labels "1 Pomodoro / 2 Pomodori / 3 Pomodori / >3 Pomodori" (text matches); the strip sits in-flow at y 824–852 with a 47px board-bg gap below it — NOT flush to the viewport bottom.
+- KanbanFlow behavior: legend strip is 38px tall (34px of segments); segment fills `#ffffe2 / #e1fec7 / #d1e1fd / #f7cdd1`; same four labels; the strip is flush to the viewport bottom (GM-139).
+- Fix direction: 38px strip height, the master's four segment colors, and pin the strip flush to the viewport bottom.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-139.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-139.png` (top=KanbanFlow, bottom=ChipFlow), `cand-GM-139.png`.
+
+### KF-250 — Task modal is taller than the viewport (content cut off at the bottom) [HIGH | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: with the same fixture data (4 subtasks, 2 comments, description), the modal's content overflows the 998px viewport; the bottom (Attachments section) is cut off. Modal bounding box (652,42,1268,996).
+- KanbanFlow behavior: the modal fits entirely within the viewport (top y≈26, bottom y≈900) (GM-070).
+- Fix direction: cap the modal height to the viewport and scroll the modal content internally.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-070.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`, `gm-v3-candidate.png`.
+
+### KF-251 — Modal body uses single-column stacked UPPERCASE-label layout instead of 2-column label-left grid [HIGH | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: body sections are single-column stacked rows, each with a small UPPERCASE gray label above the value (COLOR / TIME SPENT / ESTIMATE / LABELS / DUE DATE / MEMBERS).
+- KanbanFlow behavior: two-column grid — row 1: Color | Members | Labels | Time spent; row 2: Time estimate | Due date — with mixed-case small labels above each value (GM-073).
+- Fix direction: rebuild the modal body as the 2-column label-left grid per the master.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-252 — Toolbar buttons sit inside the modal's right edge with labels below, instead of outside vs dimmed board w/ labels right [HIGH | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: 6 small circular buttons are pinned INSIDE/overlapping the modal's right edge, each with a tiny label pill BELOW the circle.
+- KanbanFlow behavior: 6 larger light-gray circles sit OUTSIDE the modal against the dimmed board, each with a white text label to the RIGHT of the circle (GM-076).
+- Fix direction: move the icon rail outside the modal against the dimmed board with labels to the right.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-076.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-253 — Description renders as an editable textarea instead of static text [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the description is an editable textarea with a resize handle under a "DESCRIPTION" label.
+- KanbanFlow behavior: the description is a static text block (no textarea chrome, no resize handle); "Description" is a small mixed-case label (GM-070).
+- Fix direction: render the description as static text (click-to-edit), with the mixed-case label.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-070.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-254 — Comments section: no avatars, absolute timestamps, × delete, boxed composer + Add button, no count/menu in header [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: header "Comments" (no count, no ⋮ menu); comment boxes tinted (same as body) with no avatar circles; timestamps absolute ("Oct 01, 2026 2:09 PM"); each comment has a × delete button (no smiley/⋮ icons); composer is an "Add a comment…" textarea plus a blue "Add" button.
+- KanbanFlow behavior: header "Comments 2" with ⋮ menu; each comment has a "cs" avatar circle; timestamps relative ("Today 3:03 PM"); white comment boxes; smiley + ⋮ icons per comment; single-line "Add comment…" row (no boxed textarea, no Add button) (GM-070).
+- Fix direction: restructure the comments section per the master (count + menu in header, avatars, relative timestamps, per-comment smiley/⋮, single-line composer).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-070.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-255 — Modal subline shows absolute created date ("Oct 01") instead of relative "Today" [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: subline reads "In Progress · Created: Oct 01" (absolute "MMM DD" even for a task created today).
+- KanbanFlow behavior: subline reads "In Progress · Created: Today" (relative date for same-day creation) (GM-071).
+- Fix direction: use relative dates in the modal subline.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-071.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-256 — Modal subline missing the three trailing icons [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: nothing follows "Created: Oct 01" in the subline.
+- KanbanFlow behavior: three small icons follow "Created: Today" (subtask-list icon, comment icon, eye icon) (GM-071).
+- Fix direction: add the three trailing icons to the subline.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-071.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-golden-crop.png` (icons visible after subline) vs `gm-v3-modal-cand-crop.png`.
+
+### KF-257 — Color row shows only the dot, missing the color name text [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: COLOR row shows the orange dot alone.
+- KanbanFlow behavior: "● Orange" — dot followed by the color name (GM-073).
+- Fix direction: render the color name after the dot.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-258 — Time spent shows pomodori count, emoji, and "Time log" link instead of plain "2h 30m" [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: TIME SPENT row shows "🍅 0 Pomodori · ⏱ 2h30m" plus a "Time log" link.
+- KanbanFlow behavior: "2h 30m" — no pomodori count, no emoji, spaced format, no inline link (GM-073).
+- Fix direction: render plain "2h 30m"; the hover menu for time actions belongs to KF-278.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-259 — Due date renders absolute "Oct 02, 2026 5:00 PM" and omits the "(Done)" marker [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: DUE DATE row shows "📅 Oct 02, 2026 5:00 PM" — no "(Done)" marker despite `due_done: true` (confirmed via `GET /api/tasks/{id}`).
+- KanbanFlow behavior: "Friday 5:00 PM (Done)" — relative weekday format with "(Done)" suffix when the due date is marked done (GM-073).
+- Fix direction: render the due date in the relative weekday format and show the "(Done)" marker when done.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-260 — Label chips are blue-tinted instead of neutral chips [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). Severity note: keeps the draft's LOW (V3:KF-243 was filed LOW; the §4 table's MEDIUM tag was a typo).
+- ChipFlow behavior: labels render as light-blue/blue-text pills ("feature", "backend").
+- KanbanFlow behavior: labels render as neutral gray/white chips with dark text (GM-073).
+- Fix direction: restyle label chips to neutral gray/white with dark text.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-261 — Members row shows "● admin" text chip instead of avatar circle + ⊕ add button [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: MEMBERS row shows a "● admin" pill (dot + username text); no add button.
+- KanbanFlow behavior: Members row shows a circular "cs" avatar plus a ⊕ add-member button (GM-074). (The "cs" vs "admin" identity difference is fixture data; the presentation difference is structural.)
+- Fix direction: render member avatar circles and add the ⊕ add-member button.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-074.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-262 — Subtasks header missing the "2 / 4" count and the ⋮ section menu [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: header reads "Subtasks" with no count and no ⋮ menu at the right.
+- KanbanFlow behavior: header reads "Subtasks 2 / 4" with a ⋮ section menu at the right (GM-085).
+- Fix direction: add the done/total count and the ⋮ section menu to the subtasks header.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+### KF-263 — Completed subtasks are struck through [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: done subtasks render with strikethrough text.
+- KanbanFlow behavior: done subtasks render in normal text (checkbox state is the only indicator) (GM-085).
+- Fix direction: remove the strikethrough from completed subtasks.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-264 — Subtask rows use × remove instead of the ⋮ drag handle [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: each subtask row has a × remove button at the right.
+- KanbanFlow behavior: each subtask row has a ⋮ drag handle at the right (no ×) (GM-085).
+- Fix direction: replace the × remove button with the ⋮ drag handle per row.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-265 — "Add subtask…" is a boxed input instead of a plain text row [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: "Add subtask…" is a boxed text input with a border.
+- KanbanFlow behavior: "Add subtask…" is a plain unstyled text row (GM-085).
+- Fix direction: restyle as a plain unstyled text row.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-266 — Reports toolbar icon is a play triangle instead of the stacked-layers icon [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the Reports button shows a ▶ play triangle.
+- KanbanFlow behavior: the Reports button shows a stacked-layers icon (GM-076 names it the "☰-stack" glyph).
+- Fix direction: replace the play triangle with the stacked-layers icon.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-076.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-267 — Delete toolbar icon is red instead of gray [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the trash icon is red.
+- KanbanFlow behavior: the trash icon is dark gray like the other icons (GM-076).
+- Fix direction: render the trash icon dark gray.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-076.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+
+### KF-268 — Labels dialog Save button is blue instead of green [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V3 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge of V3:KF-253 (GM-080) + V5:KF-246's Save-color part (GM-158).
+- ChipFlow behavior: the Labels dialog's Save button is blue (Cancel is white); V5 confirms the blue `.btn-primary` accent (`#2563eb`) in the dialog markup.
+- KanbanFlow behavior: the Save button is green (GM-080, GM-158).
+- Fix direction: render the Labels dialog Save button green.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-080.md` (`.dev/evidence/kf-drafts/v3-evidence/gm-v3-add-label-empty.png`), `.dev/evidence/kf-drafts/kf-draft-v5-GM-158.md` (`/tmp/gm-verify-v5` scratch, not archived).
+
+### KF-269 — Labels empty-state text differs ("No labels yet."/"No suggestions." vs "No recently used labels exist") [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V3 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge of V3:KF-254 (GM-080) + V5:KF-246's wording part (GM-158).
+- ChipFlow behavior: body reads "No labels yet." (with "Add a label" input and suggestion chips for labels used elsewhere); the suggestions area separately shows "No suggestions.".
+- KanbanFlow behavior: the dialog body reads "No recently used labels exist" (a single body text) (GM-080, GM-158).
+- Fix direction: use the verbatim "No recently used labels exist" text.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-080.md` (`.dev/evidence/kf-drafts/v3-evidence/gm-v3-add-label-empty.png`), `.dev/evidence/kf-drafts/kf-draft-v5-GM-158.md` (`/tmp/gm-verify-v5` scratch, not archived).
+
+### KF-270 — Due-date dialog titled "Due date" with no calendar grid, no column list, Clear/Cancel/Save instead of green Add [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior (Add → Due date): dialog titled "Due date"; Date text field + calendar-icon button (grid opens separately, not inline); Time field "05:00 PM"; NO calendar grid inline; NO column list (instead: "Mark as done" checkbox + "Apply to tasks in this column" + per-task checkbox); Repeat field "e.g. every week" present; buttons Clear (red) / Cancel / Save (blue) — no green "Add".
+- KanbanFlow behavior: title "Add due date"; Date field; Time field; inline calendar grid; column list (Personal To-do, Do today, In progress, Done, Backlog); "Repeat (e.g. every week)" field; green "Add" button (GM-081).
+- Fix direction: title "Add due date", inline calendar grid, column list with selection, green Add button.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-081.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-add-duedate.png`.
+
+### KF-271 — "Add time manually"/"Edit Pomodoro entry" use "+ Add comment/labels" links instead of checkboxes [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: both dialogs show "+ Add comment" / "+ Add labels" text LINKS instead of checkboxes. All other described attributes match: title with ×, prefilled Task field, Date field with calendar icon, From/To 12h time fields, auto-computed Duration, green Add/Update, Cancel.
+- KanbanFlow behavior: "Add comment" / "Add labels" checkboxes that expand a Comment input and a Labels field with suggestions (GM-082, GM-084).
+- Fix direction: replace the text links with checkbox expanders.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-082.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-add-manual-time.png`, `gm-v3-edit-pomodoro-entry.png`.
+
+### KF-272 — Future-time error: title/message wording differs from KanbanFlow's verbatim ("Cannot add time"/"Error" vs "Cannot add time in the future") [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V3 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge group G4: V3:KF-257 (GM-083) + V5:KF-249 (GM-167).
+- ChipFlow behavior: the entry is rejected and an error overlay appears (dialog state preserved, OK dismisses), but the message reads "You can not enter a time in the future" under a "Cannot add time" title. Neither string matches verbatim.
+- KanbanFlow behavior: per GM-083, an error modal titled "Error" with body "You can not enter a time in the future"; per GM-167, the red validation string "Cannot add time in the future".
+- Fix direction: the two masters' expected wordings differ from each other (GM-083 expects title "Error" + body "You can not enter a time in the future"; GM-167 expects the single red string "Cannot add time in the future") — the builder must reconcile both master claims against live KanbanFlow.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-083.md` (`.dev/evidence/kf-drafts/v3-evidence/gm-v3-future-time-error.png`), `.dev/evidence/kf-drafts/kf-draft-v5-GM-167.md` (`/tmp/gm-verify-v5/cand-future-error.png` scratch, not archived).
+
+### KF-273 — Subtask list has no ↑/↓ keyboard navigation and no Cmd+↑/↓ reorder (both documented in shortcuts dialog) [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V3 and V4 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge group G5: V3:KF-258 (GM-086) + V4:KF-290 (GM-149) + V4:KF-291 (GM-150).
+- ChipFlow behavior: arrow keys do nothing on focused subtask rows (V3 pressed ArrowDown/ArrowUp/Meta+ArrowDown/Meta+ArrowUp via Playwright — focus never moved, order never changed); Ctrl+↓ on a focused subtask does not change the order (V4); there is no ArrowUp/ArrowDown or Ctrl/Cmd+Arrow handler for subtask rows anywhere in static/app.js. The shortcuts dialog documents "↑ ↓ — Navigate subtask list" and "Cmd + ↑ ↓ — Move subtask in list", so the gap is self-contradictory.
+- KanbanFlow behavior: ↑/↓ moves focus between subtask rows; Cmd+↑/↓ reorders the focused subtask (GM-086, GM-149, GM-150).
+- Fix direction: implement ↑/↓ focus navigation and Ctrl/Cmd+↑/↓ reorder for subtask rows.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-086.md` (`.dev/evidence/kf-drafts/v3-evidence/gm-v3-subtask-kbdnav.png`), `.dev/evidence/kf-drafts/kf-draft-v4-GM-149.md`, `.dev/evidence/kf-drafts/kf-draft-v4-GM-150.md` (`/tmp/gm-v4-shots/keys_subtasks.png` ephemeral; static/app.js keydown handler has no such bindings).
+
+### KF-274 — Move dialog uses Column/Swimlane/Position dropdowns instead of static Column label [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: title "Move task" ✓; Board dropdown "General" ✓; Column is a DROPDOWN (currently "In Progress") instead of a static label; EXTRA Swimlane and Position dropdowns; green "Move" ✓.
+- KanbanFlow behavior: Column shown as a static label ("Work To-do"); no Swimlane/Position controls in the dialog (GM-087).
+- Fix direction: show Column as a static label; remove the Swimlane/Position controls from the dialog.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-087.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-move-dialog.png`.
+
+### KF-275 — Reports menu missing "Time in column"; History/Print order differs [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: Reports menu shows "Time log", "History", "Print" — 3 items; "Time in column" missing; History and Print swapped relative to KF's order.
+- KanbanFlow behavior: 4 items in order: Time log, Print, History, Time in column (GM-089).
+- Fix direction: add "Time in column" and restore the verbatim order.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-089.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-reports-menu.png`.
+
+### KF-276 — Keyboard shortcuts dialog has extra "Add time manually (Y)" / "Add time estimate (E)" rows [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: all KF rows present (wording close: "Close window / discard changes — Esc"), PLUS extra rows "Add time manually — Y" and "Add time estimate — E" that KF's dialog does not list.
+- KanbanFlow behavior: the dialog lists only Open Move dialog V; Open Timer menu T; Open Reports menu P; Open More menu .; Navigate subtask list ↑↓; Move subtask in list Cmd+↑↓; Close/discard Esc; Save changes Cmd+Enter; Delete task Delete (GM-093).
+- Fix direction: remove the Y/E rows from the shortcuts dialog.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-093.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-kbd-shortcuts.png`.
+
+### KF-277 — Time log view has "Total:" line, explicit "Edit" link, and "M" badges not present in KanbanFlow [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: all described attributes present (back link, "Time log" title, "+ ADD ENTRY", day sections, red trash, 12h ranges, comment text), PLUS: (1) a "Total: 2h 30m" line under the title; (2) an explicit "Edit" link per entry (KF opens edit by clicking the entry, per GM-084); (3) an "M" badge on each manual entry.
+- KanbanFlow behavior: no "Total:" line, no explicit Edit link, no "M" badge (GM-096).
+- Fix direction: remove the Total line, the explicit Edit link, and the "M" badges.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-096.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-time-log-view.png`.
+
+### KF-278 — Hovering Time spent shows no tooltip and no hover menu [MEDIUM | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: hovering Time spent produces nothing (label has no `title` attribute; no tooltip/hover-menu elements appear in the DOM); the row instead carries a static inline "Time log" link.
+- KanbanFlow behavior: hovering "Time spent" shows tooltip "You are selecting this task" and a hover menu with "Add time entry" and "Open time log" (GM-075).
+- Fix direction: add the hover tooltip and hover menu per the master.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-075.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-hover-timespent.png`.
+### KF-279 — Timer popup TODAY section differs: "Today" w/o day total, red dots, "2:14 PM · 0m" format, no per-entry trash, running session never listed as "— pending" [MEDIUM | OPEN | Timer popup]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge group G6: V4:KF-273 (GM-099) + V4:KF-274 dev 2 (GM-101) + V4:KF-275 dev 4 (GM-105).
+- ChipFlow behavior: section heading "Today" with no day total; entries show a red dot (#f87171) for stopped sessions and green for completed; entry format "Task B / Task done / 2:14 PM · 0m" (single start time + minutes); no per-entry removal affordance; a running session is NOT listed (shows "No entries yet today." when only a running session exists).
+- KanbanFlow behavior: heading "TODAY 2m" (day total); stopped-session entry "Timer test task B Task done 11:21 AM – 11:23 AM" with green dot and a per-entry trash/× removal; entries show a start–end time range; the running session appears as a "— pending" entry (GM-099, GM-101, GM-105).
+- Fix direction: "TODAY 2m" day total; green dots for stopped sessions; "11:21 AM – 11:23 AM" time-range format; per-entry trash; list the running session as a "— pending" entry.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-099.md`, `.dev/evidence/kf-drafts/kf-draft-v4-GM-101.md`, `.dev/evidence/kf-drafts/kf-draft-v4-GM-105.md`; `/tmp/gm-v4-shots/gm104_expired2.png`, `gm105_sw_idle.png` (ephemeral); live DOM `#timer-popup .timer-today`.
+
+### KF-280 — Running pomodoro popup: task row lacks the green color dot [LOW | OPEN | Timer popup]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). V4:KF-274 (GM-101) minus the "— pending" deviation (moved to KF-279).
+- ChipFlow behavior: the running popup's task row shows the task name with NO color dot. (Verified matching: header "Pomodoro" + ×, "Time until break", big "24:31" countdown, red Stop, "Change task" link, bottom toolbar.)
+- KanbanFlow behavior: the task row is a green color dot + task name + "Change task" (GM-101).
+- Fix direction: add the task's color dot to the running popup's task row.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-101.md`; `/tmp/gm-v4-shots/` running-popup captures (ephemeral); live DOM `#timer-popup`.
+
+### KF-281 — Stopwatch popup: idle has no big "00:00" readout, blue "Start Stopwatch" vs green "Start", running footer missing Settings icon [MEDIUM | OPEN | Timer popup]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). V4:KF-275 (GM-105) devs 1–3 (the "— pending" deviation moved to KF-279).
+- ChipFlow behavior: idle tab shows Task dropdown + buttons only — NO big "00:00" readout; the idle button is blue "Start Stopwatch"; the running footer is Pomodoro / Add time / Log — Settings icon missing (the idle stopwatch footer HAS all four). (Verified matching: idle header "Stopwatch" + ×, "Session time"; running big "00:04" count-up, red Stop, "Change task", "Session time".)
+- KanbanFlow behavior: idle shows a big "00:00" and a green "Start" button; running bottom row is Stopwatch, Add time, Log, Settings (GM-105).
+- Fix direction: add the big "00:00" idle readout, a green "Start" button, and restore the Settings icon in the running footer.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-105.md`; `/tmp/gm-v4-shots/gm105_sw_idle.png`, `gm105_sw_running.png` (ephemeral); live DOM `#timer-popup`.
+
+### KF-282 — No context menu on right-click over the timer area (thin evidence: catalog text only) [LOW | OPEN | Timer popup]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: right-clicking the timer pill and right-clicking inside the open timer popup opens NO context menu. (Right-clicking a task card opens ChipFlow's card menu: "Start timer ▸, Move ▸, Color ▸, Assign members, Copy here, Task URL, Delete" — different items, different target.)
+- KanbanFlow behavior: right-clicking the timer area opens a context menu with "Comment, Label, Edit, Delete" (GM-109; thin evidence — catalog text only, no screenshot).
+- Fix direction: implement the timer-area context menu; the exact right-click target should be re-verified against live KanbanFlow given the thin master.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-109.md`; `/tmp/gm-v4-shots/gm109_ctxmenu.png`, `gm109_ctxmenu2.png`, `gm109_cardctx.png` (ephemeral).
+
+### KF-283 — Default long break is 15 minutes, KanbanFlow shows 10 [MEDIUM | OPEN | Timer settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: Settings → General → "Long break time" defaults to "15 minutes" (seeded `long_break_minutes: 15` in src/models.rs:449). All other General-tab points verified matching: Pomodoro durations heading, Work 25 minutes, Short break 5 minutes, Long interval "Every 4th break", Picture-in-Picture ON.
+- KanbanFlow behavior: "Long break time" = "10 minutes" (GM-112).
+- Fix direction: seed the default long break at 10 minutes.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-112.md`; `/tmp/gm-v4-shots/` settings captures (ephemeral); src/models.rs:449.
+
+### KF-284 — Break-activities "Add activity" button is blue, KanbanFlow green [LOW | OPEN | Timer settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the "Add activity" button in Settings → Break activities is BLUE. (Verified matching: tab heading, descriptive text verbatim, light-blue "Examples:" box.)
+- KanbanFlow behavior: the "Add activity" button is green (GM-114).
+- Fix direction: render the button green.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-114.md`; `/tmp/gm-v4-shots/` settings captures (ephemeral).
+
+### KF-285 — Add-break-activity dialog text and button differ (placeholder, "Daily limit (0=unlimited)" vs "No limit", blue button) [LOW | OPEN | Timer settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: Name placeholder "e.g. Coffee"; goal row labeled "Daily limit (pomodoros, 0 = unlimited)" defaulting to 0; "Description (optional)" label; BLUE "Add activity" button plus an extra Cancel button. (Verified matching: dialog title + ×, stacked modal, Daily goal = 1.)
+- KanbanFlow behavior: Name placeholder "e.g. Meditate, Stretch, Drink water, Take a walk"; "No limit" (not a 0=unlimited numeric field); green "Add activity" button (GM-115).
+- Fix direction: placeholder text, "No limit" wording, and green button per the master.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-115.md`; `/tmp/gm-v4-shots/` dialog captures (ephemeral).
+
+### KF-286 — Timer log is a full page, KanbanFlow shows a modal; Period plain select w/o stepper; titled "Timer log" w/ tabs; no settings/close × [HIGH | OPEN | Timer log]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V4 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge group G7: V4:KF-280 (GM-117) + V5:KF-242 dev 1+3 (GM-129).
+- ChipFlow behavior: the "Log" action navigates to a full page at /timer/log (H1 "Timer log", "← Board" link, "Statistics" link, Time log / Time spent tabs). Filter row: Board "All boards" dropdown; Period is a plain <select> ("This + Last week" selected; options This + Last week / This week / Last week / This month / Last month / Custom (absolute) / Custom (relative)); "Entry type: All types"; icon buttons print / export / reload only. The Time spent report page is titled "Timer log" with "Time log" / "Time spent" tabs instead of a standalone "Time spent" title; there is no close ×.
+- KanbanFlow behavior: a wide white centered MODAL over the dimmed board, title "Timer log" with × close. Filter row: "All boards" dropdown; Period control showing e.g. "Period: This < Last week >" WITH prev/next arrows; "Entry type: All" dropdown; icons print, export, reload, settings, close X (GM-117, GM-129).
+- Fix direction: rebuild the timer log as a centered modal per GM-117 (with the Period stepper, settings icon, and close ×); retitle the Time spent report as standalone "Time spent".
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-117.md`, `.dev/evidence/kf-drafts/kf-draft-v5-GM-129.md`; `/tmp/gm-v4-shots/gm117_timerlog.png` (ephemeral), `templates/timer_log.html`; `/tmp/gm-verify-v5/cand-time-spent-tab.png` (scratch, not archived).
+
+### KF-287 — Time spent report Reload button is blue; KanbanFlow's is green [LOW | OPEN | Reports]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). V5:KF-242 dev 2 (GM-129).
+- ChipFlow behavior: the Reload button is blue.
+- KanbanFlow behavior: the Reload button is green (GM-129).
+- Fix direction: render the Reload button green.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-129.md`; `/tmp/gm-verify-v5/cand-time-spent-tab.png` (scratch, not archived).
+
+### KF-288 — Timer log entries: sub-minute durations show "0m" vs "31s"; saved labels not rendered [MEDIUM | OPEN | Timer log]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: a 37-second session renders "0m" (the page uses fmtDuration(e.minutes) — whole minutes only; the API's `duration_display` "37s" is ignored). A manual entry saved WITH labels ["test", "another test"] (confirmed in GET /api/timer/log) renders NO label chips. Stop reasons render with curly quotes ('Task done') vs the claim's straight quotes. (Verified matching: day group header "Thursday, October 1 — 2m — 4 Pomodoros"; green "Successful Pomodoro" / red "Stopped Pomodoro with reason '…'" rows; "2:19 PM – 2:20 PM" + "1m"; blue "Add time entry" per day; manual entry comment "testing this out".)
+- KanbanFlow behavior: sub-minute sessions show "31s" / "48s"; entries show comment and labels 'test' and 'another test' (GM-118).
+- Fix direction: honor the API's `duration_display` in `fmtDuration` (static/app.js); render saved label chips on entries.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-118.md`; `/tmp/gm-v4-shots/gm118_entries.png`, `gm118_manual.png` (ephemeral); GET /api/timer/log JSON.
+
+### KF-289 — Timer log export menu order: CSV before Excel, KanbanFlow lists Excel first [LOW | OPEN | Timer log]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the export dropdown under the log's export icon lists "Download CSV file" first, then "Download Excel file".
+- KanbanFlow behavior: "Download Excel file" first, then "Download CSV file" (GM-119).
+- Fix direction: swap the menu item order (see also KF-294 for the Time spent export items themselves).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-119.md`; `/tmp/gm-v4-shots/gm119_export.png` (ephemeral); templates/timer_log.html #log-export-menu.
+
+### KF-290 — Custom (absolute) range is inline From/To inputs, not a dialog with two calendars + Done [MEDIUM | OPEN | Timer log]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: selecting "Custom (absolute)" in the Period dropdown reveals inline "From [date] To [date]" inputs in the filter row — no dialog, no "Custom (absolute)" title, no side-by-side month calendars, no Done button.
+- KanbanFlow behavior: nested "Custom (absolute)" dialog with Start/End fields, two month calendars side by side with selected dates highlighted, green "Done" button (GM-121).
+- Fix direction: replace the inline inputs with the nested dialog per the master.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-121.md`; `/tmp/gm-v4-shots/gm121_custom.png` (ephemeral).
+
+### KF-291 — Date picker: weekday row uses single letters vs "Sun Mon…"; missing Today/yesterday/This month quick buttons [LOW | OPEN | Timer]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V4 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge group G8: V4:KF-284 (GM-122) + V5:KF-250 (GM-171).
+- ChipFlow behavior: the shared `renderCalPopup` renders the weekday row as "S M T W T F S" (single initials); the popup shows the month grid with month navigation only — the "Today", "yesterday", "This month" quick buttons are absent. (Verified matching: popup header "October 2026" with < > arrows; selected date (today) highlighted blue.)
+- KanbanFlow behavior: weekday row "Sun Mon Tue Wed Thu Fri Sat"; the date-field calendar popup shows quick buttons "Today", "yesterday", "This month" (GM-122, GM-171).
+- Fix direction: three-letter day names in `renderCalPopup` (static/app.js) and add the three quick buttons.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-122.md`, `.dev/evidence/kf-drafts/kf-draft-v5-GM-171.md`; `/tmp/gm-v4-shots/gm122_datepicker.png` (ephemeral), `/tmp/gm-verify-v5/cand-date-picker.png` (scratch, not archived); static/app.js `renderCalPopup`.
+
+### KF-292 — Time spent report lacks bar/percent columns, tasks/breaks/duration% breakdown, and totals footer rows [MEDIUM | OPEN | Timer reports]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: rows show date + duration only ("Thursday, 1 October 2026 | 2m"). No per-row bar column with "100%", no tasks/breaks breakdown columns, no duration-% column, no "8h 4m / 100% / Total" footer rows. The filter is a single "Filter" button opening a dropdown (Period/User/Color/Label) rather than the claimed Board/Period/Entry-type dropdown row. (Verified matching: title "Time spent"; print/export buttons; "Group by" control; Summary/Detailed links; per-date rows; "Total: 2m".)
+- KanbanFlow behavior: rows per date with a bar column showing "100%"; columns date/tasks/breaks/duration%; footer rows "0m", "0%", "Total" with totals like "8h 4m", "100%" (GM-123).
+- Fix direction: add the bar/percent column, the tasks/breaks/duration% breakdown, the totals footer rows, and the three-dropdown filter row.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-123.md`; `/tmp/gm-v4-shots/gm123_timespent.png`, `gm123_timespent.html` (ephemeral).
+
+### KF-293 — Pomodoro statistics: Period presets don't match (GM-124 and GM-130 expected lists differ — reconcile vs live KF); no bar count labels; tooltip format differs [MEDIUM | OPEN | Timer reports]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V4 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge group G9: V4:KF-286 (GM-124) + V5:KF-243 (GM-130).
+- ChipFlow behavior: Period dropdown options are "This + Last week / This week / Last week / This month / Last month / Custom (absolute) / Custom (relative)". Bars have NO count labels atop them. Bar tooltip (SVG <title>) reads "Thursday, Oct 01: 4 pomodoros" — no year, no duration, lowercase "pomodoros", native title tooltip rather than a styled tooltip. (Verified matching: title "Pomodoro Statistics"; tabs Pomodoros/Interruptions/Break activities/Highscores; summary numbers; "Pomodoros per day" bar chart with day labels; "No data to display" empty state verbatim.)
+- KanbanFlow behavior: per GM-124, Period lists exactly '1 day', '2 days', '3 days', '7 days', '14 days', 'This week', 'Last week', 'This month'; numbers rendered atop bars; hovering a bar shows tooltip "Tuesday 1 Sep 2026: 2 Pomodori (30m)".
+- Fix direction: the two masters' expected option lists differ from each other (GM-124: '1 day','2 days','3 days','7 days','14 days','This week','Last week','This month'; GM-130: "Last 7 days","Last 14 days","Last 30 days" (default),"This week","Last week","This month","Last month","Custom (absolute)","Custom (relative)") — the builder must reconcile both master claims against live KanbanFlow. Also add bar count labels and the tooltip format "…: 2 Pomodori (30m)".
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-124.md` (`/tmp/gm-v4-shots/gm124_stats.png` ephemeral), `.dev/evidence/kf-drafts/kf-draft-v5-GM-130.md` (`/tmp/gm-verify-v5/cand-pom-stats.png` scratch, not archived).
+### KF-294 — Time spent Export menu items don't match verbatim list ("Excel (Detailed)", "Excel (Summary)", "PDF (Summary)") [MEDIUM | OPEN | Other dialogs]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the Export dropdown offers "Download CSV file" and "Download Excel file" — none of the master's items, no PDF option, no Detailed/Summary split.
+- KanbanFlow behavior: verbatim items in order: "Excel (Detailed)", "Excel (Summary)", "PDF (Summary)" (GM-170).
+- Fix direction: replace the export menu with the verbatim item list (including the Detailed/Summary split and PDF). Not a duplicate of KF-093 (export works — this is the residual menu-item fidelity) or KF-289 (different surface: the timer-log export order).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-170.md`; `/tmp/gm-verify-v5/cand-export-menu.png` (scratch, not archived).
+
+### KF-295 — Time spent Print invokes the browser's native print dialog instead of KanbanFlow's "Print" sheet [MEDIUM | OPEN | Other dialogs]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the Print button fires `window.print()` — the browser's native print dialog — no "Print" sheet exists (code-verified: static/app.js:4517 `spent-print` click handler is a bare `window.print()`).
+- KanbanFlow behavior: the Time spent report's Print button opens a sheet titled "Print" showing the task table and Filter/Print buttons (GM-169).
+- Fix direction: implement the "Print" sheet with the task table and Filter/Print buttons.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-169.md`.
+
+### KF-296 — Color filter says "2 Pomodori", KanbanFlow says "2 Pomodoros" [LOW | OPEN | Filter panel]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: Filter panel → Color dropdown (and the Time-spent report Filter → Color) lists "1 Pomodoro", "2 Pomodori", "3 Pomodori", ">3 Pomodori".
+- KanbanFlow behavior: "2 Pomodoros", "3 Pomodoros", ">3 Pomodoros" (GM-125; the master's own note flags the "2 Pomodori" rendering as an unresolved interpretation question at capture time).
+- Fix direction: use "Pomodoros" plural for the 2/3/>3 pomodoro-count colors.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-125.md`; `/tmp/gm-v4-shots/gm125_filter.png`, `gm126_after_selection.png` (ephemeral).
+
+### KF-297 — Column header count badges ignore the active filter (KF-161 regression) [MEDIUM | OPEN | Filter panel]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: with Color = "1 Pomodoro" selected, non-matching cards hide correctly (visible: "Timer test task A", "Done task"), but the column header count badges still show unfiltered totals (To-do:2, Doing:2, Done:1 instead of 1/0/1). Root cause: static/app.js `applyFilter` recounts visible cards but writes only `.columnHeader-count` (the WIP "count / limit" element) and toggles warning classes; the badge element keeps the server-rendered `data-task-count`.
+- KanbanFlow behavior: column counts drop to the filtered visible-card counts (GM-127).
+- Fix direction: update `.columnHeader-countBadge` inside `applyFilter` (static/app.js ~L5015–5035). Regression: tracker KF-161 ("Column counts ignore filters") was previously fixed and regression-verified PASS; this reproduces the same symptom on the current build via the badge element.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-127.md`; `/tmp/gm-v4-shots/gm126_after_selection.png` (ephemeral); static/app.js ~L5015–5035.
+
+### KF-298 — T opens the global timer popup, not the task modal's Timer menu [MEDIUM | OPEN | Keyboard shortcuts]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: with the task modal open, pressing T calls TimerUI.togglePopup() — the GLOBAL timer popup opens/closes at the top-right; the task modal's own Timer menu (stopwatch icon in the modal's right rail) does not open (static/app.js keydown handler, `key === 't'` branch).
+- KanbanFlow behavior: T opens the task modal's timer menu (GM-146).
+- Fix direction: when the task modal is open, T should open the modal-context timer menu instead of toggling the global popup.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-146.md`; `/tmp/gm-v4-shots/keys_t.png` (ephemeral); static/app.js ~L3613.
+
+### KF-299 — Esc closes the modal outright; no discard-edits-first step [LOW | OPEN | Keyboard shortcuts]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: handleEscape() (static/app.js ~L4100) closes menus/dialogs, then closes the task modal directly — there is no "discard in-progress edits" stage. Verified: typing an unsent comment draft in #modal-comment-input and pressing Esc once closes the modal (draft lost). (The name field commits on change, so it has no in-progress state.)
+- KanbanFlow behavior: first Esc discards in-progress edits while keeping the modal open; second Esc closes the modal (GM-151).
+- Fix direction: implement two-stage Esc (discard edits first, close on second Esc).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-151.md`; static/app.js handleEscape (~L4100).
+
+### KF-300 — Stray horizontal rules render under each color-row cell on the colors admin page [LOW | OPEN | Board settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: a stray horizontal rule renders under each color-row cell (drag handle, chip, name, actions) — confirmed via zoomed crop.
+- KanbanFlow behavior: each color row is a clean row of drag-handle, color chip, name, and actions with no rules under individual cells (GM-131).
+- Fix direction: remove the stray horizontal rules under color-row cells.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-131.md`; `/tmp/gm-verify-v5/cand-*-colors.png`, `/tmp/gm-verify-v5/zoom-row.png` (scratch; not archived).
+
+### KF-301 — Default color marker reads "(default)" instead of "(Default)" [LOW | OPEN | Board settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the marker reads "(default)" (lowercase d).
+- KanbanFlow behavior: the default color's label is suffixed "(Default)" (capital D) (GM-132).
+- Fix direction: capitalize to "(Default)".
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-132.md`.
+
+### KF-302 — Quick-add color picker is a dot-only popover, not KanbanFlow's centered named modal [MEDIUM | OPEN | Board settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the quick-add "+" opens a dot-only popover (bare color dots, no names, no ⋮ menus, no bold selected row).
+- KanbanFlow behavior: a centered modal whose color selector is a dropdown of named rows — dot + color name + ⋮ menu per row, the selected row bold (GM-133).
+- Fix direction: rebuild the quick-add color picker as the centered named modal.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-133.md`; `/tmp/gm-verify-v5/cand-quickadd.png` (scratch; not archived).
+
+### KF-303 — Disabled colors listed in palette order instead of alphabetically [LOW | OPEN | Board settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: disabled colors follow palette sort order: Orange, Purple, Magenta, Cyan, Brown, White.
+- KanbanFlow behavior: the disabled-colors section lists them alphabetically: Brown, Cyan, Magenta, Orange, Purple, White (GM-131, GM-144).
+- Fix direction: sort the disabled-colors section alphabetically.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-144.md`.
+
+### KF-304 — Board delete uses native window.confirm instead of a styled in-page dialog [MEDIUM | OPEN | Board settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the delete-board page's final step fires a native `window.confirm` ("Delete the board \"V5 Delete Me\"? This cannot be undone.", dialog type `confirm`) — verified end-to-end on a throwaway board (since deleted).
+- KanbanFlow behavior: destructive actions use a styled in-page confirmation dialog (GM-165; GM-163's styled-confirm standard).
+- Fix direction: route board delete through the styled in-page confirm. Not a duplicate: KF-184 covers task/comment/time-entry/column/swimlane/API-token deletes (all styled ✓); KF-047/KF-188/KF-112 cover other surfaces. None covers the board delete flow.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-165.md`.
+
+### KF-305 — No "Archive board" option on the delete-board page [MEDIUM | OPEN | Board settings]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: no board archiving exists anywhere — no API endpoint, no UI. The delete-board page shows only the red "Delete board" button.
+- KanbanFlow behavior: the red delete-board page shows a blue "Archive board" button alongside the red "Delete board" button — archiving is a first-class alternative to deletion (GM-138; GM-165).
+- Fix direction: add board archiving (API + UI) with the blue "Archive board" option on the delete-board page.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-138.md`; `/tmp/gm-verify-v5/cand-delete-board-1920.png` (scratch; not archived).
+
+### KF-306 — Column delete confirm lacks the "Move the tasks to the column" option and verbatim text [MEDIUM | OPEN | Other dialogs]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: a styled in-page dialog (the styled-confirm mechanism itself is fine) titled "Delete column" with text `Delete column "<name>"?` and plain Cancel / Delete buttons — no "Move the tasks to the column" checkbox and not the verbatim "Are you sure you want to delete this column?" text.
+- KanbanFlow behavior: the delete-column confirm reads "Are you sure you want to delete this column?" with a checkbox "Move the tasks to the column" — deletion of a non-empty column requires choosing a move target (no bare "Delete anyway") (GM-164).
+- Fix direction: verbatim text plus the "Move the tasks to the column" move-target option. Not a duplicate: KF-047 covers the styled-confirm mechanism; this is the missing option and text.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-164.md`; `/tmp/gm-verify-v5/cand-col-delete.png` (scratch; not archived).
+
+### KF-307 — Built-in "Pomodoro board" template ships no starter tasks [MEDIUM | OPEN | Templates]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: the built-in template snapshot (`pomodoro_template_snapshot` in src/db.rs:223) has no `tasks` key, and a board created from the template contains zero tasks (verified: 0 task cards on the new board). (Verified matching: picker lists "Pomodoro board" (Built-in); board created with the pomodoro color scheme and 4 columns.)
+- KanbanFlow behavior: built-in templates (e.g. Pomodoro board with 'Pomodoro 1') ship with starter tasks (GM-141; tracker-documented expectation in KF-164).
+- Fix direction: add the starter tasks to the built-in template snapshot. Not a duplicate of KF-164 (fixed): that fix covered save-board-as-template snapshots; this is the built-in snapshot — a distinct code path.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-141-KF-244.md`.
+
+### KF-308 — Built-in Pomodoro template's first column is "Work To-do" instead of "To-do" [LOW | OPEN | Templates]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- ChipFlow behavior: src/db.rs:244 creates the first column as "Work To-do" (the board also gets a "PERSONAL TO-DO"/"BACKLOG" swimlane), so the template's column set doesn't match the documented set.
+- KanbanFlow behavior: the pomodoro template has 4 columns "To-do / Do today / In progress / Done" (GM-141; KF-190 evidence).
+- Fix direction: name the first template column "To-do". Not a duplicate of KF-190 (fixed): that fix covered the board-creation UI; this is the residual column name.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-141-KF-245.md`.
+
+### KF-309 — Board-header funnel and pencil icons are thin outline glyphs, not KanbanFlow's solid glyphs [LOW | OPEN | Board header row]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave-V1 verifier; re-filed after the GM-017/018/019 master labels were corrected — previously dropped as master-error because the labels were shifted one icon right of their content).
+- pixdiff (content-aligned): funnel-vs-funnel 80×75 → `diff_pixels 6000/6000 (100%), mean_delta 19.55` FAIL; pencil-vs-pencil 80×75 → `diff_pixels 6000/6000 (100%), mean_delta 18.30` FAIL.
+- ChipFlow behavior: `button#filter-btn` shows a thin outline-style funnel (dark-navy stroke, hollow); `button#edit-layout-btn` shows a thin outline ✎ pencil.
+- KanbanFlow behavior: solid dark funnel glyph; solid dark pencil glyph.
+- Repro: open any board; compare the funnel and pencil icons against GM-017's image (funnel) and GM-018's image (pencil) — both masters relabeled 2026-10-01 to match their actual pixel content.
+- Evidence: `.dev/evidence/kf-drafts/v1-evidence/vs-GM-017-3x.png` (funnel solid vs outline), `vs-GM-019-3x.png`, `vs-GM-018.png` (pencil solid vs outline); corrected masters `evidence/golden-masters/board-header-row/GM-017-timer-clock-button.md`, `GM-018-filter-button.md`, `GM-019-edit-layout-pencil.md`.
+
+### KF-310 — Bell (notifications) button is dead: click opens nothing [HIGH | OPEN | Top bar]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A, adversarial re-verification of V1's hover-state pass; test server 127.0.0.1:3221, fresh redb, Playwright).
+- ChipFlow behavior: `#notifications-btn` in the dark top bar shows a hover state (idle (31,41,55)→hover (55,65,81), cursor:pointer) but clicking opens NO panel, dropdown, or popover — no `[role=dialog]`, no new visible element, no DOM diff. (The bell's icon style is separately covered by KF-235; this is strictly the dead click.)
+- KanbanFlow behavior: the bell opens the notifications panel (standard KanbanFlow top-bar behavior; the button exists precisely to surface notifications).
+- Fix direction: wire the bell button to open the notifications panel/dropdown on click (re-click/Escape/scrim to dismiss, matching the boards-drawer dismissal behavior).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-bell.md`; `.dev/evidence/kf-drafts/SPOT-A.md` (hover measurements); scratch screenshot `/tmp/spot-evidence/p3-bell-clicked.png`.
+
+### KF-311 — Column header row is shorter and its name smaller than KanbanFlow [MEDIUM | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A breaking V2's GM-031 pass; test server 127.0.0.1:3221).
+- ChipFlow behavior: column header row measures 32.6px tall (`getBoundingClientRect()`); header name renders at 13.6px font-size, cap height ~9px. Name centering, bold weight, black color all match — this is strictly row height and font size.
+- KanbanFlow behavior: golden GM-031 (`cmp-kf-header.png`) shows the header row y5–48 ≈ 41px tall, name ~17px with cap height ~11–12px.
+- Fix direction: raise the header row to ~41px and the name font-size to ~17px.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-031.md`; scratch `/tmp/spot-evidence/p1-board-1600.png`.
+
+### KF-312 — Inline "n / 3" WIP count renders blue-gray instead of neutral gray [LOW | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A breaking V2's GM-033 pass; test server 127.0.0.1:3221).
+- ChipFlow behavior: the inline WIP count (e.g. "5 / 3" in the In Progress header) renders in #6b7280 → rgb(107,114,128), a blue-gray. Placement is correct — strictly the color.
+- KanbanFlow behavior: golden GM-033's master image shows the inline count in neutral gray rgb(91,91,91) (sampled from the master PNG). Master-text note: the GM-033 .md text says "black" but the image shows (91,91,91) — the master text is inaccurate; ChipFlow matches neither.
+- Fix direction: change the inline count color from #6b7280 to neutral gray (91,91,91).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-033.md`; scratch `/tmp/spot-evidence/p5-wip-violation.png`.
+
+### KF-313 — Missing vertical separator between + button and standalone count cell [LOW | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A breaking V2's GM-032 pass; test server 127.0.0.1:3221).
+- ChipFlow behavior: in the column header, the green "+" add-task button and the standalone count cell ("16", "0") sit adjacent with NO vertical separator between them. (Count color is separately covered by KF-316; this is strictly the missing separator.)
+- KanbanFlow behavior: golden GM-032 shows a vertical separator line between the + button and the standalone count cell.
+- Fix direction: add the vertical separator between the + button and the standalone count cell, matching the master's position/color.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-032.md`; scratch `/tmp/spot-evidence/p1-board-1600.png`, `p7-collapsed.png`.
+
+### KF-314 — Folded-swimlane strip label is bold; KanbanFlow uses regular weight [LOW | OPEN | Swimlanes]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A breaking V2's GM-037 pass; test server 127.0.0.1:3221).
+- ChipFlow behavior: the folded-swimlane strip at the far right renders its vertical "BACKLOG" label with `font-weight: 700` in rgb(75,85,99). Strip position is correct — strictly label weight/color. (Folded-strip WIP-violation styling is separately covered by KF-241.)
+- KanbanFlow behavior: golden GM-037 shows the strip label in regular weight with a near-black core rgb(17,17,17) (stroke measured 4px @ DPR2 = 2 CSS px, consistent with regular-weight glyphs).
+- Fix direction: change the strip label to regular font-weight and near-black (17,17,17).
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-037.md`; scratch `/tmp/spot-evidence/p8c-strip-right.png`.
+
+### KF-315 — Edit-column dialog: four verbatim-field deviations from KanbanFlow [MEDIUM | OPEN | Columns]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A breaking V2's GM-045 pass; test server 127.0.0.1:3221; Edit dialog via right-click → Edit on the Done column). The info note, Cancel/Update-column buttons, and Column sum "None" all match — not part of this defect.
+- ChipFlow behavior: (1) Description placeholder is empty (master: "Add description"); (2) WIP limit placeholder reads "No limit" (master: "Add limit"); (3) Task sorting defaults to "Manual order" with options Manual order/Name/Date created — no "None" option (master: "None"); (4) Archiving checkbox UNCHECKED for the Done column (master: checked for Done).
+- KanbanFlow behavior: per the verbatim golden master GM-045 — Description "Add description", WIP limit "Add limit", Task sorting "None", Archiving checked for the Done column; info note verbatim "Archiving is ONLY recommended for columns that represent an end state for tasks, like the Done column. Loads the 20 most recent tasks from the start."
+- Fix direction: Description placeholder "Add description"; WIP-limit placeholder "Add limit"; Task sorting default/option "None" per master; Archiving checked by default for done columns.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-045.md`; scratch `/tmp/spot-evidence/p10-edit-column.png` + DOM dumps.
+
+### KF-316 — "Do today" header: add-task control is a green button, not a bare green glyph; count is muted gray, not near-black [LOW | OPEN | Empty states]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker B breaking V5's GM-156 attribute pass; test server 127.0.0.1:3222, fresh redb; Firefox 1919×998 DPR 1). Breaks the 1px/1-shade bar on two axes.
+- ChipFlow behavior: the add-task control is a green rounded-square button (background #22C55E = 34, 197, 94, Tailwind green-500) containing a white "+" glyph; the count "0" renders in muted gray #6b7280 (`var(--muted)`, `.columnHeader-countBadge`, static/style.css:415).
+- KanbanFlow behavior: golden GM-156's master crop shows a bare green "+" glyph, core color #3DC54E (61, 197, 78), with no button background; the count "0" is near-black (#111111 core).
+- Fix direction: render the header add control as a bare green glyph in #3DC54E (no button background); render the count in near-black.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotB-GM-156.md`; scratch `/tmp/spotb-master-hdr-zoom.png`, `/tmp/spotb-cf-hdr-zoom.png`.
+
+### KF-317 — Labels dialog input label/placeholder does not match the master's "Add labels…" [LOW | OPEN | Task detail modal]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker B breaking V5's GM-158 partial match; test server 127.0.0.1:3222; verified via DOM). Not a duplicate of KF-268/KF-269 (Save color, suggestions empty text) — this covers the input field's own label/placeholder, which the V5 partial-match claim glossed over.
+- ChipFlow behavior: the labels dialog's input is labeled by `<span>Add a label</span>` and carries the placeholder "Type a label and press Enter..." — neither matches the master's "Add labels…" text.
+- KanbanFlow behavior: golden GM-158 records the input field as '"Add labels..." input field'.
+- Fix direction: match the input's label/placeholder to the verbatim master text.
+- Evidence: `.dev/evidence/kf-drafts/kf-draft-spotB-GM-158.md`; markup at templates/board.html.
+
+### KF-318 — Board-filter option values on timer log/statistics render with literal surrounding quotes [MEDIUM | OPEN | Timer reports]
+- Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker B incidental finding; test server 127.0.0.1:3222).
+- ChipFlow behavior: the board-filter `<option>` values on `/timer/log` and `/timer/statistics` render with literal surrounding quotes (`value="&quot;…&quot;"`), which likely breaks selecting a specific board (default "All boards" unaffected).
+- KanbanFlow behavior: board filter options carry clean board-id values and selecting a board filters the report.
+- Fix direction: emit the option values without the extra quoting layer (fix the template escaping so `value` holds the raw board id).
+- Evidence: spot-checker B report, `.dev/evidence/kf-drafts/SPOT-B.md` (incidental section).
