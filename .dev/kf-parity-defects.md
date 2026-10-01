@@ -1494,6 +1494,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-01T21:48:50Z — deployed 2a96fa0ec74645281db67094cf531573ede7f1bb, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-250.md
 
 ### KF-251 — Modal body uses single-column stacked UPPERCASE-label layout instead of 2-column label-left grid [HIGH | OPEN | Task modal]
+- Status: FIXED 2026-10-01T23:25:25Z — deployed 1186e216906967dcc253d219cbf2f786128ec847, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-251.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: body sections are single-column stacked rows, each with a small UPPERCASE gray label above the value (COLOR / TIME SPENT / ESTIMATE / LABELS / DUE DATE / MEMBERS).
 - KanbanFlow behavior: two-column grid — row 1: Color | Members | Labels | Time spent; row 2: Time estimate | Due date — with mixed-case small labels above each value (GM-073).
