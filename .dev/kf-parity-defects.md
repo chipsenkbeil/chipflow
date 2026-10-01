@@ -1491,6 +1491,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the modal fits entirely within the viewport (top y≈26, bottom y≈900) (GM-070).
 - Fix direction: cap the modal height to the viewport and scroll the modal content internally.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-070.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`, `gm-v3-candidate.png`.
+- Status: FIXED 2026-10-01T21:48:50Z — deployed 2a96fa0ec74645281db67094cf531573ede7f1bb, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-250.md
 
 ### KF-251 — Modal body uses single-column stacked UPPERCASE-label layout instead of 2-column label-left grid [HIGH | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
@@ -1965,3 +1966,11 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: board filter options carry clean board-id values and selecting a board filters the report.
 - Fix direction: emit the option values without the extra quoting layer (fix the template escaping so `value` holds the raw board id).
 - Evidence: spot-checker B report, `.dev/evidence/kf-drafts/SPOT-B.md` (incidental section).
+
+### KF-319 — Task modal sits ~15px lower than KanbanFlow (4vh overlay padding vs fixed ~25px top offset) [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the KF-250 spot-checker (independent pass 2; the KF-250 verifier had noted this as a candidate separate defect in its §8 observations).
+- ChipFlow behavior: `.modal-overlay` uses `padding: 4vh 1rem`, so the modal's top edge scales with viewport height (measured via DOM rect: 36px at 900px viewport, 39.9px at 998px, 24px at 600px, 20px at 500px).
+- KanbanFlow behavior: GM-070 (1919×998) measures the modal at top=25px, bottom=901px (luminance edge detection, 1px resolution; see spotcheck evidence). ChipFlow at the same viewport: top=39.9px, bottom=915.1px — modal height matches within 1px (875.2 vs 876), so the whole modal is shifted down ~15px by the 4vh padding.
+- Fix direction: match KanbanFlow's top offset (single data point suggests a fixed ~25px, not viewport-proportional; confirm with a second KanbanFlow viewport before implementing).
+- Severity: LOW — cosmetic positioning only; nothing is cut off (KF-250's vertical-fit fix is intact).
+- Evidence: `.dev/evidence/spotcheck-20261001-kf-250.md`; `.dev/evidence/spotcheck-kf250/measurements.json` (S2 1919×998); GM bbox measured from `.dev/evidence/golden-masters/task-detail-modal/GM-070-modal-open.png`.
