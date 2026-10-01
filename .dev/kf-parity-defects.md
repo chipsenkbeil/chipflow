@@ -1344,7 +1344,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the column menu includes "Delete column" (with confirmation when the column holds tasks).
 - Fix direction: add a Delete item to the column menu (wiring the existing `deleteColumn`, which already handles the non-empty-column confirm copy) or add a delete affordance to the layout-edit view's column list. Also decide what happens to the vestigial hidden ⋮ button (`button.columnHeader-menu`, display:none) — KF-038 removed it but the markup remains.
 - Evidence: `.dev/evidence/final-battery-20261001.md` (column-delete section); screenshot `.dev/evidence/final-battery-column-menu.png`.
-- Status: FIXED 2026-10-01T03:30:00Z — deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, /api/v1/version build_sha verified on green-box port 3000. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-230.md
+- Status: FIXED 2026-10-01T03:13:00Z — deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, /api/v1/version build_sha verified on green-box port 3000. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-230.md
 
 ### KF-231 — Timer chip minutes not zero-padded: "0:03" vs KanbanFlow's "00:02" [LOW | FIXED | Timer]
 - Status: OPEN — filed 2026-10-01 by the KF-229 independent verifier (browser-verified on the KF-229 fix tree, commit 667b66d).

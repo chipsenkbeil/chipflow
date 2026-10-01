@@ -70,7 +70,7 @@
 - Verification: chipflow.service active; green-box-local /api/v1/version build_sha == 91230ec8e450c61bd9a74d60cd7f728000d94fdf; public URL from this VM returned empty body (known VM-egress issue)
 - KF-231 marked FIXED in tracker. Note: KF-230 fix was DEPLOYED in this same push but remains to be marked FIXED/VERIFIED by its own pipeline cycle.
 
-## 2026-10-01T03:30:00Z — release round 3 — KF-230 marked FIXED (already deployed in 91230ec8)
+## 2026-10-01T03:13:00Z — release round 3 — KF-230 marked FIXED (already deployed in 91230ec8)
 - State at entry: phase 'verify', verdict 'VERIFIED', defect KF-230 (verifier 22/22 checks, evidence verifier-20261001-kf-230.md).
 - Suite re-run on master HEAD: node --check OK, cargo fmt --check OK, cargo build OK, clippy 0 warnings, cargo test 77/77 pass.
 - Diff origin/main..HEAD for src/ static/ templates/ → empty: KF-230 wiring already live in origin/main via the KF-231 push (91230ec8e450c61bd9a74d60cd7f728000d94fdf).
