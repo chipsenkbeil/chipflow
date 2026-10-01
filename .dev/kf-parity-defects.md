@@ -1252,8 +1252,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: filter Color section lists the board's palette verbatim (golden-master reference: Show all, Yellow, Green, Blue, Red, Orange, Purple, Magenta, Cyan — see tracker line 756).
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (P3).
 
-### KF-218 — No column-level "N overdue task(s)" indicator [LOW-MED | open | Board]
-- Status: OPEN 2026-09-30 (filed from golden-master mirror worker; INDEPENDENTLY CONFIRMED 2026-09-30 by the visual verifier via the creation task's accessibility tree — the To Do header cell reads "1 overdue task Implement dark mode toggle …"; reference screenshots had To Do collapsed so it wasn't screenshot-visible). FURTHER CONFIRMED 2026-09-30: the COLLAPSED To Do strip itself shows "1 overdue task" + warning line beneath the count, tooltip "Overdue tasks: 1 / Total tasks: 5 / Click to expand" (collapsed-strip screenshot).
+### KF-218 — No column-level "N overdue task(s)" indicator [LOW-MED | FIXED | Board]
+- Status: FIXED 2026-09-30 — independent verifier passed 9/9 functional checks (singular/plural text, exact tooltips "Overdue tasks: {n} / Total tasks: {t}", no indicator on clean/empty columns, red bold centered block styling, no new overdue logic — reuses col.overdue_count). Evidence: .dev/evidence/verifier-2026-09-30-kf218-225.md.
 - ChipFlow behavior: the To Do column header shows only the count badge ("5"); no overdue indicator.
 - KanbanFlow behavior: To Do shows a "1 overdue task" indicator under/beside the header (golden-master board, task 7 due Sep 25).
 - Evidence: `.dev/evidence/golden-master-mirror-2026-09-30.md` (O1).
@@ -1304,9 +1304,27 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
   4. Color presentation: FULL-CARD light tint + solid colored outer border (~1–2px, rounded corners); dotted section dividers tinted with the card color. (NOT a left-edge stripe — see corrected KF-179.)
 - Evidence: `.dev/evidence/visual-compare-golden-2026-09-30.md`; card-detail capture 2026-09-30 (screenshot + element markup).
 
-### KF-225 — Task modal dialog save leaves stale card markup on the board [LOW-MED | open | Task modal]
-- Status: OPEN 2026-09-30 (found by KF-224 independent verifier; pre-existing — verified via `git show 2d6d34b~1` that it predates KF-224, affected due_at/due_repeat edits before)
+### KF-225 — Task modal dialog save leaves stale card markup on the board [LOW-MED | FIXED | Task modal]
+- Status: FIXED 2026-09-30 — independent verifier passed 7/7 functional checks: race test (aborted post-save modal refresh fetch, saved due date, closed modal → automatic closeModal() reload re-rendered card "Due: 9 October 3:00 PM"), normal save and Clear paths both auto-reload with fresh card markup. `modalDirty = true` set synchronously in DueDateDialog.applyToSelected's success handler. Evidence: .dev/evidence/verifier-2026-09-30-kf218-225.md.
 - ChipFlow behavior: the due-date dialog's `applyToSelected` success handler never sets `modalDirty`, so after any dialog save (due date edits, the new "Mark as done" checkbox, etc.) the background board card keeps stale markup until a full page reload.
 - KanbanFlow behavior: (parity expectation) the board card reflects dialog edits immediately after save.
 - Evidence: `.dev/evidence/verifier-2026-09-30-kf224.md` — PATCH succeeds and DB is correct; only the rendered card is stale.
 - Fix direction: set `modalDirty = true` in `applyToSelected`'s success handler (one-line, suggested by the verifier).
+
+### KF-226 — POST /api/tasks silently drops due_at/due_repeat [LOW-MED | FIXED | API]
+- Status: FIXED 2026-09-30 — independent verifier passed: POST with "2026-10-05 17:00" + due_repeat stored/round-tripped correctly; null/null and blank/"" → no due date; bare date → end-of-day. `CreateTaskInput` gained optional `due_at`/`due_repeat` applied via `db.set_task_due`. agents.md + agents/skill.md document the new fields; openapi.json regenerates with nullable types. Evidence: .dev/evidence/verifier-2026-09-30-kf226-227.md.
+- ChipFlow behavior: `POST /api/tasks` accepts `{"due_at": ..., "due_repeat": ...}` without error (200) but creates the task with no due date; the caller must issue a separate PATCH afterward.
+- Expected behavior: either accept the fields on create (parity with the update path) or reject with 400 listing the unsupported fields — never a silent 200 drop.
+- Fix direction: add optional `due_at`/`due_repeat` to CreateTaskInput and apply them at creation, or add `#[serde(deny_unknown_fields)]` and document the PATCH-after-create requirement.
+
+### KF-227 — Due-date dialog Clear is a server-side no-op [LOW-MED | FIXED | Task modal]
+- Status: FIXED 2026-09-30 — independent verifier passed: PATCH {"due_at":null,"due_repeat":null} clears both (verified via GET detail); absent fields unchanged; "" still clears (legacy); {"due_at":null} keeps due_repeat; clearing resets due_done true→false. End-to-end browser: task modal → due dialog → Clear → card lost its due-date line, API confirms nulls. Server now uses a `de_opt_opt` serde helper (missing→None, null→Some(None), value→Some(Some(v))) on both fields. Evidence: .dev/evidence/verifier-2026-09-30-kf226-227.md.
+- ChipFlow behavior: the due-date dialog's Clear button sends `PATCH {"due_at": null, "due_repeat": null}`; `UpdateTaskInput.due_at: Option<String>` treats JSON null as absent, so the clear is a silent no-op (200, due date unchanged). The KF-225 auto-reload fires, but the re-rendered card still shows the old due date.
+- Expected behavior: Clear actually clears the due date (KanbanFlow parity: removing a due date removes it).
+- Fix direction: distinguish "absent" from "explicit null" on the server (e.g. `Option<Option<String>>` for due_at/due_repeat in UpdateTaskInput: null → clear, absent → unchanged) or have the client send "" (the verifier confirmed "" clears today). Related: KF-226 (accept due fields on POST /api/tasks).
+
+### KF-228 — PATCH {"wip_limit": null} does not clear the column WIP limit [LOW-MED | FIXED | Columns]
+- Status: FIXED 2026-09-30 — independent verifier passed 6/6 functional checks: PATCH {"wip_limit":5} → 5; PATCH {"wip_limit":null} → cleared (the fix); absent → unchanged; {"wip_limit":7} → 7; {"wip_limit":0} → 400 "WIP limit must be at least 1"; KF-227 regression (PATCH {"due_at":null} clears). Server reuses the KF-227 `de_opt_opt` serde helper (now generic) on `UpdateColumnInput.wip_limit`; doc comment corrected. Evidence: .dev/evidence/verifier-2026-09-30-kf228.md.
+- ChipFlow behavior: `UpdateColumnInput.wip_limit: Option<Option<i64>>` lacks a `deserialize_with`, so stock serde collapses JSON null to absent (unchanged); the field's doc comment and the OpenAPI description claim "JSON null clears the limit", which is false.
+- Expected behavior: either null actually clears the limit (same `de_opt_opt` pattern as KF-227) or the docs/schema stop claiming it does.
+- Fix direction: apply the KF-227 `de_opt_opt` deserializer to `UpdateColumnInput.wip_limit` and add the clear arm in the column PATCH handler; keep the doc/OpenAPI text accurate.
