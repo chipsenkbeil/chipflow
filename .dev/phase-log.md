@@ -79,3 +79,11 @@
 - Leftover test chipflow on 127.0.0.1:3100 (pid 2303654, build_sha 73b68b06) — not mine, untouched.
 - Tracker: KF-230 header OPEN→FIXED; VERIFIED line replaced with FIXED line (deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, build_sha verified). Evidence: .dev/evidence/deploy-20261001-kf-230.md.
 - Docs committed on master, pushed via .dev/push_via_api.py (docs-only, no redeploy).
+
+## 2026-10-01T04:25:09Z — Release KF-232 (release worker)
+- Full check suite green (node --check, cargo fmt/build/clippy zero warnings, cargo test).
+- Pushed via .dev/push_via_api.py: origin/main = 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc (base origin/main 101adf9, diff was exactly the KF-232 fix).
+- Deployed on green-box: NAR hash sha256-UoiBZfjbJK7zX+GIRmJoPI0O917JchZZ5p8AWExgfjc= (cross-confirmed); slot file rev+hash lines only; dry-activate showed chipflow.service as sole affected unit; switch completed.
+- Verified: chipflow.service active; green-box-local /api/v1/version build_sha = 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc (exact match).
+- Public URL from VM: "Empty reply from server" (known VM egress issue).
+- Tracker KF-232 marked FIXED; evidence .dev/evidence/deploy-20261001-kf-232.md.
