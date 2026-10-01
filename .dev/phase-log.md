@@ -69,3 +69,13 @@
 - green-box: NAR hash sha256-K49wYMTREcbR10xzyjKDk9T348HwyKS4hpI5R/LXl9o= computed + cross-confirmed (nix hash path --sri match); modules/chipflow.nix rev+hash lines only (verified via diff); dry-activate showed only chipflow.service affected; switch applied
 - Verification: chipflow.service active; green-box-local /api/v1/version build_sha == 91230ec8e450c61bd9a74d60cd7f728000d94fdf; public URL from this VM returned empty body (known VM-egress issue)
 - KF-231 marked FIXED in tracker. Note: KF-230 fix was DEPLOYED in this same push but remains to be marked FIXED/VERIFIED by its own pipeline cycle.
+
+## 2026-10-01T03:30:00Z — release round 3 — KF-230 marked FIXED (already deployed in 91230ec8)
+- State at entry: phase 'verify', verdict 'VERIFIED', defect KF-230 (verifier 22/22 checks, evidence verifier-20261001-kf-230.md).
+- Suite re-run on master HEAD: node --check OK, cargo fmt --check OK, cargo build OK, clippy 0 warnings, cargo test 77/77 pass.
+- Diff origin/main..HEAD for src/ static/ templates/ → empty: KF-230 wiring already live in origin/main via the KF-231 push (91230ec8e450c61bd9a74d60cd7f728000d94fdf).
+- green-box: chipflow.service active; green-box-local /api/v1/version on port 3000 build_sha == 91230ec8e450c61bd9a74d60cd7f728000d94fdf (matches); slot file rev/hash already pinned (no edit, no dry-activate, no switch — anti-churn).
+- Public URL from this VM: curl exit 52, empty body (known VM egress issue, recorded verbatim).
+- Leftover test chipflow on 127.0.0.1:3100 (pid 2303654, build_sha 73b68b06) — not mine, untouched.
+- Tracker: KF-230 header OPEN→FIXED; VERIFIED line replaced with FIXED line (deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, build_sha verified). Evidence: .dev/evidence/deploy-20261001-kf-230.md.
+- Docs committed on master, pushed via .dev/push_via_api.py (docs-only, no redeploy).

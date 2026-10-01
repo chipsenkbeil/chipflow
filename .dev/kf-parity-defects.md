@@ -1338,12 +1338,13 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: rewrite `updatePill` to target the SVG (e.g. swap the icon path for play/stop states and/or render the remaining time as text next to the clock icon, KanbanFlow-parity), or restore the `#timer-pill-icon`/`#timer-pill-time` spans inside the pill.
 - Evidence: `.dev/evidence/final-battery-20261001.md` (timer section).
 
-### KF-230 — Column delete is unreachable in the UI; deleteColumn() is dead code [MEDIUM | OPEN | Columns]
+### KF-230 — Column delete is unreachable in the UI; deleteColumn() is dead code [MEDIUM | FIXED | Columns]
 - Status: OPEN — filed 2026-10-01 from the final golden-master battery (browser-verified on the deployed tree, build c3307b7).
 - ChipFlow behavior: the column menu (right-click, KF-038/KF-223) offers exactly three items — Edit, Collapse, Show details. There is no Delete item; the layout-edit view offers only Add column / Add swimlane / drag-reorder; and `deleteColumn()` (static/app.js:814, with the KF-047 styled confirm dialog and the "server will refuse until tasks are moved" message) is never called from anywhere — grep over static/app.js and templates/ finds zero callers. The server-side `DELETE /api/columns/:id` endpoint exists and works, but no UI entry point reaches it, so a column created in the UI can never be deleted in the UI.
 - KanbanFlow behavior: the column menu includes "Delete column" (with confirmation when the column holds tasks).
 - Fix direction: add a Delete item to the column menu (wiring the existing `deleteColumn`, which already handles the non-empty-column confirm copy) or add a delete affordance to the layout-edit view's column list. Also decide what happens to the vestigial hidden ⋮ button (`button.columnHeader-menu`, display:none) — KF-038 removed it but the markup remains.
 - Evidence: `.dev/evidence/final-battery-20261001.md` (column-delete section); screenshot `.dev/evidence/final-battery-column-menu.png`.
+- Status: FIXED 2026-10-01T03:30:00Z — deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, /api/v1/version build_sha verified on green-box port 3000. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-230.md
 
 ### KF-231 — Timer chip minutes not zero-padded: "0:03" vs KanbanFlow's "00:02" [LOW | FIXED | Timer]
 - Status: OPEN — filed 2026-10-01 by the KF-229 independent verifier (browser-verified on the KF-229 fix tree, commit 667b66d).
