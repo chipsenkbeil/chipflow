@@ -1329,8 +1329,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Expected behavior: either null actually clears the limit (same `de_opt_opt` pattern as KF-227) or the docs/schema stop claiming it does.
 - Fix direction: apply the KF-227 `de_opt_opt` deserializer to `UpdateColumnInput.wip_limit` and add the clear arm in the column PATCH handler; keep the doc/OpenAPI text accurate.
 
-### KF-229 — Timer pill never shows countdown or play/stop glyph [MEDIUM | OPEN | Timer]
-- Status: IN_PROGRESS (2026-10-01 02:13 UTC — direct-dispatch builder implementing; pipeline planner: skip this defect)
+### KF-229 — Timer pill never shows countdown or play/stop glyph [MEDIUM | FIXED | Timer]
+- Status: FIXED 2026-10-01 02:31 UTC — released 1e8441e2b8a660271d7709c2f88e48e7f05c9463, deployed to green-box, /api/v1/version verified.
 - Status: OPEN — filed 2026-10-01 from the final golden-master battery (browser-verified on the deployed tree, build c3307b7).
 - ChipFlow behavior: `TimerUI.updatePill` (static/app.js ~2389) writes the countdown text and play/stop glyph into `#timer-pill-icon` / `#timer-pill-time` child elements, but KF-209 replaced the pill's contents with a bare clock SVG (KanbanFlow parity) — those child elements no longer exist in templates/board.html. The writes are null-guarded so they silently do nothing: the pill never shows a countdown and never swaps play/stop while a session runs.
 - KanbanFlow behavior: the header pill shows the live countdown (v3-e022, v9-e002).
