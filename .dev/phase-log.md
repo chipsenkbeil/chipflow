@@ -54,3 +54,11 @@
 - green-box: rev/hash pin updated (only 2 lines), dry-activate showed chipflow.service as sole affected unit, switch applied
 - Verification: chipflow.service active; green-box-local /api/v1/version build_sha matches 3116db5a; public URL from this VM returned empty reply (known VM-egress issue)
 - KF-224 marked FIXED in 3116db5a. Remaining OPEN: KF-218 (column overdue indicator), KF-225 (dialog stale card) — both queued for the watchdog.
+
+## 2026-09-30 20:12 CDT — Deploy c3307b7 (KF-218/225/226/227/228 batch) to green-box
+- Contents: KF-218 column overdue indicator; KF-225 dialog-save stale card (modalDirty); KF-226 POST /api/tasks preserves due_at/due_repeat; KF-227 due-date dialog Clear clears server-side; KF-228 PATCH {"wip_limit": null} clears WIP limit. (KF-228 filed this batch.)
+- Context: the 19:29 CDT watchdog run pushed c3307b7 to GitHub main but FAILED before deploying; green-box was still on 3116db5a. This release completed the deploy.
+- Pre-deploy checks: node --check OK, cargo fmt --check OK, cargo build OK, clippy 0 warnings, cargo test 77/77 pass (run in main checkout — /tmp worktree attempt failed on 512MB tmpfs space, not a code issue)
+- green-box: NAR hash sha256-LZhQtkDG3VlrBcgimrvkhzJA5RLQC+UsGfE0Y7coIzg= computed + cross-confirmed on green-box; slot rev/hash lines only; dry-activate showed chipflow.service as sole affected unit; switch applied
+- Verification: chipflow.service active; green-box-local /api/v1/version build_sha == c3307b7; public URL from this VM empty reply (known VM-egress issue)
+- KF-218, KF-225, KF-226, KF-227, KF-228 FIXED and DEPLOYED in c3307b7. Remaining OPEN: none from this batch.
