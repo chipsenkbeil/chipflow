@@ -1,0 +1,14 @@
+{
+ "1440": {
+  "diff_pixels": 1782,
+  "diff_ratio": 0.269,
+  "max_channel_delta": 221,
+  "mean_delta": 8.59
+ },
+ "1100": {
+  "diff_pixels": 1782,
+  "diff_ratio": 0.269,
+  "max_channel_delta": 221,
+  "mean_delta": 8.59
+ }
+}
