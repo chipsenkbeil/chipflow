@@ -1507,6 +1507,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: 6 larger light-gray circles sit OUTSIDE the modal against the dimmed board, each with a white text label to the RIGHT of the circle (GM-076).
 - Fix direction: move the icon rail outside the modal against the dimmed board with labels to the right.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-076.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-02T00:25:00Z — deployed c8fd5d9a27d4bbc588e17b5df12c9c4eb33056af, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-252.md
 
 ### KF-253 — Description renders as an editable textarea instead of static text [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
@@ -1975,3 +1976,17 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: match KanbanFlow's top offset (single data point suggests a fixed ~25px, not viewport-proportional; confirm with a second KanbanFlow viewport before implementing).
 - Severity: LOW — cosmetic positioning only; nothing is cut off (KF-250's vertical-fit fix is intact).
 - Evidence: `.dev/evidence/spotcheck-20261001-kf-250.md`; `.dev/evidence/spotcheck-kf250/measurements.json` (S2 1919×998); GM bbox measured from `.dev/evidence/golden-masters/task-detail-modal/GM-070-modal-open.png`.
+
+### KF-320 — Move toolbar icon arrow shaft is heavier than KanbanFlow's (4px vs 2px) [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the KF-252 independent verifier (blind pass; zoomed glyph break-attempt).
+- ChipFlow behavior: the Move (→) glyph's arrow shaft is 4px thick (measured on vertical scan through the shaft; total ink 26×19px, 184 ink px).
+- KanbanFlow behavior: the Move arrow shaft is 2px thick (GM-076; total ink 20×18px, 86 ink px). Glyph color matches (#666 both).
+- Fix direction: use a lighter arrow glyph matching the master's 2px shaft weight.
+- Evidence: `.dev/evidence/verifier-20261001-kf-252.md`; `.dev/evidence/verifier-kf252-glyphs.png` (zoomed pair 2).
+
+### KF-321 — Timer toolbar icon is a tick-mark stopwatch instead of KanbanFlow's plain stopwatch [LOW | OPEN | Task modal]
+- Status: OPEN — filed 2026-10-01 by the KF-252 independent verifier (blind pass; zoomed glyph break-attempt).
+- ChipFlow behavior: the Timer button shows a stopwatch with tick marks around the dial (ink 19×21px, 80 ink px).
+- KanbanFlow behavior: the Timer button shows a plain stopwatch with a top button and no tick marks (GM-076; ink 20×24px, 150 ink px). Glyph color matches (#666 both).
+- Fix direction: replace with the plain stopwatch glyph per GM-076.
+- Evidence: `.dev/evidence/verifier-20261001-kf-252.md`; `.dev/evidence/verifier-kf252-glyphs.png` (zoomed pair 3).
