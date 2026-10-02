@@ -1604,6 +1604,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: Members row shows a circular "cs" avatar plus a ⊕ add-member button (GM-074). (The "cs" vs "admin" identity difference is fixture data; the presentation difference is structural.)
 - Fix direction: render member avatar circles and add the ⊕ add-member button.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-074.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-02T13:16:00Z — deployed f6d9f17cedbacf9fef6333807547332c21707ee6, /api/v1/version build_sha verified (green-box-local 127.0.0.1:3000 and public https://chipflow.chip.network). Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-261.md
 
 ### KF-262 — Subtasks header missing the "2 / 4" count and the ⋮ section menu [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
