@@ -1908,6 +1908,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/v1-evidence/vs-GM-017-3x.png` (funnel solid vs outline), `vs-GM-019-3x.png`, `vs-GM-018.png` (pencil solid vs outline); corrected masters `evidence/golden-masters/board-header-row/GM-017-timer-clock-button.md`, `GM-018-filter-button.md`, `GM-019-edit-layout-pencil.md`.
 
 ### KF-310 — Bell (notifications) button is dead: click opens nothing [HIGH | OPEN | Top bar]
+- Status: FIXED 2026-10-02T01:42:05Z — deployed cfffe44bf48a5b86f6ce15561b2b73b14c81d20f, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-310.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A, adversarial re-verification of V1's hover-state pass; test server 127.0.0.1:3221, fresh redb, Playwright).
 - ChipFlow behavior: `#notifications-btn` in the dark top bar shows a hover state (idle (31,41,55)→hover (55,65,81), cursor:pointer) but clicking opens NO panel, dropdown, or popover — no `[role=dialog]`, no new visible element, no DOM diff. (The bell's icon style is separately covered by KF-235; this is strictly the dead click.)
 - KanbanFlow behavior: the bell opens the notifications panel (standard KanbanFlow top-bar behavior; the button exists precisely to surface notifications).
