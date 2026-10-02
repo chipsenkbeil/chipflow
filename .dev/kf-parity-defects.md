@@ -1397,6 +1397,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-128.md`.
 
 ### KF-237 — Board-tab row styling: gray `#e8eaed` vs `#f2f2f2`; avatar styling; invite "+" bare glyph vs white circle button [MEDIUM | OPEN | Board header row]
+- Status: FIXED 2026-10-02T03:45:00Z — deployed f8a02bdda6509b94c5c712d799e5d86ef01f720d, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-237.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge of V1:KF-237 (GM-002/GM-015) + V1:KF-238 (GM-016).
 - ChipFlow behavior: gray row bg `#e8eaed`; board name "General" bold black; member avatar is a dark-navy circle with white "VE" (no white ring); invite "+" (`button#invite-btn` at (134,46,27,29)) is a bare dark text glyph with no button chrome; dark bar above is `#111827`.
 - KanbanFlow behavior: gray row bg `#f2f2f2`; member avatar is a white circle with brown "CS"; invite "+" is a white circle button containing a dark "+"; dark bar above is `#333333` (GM-002, GM-015, GM-016 — the latter a zoomed crop of the same invite control).
