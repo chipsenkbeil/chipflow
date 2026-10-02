@@ -1627,6 +1627,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: each subtask row has a ⋮ drag handle at the right (no ×) (GM-085).
 - Fix direction: replace the × remove button with the ⋮ drag handle per row.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-02T16:01:42Z — deployed fe1fed664c6daa436017033130e41463c7018fde, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-264.md
 
 ### KF-265 — "Add subtask…" is a boxed input instead of a plain text row [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
