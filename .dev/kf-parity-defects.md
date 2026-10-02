@@ -1612,6 +1612,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: header reads "Subtasks 2 / 4" with a ⋮ section menu at the right (GM-085).
 - Fix direction: add the done/total count and the ⋮ section menu to the subtasks header.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-02T13:53:25Z — deployed b92f891409952dcb1570d7903d62319bba08cd7b, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-262.md
 ### KF-263 — Completed subtasks are struck through [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: done subtasks render with strikethrough text.
