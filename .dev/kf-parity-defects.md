@@ -1372,6 +1372,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: dark top bar bg `#333333`, 38px tall; "☰ Boards" button bg `#515151`, rect ≈ (11,5,113,47) CSS px — ~47px tall, filling the bar nearly edge-to-edge vertically (GM-001).
 - Fix direction: restyle the bar bg to `#333333`, the button bg to `#515151`, and make the button fill the bar's height.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-001.md`; `.dev/evidence/kf-drafts/v1-evidence/cmp-GM-001.png` (zoomed side-by-side), `cf-1600.png`; golden `.dev/evidence/golden-masters/top-bar/GM-001-boards-button.png`.
+- Status: FIXED 2026-10-02T02:48:30Z — deployed 8e0c5db1ac1f12803c4cfec3dc5048d9182d1f1a, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-233.md
 
 ### KF-234 — Member avatar is dark circle/white initials, not white circle + brown-initials disc [LOW | OPEN | Top bar]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
