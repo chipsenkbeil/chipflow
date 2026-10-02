@@ -1619,6 +1619,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: done subtasks render in normal text (checkbox state is the only indicator) (GM-085).
 - Fix direction: remove the strikethrough from completed subtasks.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-02T14:16:26Z — deployed 0131a9ad8167a25a76fdad5be139be3c9316bd7b, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-263.md
 
 ### KF-264 — Subtask rows use × remove instead of the ⋮ drag handle [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
