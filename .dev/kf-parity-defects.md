@@ -1589,6 +1589,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: "Friday 5:00 PM (Done)" — relative weekday format with "(Done)" suffix when the due date is marked done (GM-073).
 - Fix direction: render the due date in the relative weekday format and show the "(Done)" marker when done.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-02T12:11:56Z — deployed 552893382a207449a9953b128d0c9511ea41d5fc, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-259.md
 
 ### KF-260 — Label chips are blue-tinted instead of neutral chips [LOW | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). Severity note: keeps the draft's LOW (V3:KF-243 was filed LOW; the §4 table's MEDIUM tag was a typo).
