@@ -137,3 +137,11 @@
 2026-10-02T04:42:59Z | repair | KF-242 | icons 14->16px, clock 13->20px (16.7px circle), gap 0.475rem (pitch 23.59px), time chip -3.6px margin (last-interval 22.0px = golden), time text 0.71rem (8px digits = golden); commit 4874209; L0/L1 green, permutations PASS, pixdiff 1506px remainder is out-of-scope glyph artwork only. Evidence builder-20261002-kf-242.md + repair-20261002-kf242/.
 2026-10-02T05:05:46Z | repair | KF-242 | clock svg 20->16px; circle now 14x14 = golden exact; pixdiff 1694px (remainder out-of-scope glyph artwork); 5 icons GM-069 order, pitch 23.6px, permutations PASS; L0/L1/L4 green. Evidence repair-20261002-kf242-r3.md.
 2026-10-02T05:52:18Z | release | KF-242 | deployed 5c747a88bbcc8bde9db98998213285debdce5859 — suite green (node --check, fmt, build, clippy 0 warn, tests 79 pass); adopted dead verifier's uncommitted VERIFIED line per dirty-tree rule. Slot file /home/senkwich/homelab-dale-chipflow/modules/chipflow.nix lines 16/18 only (rev+hash; diff shows exactly 2 lines); dry-activate sole unit chipflow.service; switch done; green-box-local :3000 /api/v1/version build_sha matches release SHA; public URL exit 52 (known VM egress). Tracker FIXED; evidence deploy-20261002-kf-242.md.
+
+## 2026-10-02T06:25:51Z — release KF-245
+Release worker deployed KF-245 (card border color-matched shade fix) to green-box.
+Pushed 3559f58 → remote main as 01e733d5b5dc16ca9bc22523a6487a51f3a6c5ad.
+Check suite all green (clippy zero warnings, 77 tests pass). Slot file rev+hash updated,
+dry-activate affected only chipflow.service, switch OK. Green-box-local
+/api/v1/version build_sha = release SHA. Tracker marked FIXED.
+Evidence: .dev/evidence/deploy-20261002-kf-245.md.

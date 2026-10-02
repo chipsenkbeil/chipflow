@@ -1462,7 +1462,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: render the card due line in dark text.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-069-dueline.md`; `.dev/evidence/kf-drafts/v2-evidence/boardb-final2.png`; golden `.dev/evidence/golden-masters/task-cards/GM-069-card-due-subtasks-time-attributes.png`.
 
-### KF-245 — Card border is near-black instead of a color-matched shade of the card face [MEDIUM | OPEN | Task cards]
+### KF-245 — Card border is near-black instead of a color-matched shade of the card face [MEDIUM | FIXED | Task cards]
+- Status: FIXED 2026-10-02T06:25:51Z — deployed 01e733d5b5dc16ca9bc22523a6487a51f3a6c5ad, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-245.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior (green "Retro categorization" task; also orange "webhook" task): every card renders a 1px border in near-black (31,41,55) regardless of card color.
 - KanbanFlow behavior: the border is a shade matched to the card's color — green card → (124,211,64) border; orange card → (250,162,0) border. Face colors already match (green (225,254,199) vs (219,255,194), Δ≤6) (GM-051, GM-052, GM-053).
