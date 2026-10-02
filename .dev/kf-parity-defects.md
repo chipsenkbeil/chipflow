@@ -1566,6 +1566,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-071.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-golden-crop.png` (icons visible after subline) vs `gm-v3-modal-cand-crop.png`.
 
 ### KF-257 — Color row shows only the dot, missing the color name text [MEDIUM | OPEN | Task modal]
+- Status: FIXED 2026-10-02T11:10Z — deployed ff9145420a572ba04ecef9264dfb847caa7af5c6, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-257.md
+- Status: FAILED 2026-10-02T10:48Z — independent blind verifier: colored-task rendering passes vs GM-073 ("● Orange", #333333, identical text metrics; remaining pixdiff is cross-machine glyph rasterization with zoomed-crop proof), but the contract-required no-color/default case renders "● 1 Pomodoro" — the legacy size label surfaced as the color name (dot title likewise "1 Pomodoro — click to change"). Contract clause 1 required no name for the default case. Repro: fresh board → task with no color → open modal. Evidence: `.dev/evidence/verifier-20261002-kf-257.md`; screenshots `.dev/test-dbs/vkf257-shots/cand-plain-modal.png`. Break-attempt: uncolored task (contract-named permutation the builder never exercised).
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: COLOR row shows the orange dot alone.
 - KanbanFlow behavior: "● Orange" — dot followed by the color name (GM-073).
