@@ -1418,6 +1418,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: move the timer pill into the dark top bar and restyle it as a dark chip.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-009.md`; `.dev/evidence/kf-drafts/v1-evidence/cf-timerpill-3x.png`, `cf-swpill-3x.png`.
 
+- Status: FIXED 2026-10-02T04:06:48Z — deployed 31da0a63ecb90c2089933210bcde06699ef63be6, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-239.md
+
 ### KF-240 — Boards drawer is white panel; selection highlight blue `#e0e7ff`, not green indicator [LOW | OPEN | Boards drawer]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: drawer is a WHITE panel (~440 CSS px wide) with header "Boards" + green "+ New board" button, search box ("Search boards" ✓), hint text "Drag to add to Favorites" ✓, "FAVORITES" and "ALL BOARDS" sections; the active board row is highlighted light INDIGO/BLUE `#e0e7ff`.
