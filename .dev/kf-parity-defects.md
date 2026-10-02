@@ -1389,6 +1389,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-007.md`; `.dev/evidence/kf-drafts/v1-evidence/cmp-GM-007.png`, `cf-1600.png`; golden `.dev/evidence/golden-masters/top-bar/GM-007-bell-icon.png`.
 
 ### KF-236 — Top bar has no chart/reports icon (15 destinations only via ☰ Menu → Reports) [MEDIUM | OPEN | Top bar]
+- Status: FIXED 2026-10-02T03:03:46Z — deployed b1127ece6cb8c180cef21023295cd9e0b5c57968, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-236.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: the top bar has no chart/reports icon at all (top bar = Boards / brand / bell / ? / account). The 15 destinations are reachable only via the board ☰ Menu → Reports submenu — and that submenu's order was verified verbatim-correct.
 - KanbanFlow behavior: the top bar carries a chart icon whose dropdown lists the 15 report destinations: Pomodoro statistics, Time spent, Print, Board history, Burndown, Calendar, Cumulative flow, Cycle & lead time, Due date performance, Monte Carlo forecasting, Task count, Throughput, Time estimate, Time in column, Export (GM-128).
