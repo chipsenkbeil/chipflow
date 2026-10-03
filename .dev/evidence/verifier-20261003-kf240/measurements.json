@@ -1,0 +1,41 @@
+{
+  "boards_drawer_btn_found": 1,
+  "drawer_open": 1,
+  "computed": {
+    "drawer_bg": "rgb(51, 51, 51)",
+    "drawer_text": "rgb(229, 231, 235)",
+    "head_color": "rgb(245, 245, 245)",
+    "newboard_color": "rgb(74, 222, 128)",
+    "search_bg": "rgb(64, 64, 64)",
+    "search_color": "rgb(245, 245, 245)",
+    "cur_bg": "rgba(22, 163, 74, 0.18)",
+    "cur_border_left": "3px solid rgb(22, 163, 74)",
+    "cur_border_width": "3px",
+    "cur_padding_left": "5px",
+    "item_padding_left": "8px",
+    "cur_text_left": 20.796875,
+    "other_text_left": 20.796875,
+    "cur_font_weight": "600",
+    "row_count": 6
+  },
+  "board_links": 6,
+  "after_click_url": "http://127.0.0.1:3201/b/2c3d90eb-3d75-4f10-8368-3d19abdfb1a5",
+  "drawer_open_after_nav": 0,
+  "js_errors": [
+    "reqfail: https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: net::ERR_EMPTY_RESPONSE",
+    "reqfail: https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "console.error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "console.error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "reqfail: https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: net::ERR_EMPTY_RESPONSE",
+    "reqfail: https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: net::ERR_EMPTY_RESPONSE",
+    "reqfail: https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: net::ERR_EMPTY_RESPONSE",
+    "reqfail: https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js net::ERR_EMPTY_RESPONSE",
+    "console.error: Failed to load resource: net::ERR_EMPTY_RESPONSE"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+ "measurements": {
+  "drawer_bg": "rgb(51, 51, 51)",
+  "head_color": "rgb(245, 245, 245)",
+  "newboard_color": "rgb(74, 222, 128)",
+  "search_bg": "rgb(64, 64, 64)",
+  "search_color": "rgb(245, 245, 245)",
+  "cur_border_left": "3px solid rgb(22, 163, 74)",
+  "cur_bg": "rgba(22, 163, 74, 0.18)",
+  "cur_pad_left": "5px",
+  "un_pad_left": "8px",
+  "cur_text_left": 20.796875,
+  "un_text_left": 20.796875,
+  "un_border_left_w": "0px",
+  "cur_rect": {
+   "x": 12.796875,
+   "y": 183.15625,
+   "width": 233.40625,
+   "height": 27.1875,
+   "top": 183.15625,
+   "right": 246.203125,
+   "bottom": 210.34375,
+   "left": 12.796875
+  },
+  "n_current": 1
+ },
+ "pixels": {
+  "drawer_bg_sample": [
+   51,
+   51,
+   51
+  ],
+  "bar_cols_at_midrow": [
+   13,
+   14,
+   15
+  ],
+  "wash_sample": [
+   217,
+   220,
+   218
+  ],
+  "wash_expected": [
+   46,
+   71,
+   55
+  ]
+ },
+ "break": {
+  "sequence_select": [
+   {
+    "selected": "Board 2",
+    "border": "3px solid rgb(22, 163, 74)",
+    "old_rows_clean": true
+   },
+   {
+    "selected": "Board 4",
+    "border": "3px solid rgb(22, 163, 74)",
+    "old_rows_clean": true
+   }
+  ],
+  "single_board_filter": {
+   "visible": 1,
+   "current_still_rendered": false
+  },
+  "unselected_no_green": []
+ }
+}
