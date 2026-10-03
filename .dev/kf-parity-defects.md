@@ -1408,6 +1408,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 ### KF-238 — Menu hamburger is thin outline bars, not thick solid bars [LOW | OPEN | Board header row]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- Status: FIXED 2026-10-03T20:05:00Z — release SHA dd14fc09b593997fb4259ee8a7f7ee9cc81370a9 (remote main, product-only: static/style.css + templates/board.html); VERIFIED 2026-10-03 (5/5 contract expectations; evidence `.dev/evidence/verifier-20261003-kf-238.md`); spotcheck PASS 2026-10-03T19:47:02Z (evidence `.dev/evidence/spotcheck-20261003-kf-238.md`); deployed to green-box via pin bump in modules/chipflow.nix (dry-activate: chipflow.service sole affected unit), green-box-local /api/v1/version build_sha matches release SHA.
 - ChipFlow behavior: `button#board-menu-btn` at (1348,46,72,29) shows three thin outline-style bars + "Menu" text.
 - KanbanFlow behavior: three thick solid dark bars + bold "Menu" text (GM-020; true box (2688,56,2878,136)).
 - Fix direction: redraw the hamburger as thick solid bars.
@@ -2050,3 +2051,10 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: GM-070-modal-open.png (1919×998) measures the modal at x 655–1255 = 600px wide (cream-mask edge detection, consistent at rows y=300/500/700).
 - Fix direction: set the modal width to 600px.
 - Evidence: `.dev/evidence/verifier-20261002-kf254.md`; measurement commands in the report.
+
+### KF-324 — Wordmark overlaps the bell button at ~500px viewport width [MEDIUM | OPEN | Top bar]
+- Status: OPEN — filed 2026-10-03 by the planner on the KF-235 spotchecker's break-attempt finding.
+- ChipFlow behavior: at 500px viewport width the wordmark (`A.brand-logo > SPAN.brand-logo-flow`) overlaps the bell button — `document.elementFromPoint` at the button center returns the logo span, and zoomed screenshots show "ChipFlow" text painted over the bell.
+- KanbanFlow behavior: no golden master covers the top bar at narrow width; live KanbanFlow top-bar responsive behavior is unobserved. Expected constraint: the wordmark and bell button must not overlap at any viewport width.
+- Fix direction: make the top bar responsive (e.g. shrink/hide the wordmark, or prevent overlap via flex shrink/overflow) so the brand-logo span never covers `#notifications-btn` at 500px width.
+- Evidence: `.dev/evidence/spotcheck-20261003-kf-235.md` (Narrow viewport 500×800 break-attempt).
