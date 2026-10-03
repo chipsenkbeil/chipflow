@@ -1383,6 +1383,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-005.md`; `.dev/evidence/kf-drafts/v1-evidence/cmp-GM-005.png`, `cf-1600.png`; golden `.dev/evidence/golden-masters/top-bar/GM-005-member-avatar.png`.
 
 ### KF-235 — Bell icon is yellow emoji glyph, not white outline bell [LOW | OPEN | Top bar]
+- Status: FIXED 2026-10-03T18:52:44Z — deployed a5f06ec2bbaaf10b1a2241d5f695f7fc02e99cba, green-box-local /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261003-kf-235.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: notifications button shows a yellow 🔔 emoji glyph on the dark button (32×32 CSS px at (1302,4)).
 - KanbanFlow behavior: notifications button shows a white outline bell icon on a `#505050` button (GM-007).
