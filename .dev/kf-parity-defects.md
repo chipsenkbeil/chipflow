@@ -1458,6 +1458,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the assignee avatar sits at the top-right of the card's title row, aligned with the task name (GM-069).
 - Fix direction: move the assignee avatar to the top-right of the card title row.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-069-avatar.md`; `.dev/evidence/kf-drafts/v2-evidence/boardb-final2.png`; golden `.dev/evidence/golden-masters/task-cards/GM-069-card-due-subtasks-time-attributes.png`.
+- Status: FIXED 2026-10-03T21:15:00Z — independent spotcheck PASS 2026-10-03T21:08:22Z (.dev/evidence/spotcheck-20261003-kf-243.md); pushed 0433449576c317178697135b0a71ee7c7039dc6d to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=0433449576c317178697135b0a71ee7c7039dc6d confirmed green-box-local 2026-10-03T21:14Z. Deploy report: .dev/evidence/deploy-20261003-kf-243.md
 
 ### KF-244 — Card due line renders orange-brown instead of dark text [LOW | OPEN | Task cards]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
