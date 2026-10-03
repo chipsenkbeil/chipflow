@@ -1574,6 +1574,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: three small icons follow "Created: Today" (subtask-list icon, comment icon, eye icon) (GM-071).
 - Fix direction: add the three trailing icons to the subline.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-071.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-golden-crop.png` (icons visible after subline) vs `gm-v3-modal-cand-crop.png`.
+- Status: FIXED 2026-10-03T22:57:00Z — released `9dd80270c56ad5f2aad68a7f4a5bf426066c5772` (builder `3c3d2bf` + repair `5a43a75`); verified (verifier r2 VERIFIED) and spotchecked PASS; deployed to green-box, /api/v1/version confirms the release SHA. Evidence: `.dev/evidence/verifier-20261003-kf-256-r2.md`, `.dev/evidence/spotcheck-20261003-kf-256.md`, `.dev/evidence/deploy-20261003-kf-256.md`.
 
 ### KF-257 — Color row shows only the dot, missing the color name text [MEDIUM | OPEN | Task modal]
 - Status: FIXED 2026-10-02T11:10Z — deployed ff9145420a572ba04ecef9264dfb847caa7af5c6, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-257.md
