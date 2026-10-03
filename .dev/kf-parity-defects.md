@@ -1466,6 +1466,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the equivalent due line renders in dark/near-black text (GM-069).
 - Fix direction: render the card due line in dark text.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-069-dueline.md`; `.dev/evidence/kf-drafts/v2-evidence/boardb-final2.png`; golden `.dev/evidence/golden-masters/task-cards/GM-069-card-due-subtasks-time-attributes.png`.
+- Status: FIXED 2026-10-03T21:29:20Z — release 9da8b186651ea24785870d0ae88bb302babb0da7: `.card-dueline` `#9a5b00` → `#222222` (golden text core rgb(34,34,34), GM-069); overdue red preserved; builder/verify/spotcheck evidence `.dev/evidence/builder-20261003-kf-244.md`, `verifier-20261003-kf-244.md`, `spotcheck-20261003-kf-244.md`, `deploy-20261003-kf-244.md`.
 
 ### KF-245 — Card border is near-black instead of a color-matched shade of the card face [MEDIUM | FIXED | Task cards]
 - Status: FIXED 2026-10-02T06:25:51Z — deployed 01e733d5b5dc16ca9bc22523a6487a51f3a6c5ad, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-245.md
