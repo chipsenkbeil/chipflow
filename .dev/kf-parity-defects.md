@@ -1481,6 +1481,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior (GM-043 verbatim catalog): header "Layout: General" with buttons Add column, Add swimlane; column list in board order; green Add column button at right.
 - Fix direction: add the green "Add column" button at the right end of the column list per GM-043.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-043.md`; `.dev/evidence/kf-drafts/v2-evidence/c-layoutview3.png`; golden `.dev/evidence/golden-masters/columns/GM-043-layout-editor.md`.
+- Status: FIXED 2026-10-03T21:48:00Z — release SHA `5075c6a3dda80c965577b4b7a0dce7c59d1ff869` (builder `17f0b44`: green `btn-success` "+ Add column" button at the right end of the layout-editor column list, opens dialog, adds column at end; header button stays blue). Verified: independent verifier VERIFIED 21:43Z (`.dev/evidence/verifier-20261003-kf-246.md`); mandatory spotcheck PASS 21:45Z (`.dev/evidence/spotcheck-20261003-kf-246.md`); green-box-local `/api/v1/version` confirms release SHA.
 
 ### KF-247 — Layout editor is a full-page in-board view, not a modal dialog over the dimmed board [MEDIUM | OPEN | Columns]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
