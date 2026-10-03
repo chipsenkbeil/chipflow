@@ -1376,6 +1376,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 ### KF-234 — Member avatar is dark circle/white initials, not white circle + brown-initials disc [LOW | OPEN | Top bar]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- Status: FIXED 2026-10-03T18:12Z — release SHA `5043e2fe7c1cd725ff62f6e25f11e76d6b29ef9a` (Git Data API push, base ed1e426^ → head ed1e426; diff BASE..HEAD: static/style.css only). Deployed to green-box (chipflow.service only); green-box-local `/api/v1/version` reports the release SHA. Blind verifier VERIFIED 2026-10-03T18:07Z + mandatory independent spotcheck PASS 2026-10-03T18:11:23Z. Evidence: `.dev/evidence/verifier-20261003-kf-234.md`, `.dev/evidence/spotcheck-20261003-kf-234.md`, `.dev/evidence/deploy-20261003-kf-234.md`.
 - ChipFlow behavior: avatar is the initials "VE" in white directly on the dark button (no white circle); button bg dark navy.
 - KanbanFlow behavior: avatar is a white circle containing a smaller brown circle with "CS" initials (white outer ring, brown inner disc) (GM-005).
 - Fix direction: render the white-circle + brown-initials disc avatar instead of bare initials on the dark button.
