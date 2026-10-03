@@ -1607,6 +1607,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: labels render as neutral gray/white chips with dark text (GM-073).
 - Fix direction: restyle label chips to neutral gray/white with dark text.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-03T23:17:28Z — independent verifier passed pixel-exact chip styling (GM-073, evidence .dev/evidence/verifier-20261003-kf-260.md); independent spotcheck PASS (2026-10-03T23:14:26Z, .dev/evidence/spotcheck-20261003-kf-260.md); pushed b7eaac77c535249fa17114c07110b5b77671539a to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=b7eaac77c535249fa17114c07110b5b77671539a confirmed green-box-local 2026-10-03T23:17:28Z. Deploy report: .dev/evidence/deploy-20261003-kf-260.md
 
 ### KF-261 — Members row shows "● admin" text chip instead of avatar circle + ⊕ add button [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
