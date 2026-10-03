@@ -1631,6 +1631,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 ### KF-265 — "Add subtask…" is a boxed input instead of a plain text row [MEDIUM | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
+- Status: VERIFIED 2026-10-03T11:52:00Z — independent blind verifier passed 5/5 contract expectations + L4 band-confined before/after pixdiff (17970 px, all inside the add-row band); break-attempt: 200-char maxlength typed + Enter-add cycle, row stayed borderless. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/verifier-20261003-kf-265.md
+- Status: FIXED 2026-10-03T17:46:27Z — independent spotcheck PASS 2026-10-03T17:42:59Z (.dev/evidence/spotcheck-20261003-kf-265.md); pushed b178dff799ade742a6f6e20c6ce8ad7f9f47de22 to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=b178dff799ade742a6f6e20c6ce8ad7f9f47de22 confirmed green-box-local 2026-10-03T17:46:27Z. Deploy report: .dev/evidence/deploy-20261003-kf-265.md
 - ChipFlow behavior: "Add subtask…" is a boxed text input with a border.
 - KanbanFlow behavior: "Add subtask…" is a plain unstyled text row (GM-085).
 - Fix direction: restyle as a plain unstyled text row.
