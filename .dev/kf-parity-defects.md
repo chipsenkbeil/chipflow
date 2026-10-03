@@ -1560,6 +1560,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T10:27:41Z — deployed 2b9bc77d8cf62b8d846045ebc38cafda35d87068, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-254.md
 
 ### KF-255 — Modal subline shows absolute created date ("Oct 01") instead of relative "Today" [LOW | OPEN | Task modal]
+- Status: FIXED 2026-10-03T22:15:00Z — release SHA 19ceba25949aa97c35c2c08786ad3ccedc32dfde (build a1a83df); independent verifier VERIFIED 2026-10-03T22:04Z; spotcheck PASS 2026-10-03T22:09Z; deployed to green-box, /api/v1/version confirms build_sha. Evidence: .dev/evidence/deploy-20261003-kf-255.md.
+
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: subline reads "In Progress · Created: Oct 01" (absolute "MMM DD" even for a task created today).
 - KanbanFlow behavior: subline reads "In Progress · Created: Today" (relative date for same-day creation) (GM-071).
