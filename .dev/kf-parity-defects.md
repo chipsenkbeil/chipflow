@@ -1720,7 +1720,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: show Column as a static label; remove the Swimlane/Position controls from the dialog.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-087.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-move-dialog.png`.
 
-### KF-275 — Reports menu missing "Time in column"; History/Print order differs [LOW | OPEN | Task modal]
+### KF-275 — Reports menu missing "Time in column"; History/Print order differs [LOW | Task modal]
+- Status: FIXED 2026-10-04T06:36:00Z — task-modal Reports menu now shows GM-089's verbatim order Time log / Print / History / Time in column; "Time in column" wired to the honest not-available toast (`Time in column report is not available in ChipFlow yet.`, identical to the board-level menu's); Time log/History/Print all functional. Builder L0–L4 green (commit db54fa2, 1 of 4 attempts); blind verifier VERIFIED 2026-10-04T05:01:56Z (8/8 checks + break-attempts; 81/81 tests; .dev/evidence/verifier-20261003-kf-275.md); mandatory independent spotcheck PASS 2026-10-04T05:08:00Z (.dev/evidence/spotcheck-20261003-kf-275.md); pushed 10217ff99ca8916a1db06d5a86e3e0a24521aacd to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=10217ff99ca8916a1db06d5a86e3e0a24521aacd confirmed green-box-local. Deploy report: .dev/evidence/deploy-20261003-kf-275.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: Reports menu shows "Time log", "History", "Print" — 3 items; "Time in column" missing; History and Print swapped relative to KF's order.
 - KanbanFlow behavior: 4 items in order: Time log, Print, History, Time in column (GM-089).
