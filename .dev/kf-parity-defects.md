@@ -1655,6 +1655,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the Reports button shows a stacked-layers icon (GM-076 names it the "☰-stack" glyph).
 - Fix direction: replace the play triangle with the stacked-layers icon.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-076.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-04T00:28:40Z — Reports icon rebuilt as the golden's stacked-layers glyph (diamond outline + two chevrons, 22×20px, #666, stroke-width 2; GM-076 pixel-verified). Independent verifier FAILED x3 then VERIFIED on fourth pass (evidence .dev/evidence/verifier-20261003-kf-266-r4.md); independent spotcheck PASS (2026-10-04T00:25:45Z, .dev/evidence/spotcheck-20261003-kf-266.md); pushed a364f29e725ccd1501fd6add13df0c5186087dff to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=a364f29e725ccd1501fd6add13df0c5186087dff confirmed green-box-local. Deploy report: .dev/evidence/deploy-20261003-kf-266.md
 
 ### KF-267 — Delete toolbar icon is red instead of gray [LOW | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
