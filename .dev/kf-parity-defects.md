@@ -1663,6 +1663,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow behavior: the trash icon is dark gray like the other icons (GM-076).
 - Fix direction: render the trash icon dark gray.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-076.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
+- Status: FIXED 2026-10-04T01:22:00Z — Delete toolbar icon renders dark gray #666 like the other 5 icons (tm-icon-btn tm-danger class dropped; dead tm-danger CSS rule removed; GM-076 pixel-verified). Builder L0–L4 green (commit 9503606); blind verifier VERIFIED 2026-10-04T00:46:29Z; mandatory independent spotcheck PASS (2026-10-04T01:05:00Z, .dev/evidence/spotcheck-20261003-kf-267.md); pushed 09aa2e5a318fc3166924a3993ba62c84dc4e2786 to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=09aa2e5a318fc3166924a3993ba62c84dc4e2786 confirmed green-box-local. Deploy report: .dev/evidence/deploy-20261003-kf-267.md
 
 ### KF-268 — Labels dialog Save button is blue instead of green [LOW | OPEN | Task modal]
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V3 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge of V3:KF-253 (GM-080) + V5:KF-246's Save-color part (GM-158).
