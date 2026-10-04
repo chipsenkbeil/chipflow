@@ -1670,6 +1670,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: the Labels dialog's Save button is blue (Cancel is white); V5 confirms the blue `.btn-primary` accent (`#2563eb`) in the dialog markup.
 - KanbanFlow behavior: the Save button is green (GM-080, GM-158).
 - Fix direction: render the Labels dialog Save button green.
+- Status: FIXED 2026-10-04T01:26:00Z — Labels dialog Save button now green #16a34a (#labels-save btn-primary→btn-success; GM-158 keyword-verified; due-date Save stays blue). Builder L0–L4 green (commit cbd4cfd); blind verifier VERIFIED 2026-10-04T01:11:53Z; mandatory independent spotcheck PASS (2026-10-04T01:18:20Z, .dev/evidence/spotcheck-20261003-kf-268.md); pushed 54b8ff7875113e6ef487c84c507d1aecd5f164bf to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=54b8ff7875113e6ef487c84c507d1aecd5f164bf confirmed green-box-local. Deploy report: .dev/evidence/deploy-20261003-kf-268.md
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-080.md` (`.dev/evidence/kf-drafts/v3-evidence/gm-v3-add-label-empty.png`), `.dev/evidence/kf-drafts/kf-draft-v5-GM-158.md` (`/tmp/gm-verify-v5` scratch, not archived).
 
 ### KF-269 — Labels empty-state text differs ("No labels yet."/"No suggestions." vs "No recently used labels exist") [LOW | OPEN | Task modal]
