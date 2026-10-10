@@ -1,0 +1,132 @@
+[
+ {
+  "name": "KF-241 count badge exists (violated folded strip)",
+  "ok": true,
+  "detail": "count=1"
+ },
+ {
+  "name": "KF-241 violated strip count is darkred rgb(139,0,0)",
+  "ok": true,
+  "detail": "got rgb(139, 0, 0)"
+ },
+ {
+  "name": "KF-241 warning line present in folded strip",
+  "ok": true,
+  "detail": "count=1"
+ },
+ {
+  "name": "KF-241 warning line is #ff8080",
+  "ok": true,
+  "detail": "got rgb(255, 128, 128)"
+ },
+ {
+  "name": "KF-241 warning line spans full strip width",
+  "ok": true,
+  "detail": "line=21.0 strip=22.0"
+ },
+ {
+  "name": "KF-241 no spurious red '5' in strip body (only name + count)",
+  "ok": true,
+  "detail": "strip text='5\\nTO-DO'"
+ },
+ {
+  "name": "KF-241 BREAK dark mode: violated count still darkred-family",
+  "ok": true,
+  "detail": "dark mode color=rgb(139, 0, 0)"
+ },
+ {
+  "name": "KF-250 modal fits viewport (top>=0, bottom<=vh)",
+  "ok": true,
+  "detail": "top=25 bottom=959 vh=998"
+ },
+ {
+  "name": "KF-250 modal body scrolls internally",
+  "ok": true,
+  "detail": "overflowY=auto scroll=950 client=859"
+ },
+ {
+  "name": "KF-250 modal top ~25px (GM-070)",
+  "ok": true,
+  "detail": "top=25.0"
+ },
+ {
+  "name": "KF-252 iconbar sits OUTSIDE modal right edge (+11px)",
+  "ok": true,
+  "detail": "barLeft=1266.0 modalRight=1255.0"
+ },
+ {
+  "name": "KF-252 6 actions present",
+  "ok": true,
+  "detail": "n=6"
+ },
+ {
+  "name": "KF-252 circles are 44px",
+  "ok": true,
+  "detail": "44.0x44.0"
+ },
+ {
+  "name": "KF-252 label sits RIGHT of circle",
+  "ok": true,
+  "detail": "labelLeft=1321.0 circleRight=1310.0"
+ },
+ {
+  "name": "KF-252 circle fill is white (not light-gray)",
+  "ok": true,
+  "detail": "got rgb(255, 255, 255)"
+ },
+ {
+  "name": "KF-250 BREAK 1366x768: modal still fits",
+  "ok": true,
+  "detail": "top=25 bottom=729 vh=768"
+ },
+ {
+  "name": "KF-252 BREAK 1366: iconbar outside modal, on-screen",
+  "ok": true,
+  "detail": "barRight=1112 vw=1366"
+ },
+ {
+  "name": "KF-286 modal title is 'Timer log'",
+  "ok": true,
+  "detail": "'Timer log'"
+ },
+ {
+  "name": "KF-286 header close \u00d7 present",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "KF-286 Period stepper present (< label >)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "KF-286 settings + icon-row close present",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "KF-286 modal is white and centered",
+  "ok": true,
+  "detail": "bg=rgb(255, 255, 255) w=1080 centered=True"
+ },
+ {
+  "name": "KF-286 seeded entries render",
+  "ok": true,
+  "detail": "entries=2"
+ },
+ {
+  "name": "KF-286 BREAK stepper changes period",
+  "ok": true,
+  "detail": "'This month' -> 'Last month'"
+ },
+ {
+  "name": "KF-286 BREAK 1100px: modal fits",
+  "ok": true,
+  "detail": "modalW=1068 vw=1100"
+ },
+ {
+  "name": "KF-286 close \u00d7 dismisses modal",
+  "ok": true,
+  "detail": ""
+ }
+]
