@@ -1586,6 +1586,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-070.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
 
 ### KF-254 — Comments section: no avatars, absolute timestamps, × delete, boxed composer + Add button, no count/menu in header [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): comments section verified: header count + ⋮ menu, 30px avatars, relative timestamps, comment boxes #FFF9ED (r4 repair-challenge conclusion holds; r3 FAILED refuted). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: header "Comments" (no count, no ⋮ menu); comment boxes tinted (same as body) with no avatar circles; timestamps absolute ("Oct 01, 2026 2:09 PM"); each comment has a × delete button (no smiley/⋮ icons); composer is an "Add a comment…" textarea plus a blue "Add" button.
 - KanbanFlow behavior: header "Comments 2" with ⋮ menu; each comment has a "cs" avatar circle; timestamps relative ("Today 3:03 PM"); white comment boxes; smiley + ⋮ icons per comment; single-line "Add comment…" row (no boxed textarea, no Add button) (GM-070).
@@ -1633,6 +1634,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
 
 ### KF-259 — Due date renders absolute "Oct 02, 2026 5:00 PM" and omits the "(Done)" marker [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): due date renders "Tuesday 5:00 PM (Done)" — relative weekday rule + Done marker. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: DUE DATE row shows "📅 Oct 02, 2026 5:00 PM" — no "(Done)" marker despite `due_done: true` (confirmed via `GET /api/tasks/{id}`).
 - KanbanFlow behavior: "Friday 5:00 PM (Done)" — relative weekday format with "(Done)" suffix when the due date is marked done (GM-073).
@@ -1649,6 +1651,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-03T23:17:28Z — independent verifier passed pixel-exact chip styling (GM-073, evidence .dev/evidence/verifier-20261003-kf-260.md); independent spotcheck PASS (2026-10-03T23:14:26Z, .dev/evidence/spotcheck-20261003-kf-260.md); pushed b7eaac77c535249fa17114c07110b5b77671539a to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=b7eaac77c535249fa17114c07110b5b77671539a confirmed green-box-local 2026-10-03T23:17:28Z. Deploy report: .dev/evidence/deploy-20261003-kf-260.md
 
 ### KF-261 — Members row shows "● admin" text chip instead of avatar circle + ⊕ add button [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): members row: avatar disc + ⊕ button, no text chip. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: MEMBERS row shows a "● admin" pill (dot + username text); no add button.
 - KanbanFlow behavior: Members row shows a circular "cs" avatar plus a ⊕ add-member button (GM-074). (The "cs" vs "admin" identity difference is fixture data; the presentation difference is structural.)
@@ -1657,6 +1660,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T13:16:00Z — deployed f6d9f17cedbacf9fef6333807547332c21707ee6, /api/v1/version build_sha verified (green-box-local 127.0.0.1:3000 and public https://chipflow.chip.network). Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-261.md
 
 ### KF-262 — Subtasks header missing the "2 / 4" count and the ⋮ section menu [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): subtasks header "2 / 4" + ⋮ section menu. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: header reads "Subtasks" with no count and no ⋮ menu at the right.
 - KanbanFlow behavior: header reads "Subtasks 2 / 4" with a ⋮ section menu at the right (GM-085).
@@ -1664,6 +1668,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
 - Status: FIXED 2026-10-02T13:53:25Z — deployed b92f891409952dcb1570d7903d62319bba08cd7b, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-262.md
 ### KF-263 — Completed subtasks are struck through [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): no strikethrough on completed subtasks (zero line-through in deployed CSS). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: done subtasks render with strikethrough text.
 - KanbanFlow behavior: done subtasks render in normal text (checkbox state is the only indicator) (GM-085).
@@ -1672,6 +1677,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T14:16:26Z — deployed 0131a9ad8167a25a76fdad5be139be3c9316bd7b, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-263.md
 
 ### KF-264 — Subtask rows use × remove instead of the ⋮ drag handle [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): subtask rows use ⋮ drag handles, no × remove buttons. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: each subtask row has a × remove button at the right.
 - KanbanFlow behavior: each subtask row has a ⋮ drag handle at the right (no ×) (GM-085).
@@ -1680,6 +1686,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T16:01:42Z — deployed fe1fed664c6daa436017033130e41463c7018fde, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-264.md
 
 ### KF-265 — "Add subtask…" is a boxed input instead of a plain text row [MEDIUM | OPEN | Task modal]
+- Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): add-subtask row is borderless (border 0/none, transparent). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Status: VERIFIED 2026-10-03T11:52:00Z — independent blind verifier passed 5/5 contract expectations + L4 band-confined before/after pixdiff (17970 px, all inside the add-row band); break-attempt: 200-char maxlength typed + Enter-add cycle, row stayed borderless. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/verifier-20261003-kf-265.md
 - Status: FIXED 2026-10-03T17:46:27Z — independent spotcheck PASS 2026-10-03T17:42:59Z (.dev/evidence/spotcheck-20261003-kf-265.md); pushed b178dff799ade742a6f6e20c6ce8ad7f9f47de22 to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=b178dff799ade742a6f6e20c6ce8ad7f9f47de22 confirmed green-box-local 2026-10-03T17:46:27Z. Deploy report: .dev/evidence/deploy-20261003-kf-265.md
@@ -2653,3 +2660,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the tab exists but has no content.
 - KanbanFlow: Pomodoro Statistics is a full page with working tabs Pomodoros / Interruptions / Break activities / Highscores (v1 S16; frame review).
 - ChipFlow behavior: the tab bar renders, but the Break activities panel (`templates/timer_statistics.html:76`) contains only `<p class="log-status">Break activities are not available yet.</p>` — no activity list, no per-activity stats.
+
+### KF-348 — API accepts bare local datetimes the due-date renderer cannot parse [LOW | OPEN | Robustness]
+- Status: OPEN — filed 2026-10-11 by Dale from the batch-15 verifier's probe note.
+- Behavior: a bare local datetime (no UTC offset) is accepted by the task API, but `format_due_card` cannot RFC3339-parse it, so no due row renders. The UI always sends `toISOString()`, so this is a latent edge under real usage, not a live bug.
+- Fix direction: either reject non-RFC3339 datetimes at the API boundary or make the renderer tolerate bare local datetimes.
