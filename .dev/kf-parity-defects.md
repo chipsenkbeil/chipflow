@@ -2653,11 +2653,13 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:52` renders the menu item (`data-report="flow"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Cumulative flow report is not available in ChipFlow yet."
 
 ### KF-340 — Reports menu: "Cycle & lead time" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T03:10Z — built, independently verified, and deployed to production 520ac4b: cycle & lead time report: 12-week Monday-start chart with cycle/lead toggle and trend line. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Cycle & lead time is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:53` renders the menu item (`data-report="cycle"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Cycle & lead time report is not available in ChipFlow yet."
 
 ### KF-341 — Reports menu: "Due date performance" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T03:10Z — built, independently verified, and deployed to production 520ac4b: due date performance report: on-time/late/overdue/upcoming summary + sorted table. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Due date performance is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:54` renders the menu item (`data-report="due"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Due date performance report is not available in ChipFlow yet."
