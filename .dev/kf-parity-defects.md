@@ -1610,6 +1610,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-071.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
 
 ### KF-256 — Modal subline missing the three trailing icons [LOW | OPEN | Task modal]
+- Status: RELEASED 2026-10-12T00:15Z — independent verifier confirmed fix content present in deployed tree (origin/main 52bf7626; app tree byte-identical to production 8794cb26): modal subline carries the three trailing icons (subtask-list, comment, eye). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: nothing follows "Created: Oct 01" in the subline.
 - KanbanFlow behavior: three small icons follow "Created: Today" (subtask-list icon, comment icon, eye icon) (GM-071).
@@ -1645,6 +1646,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T12:11:56Z — deployed 552893382a207449a9953b128d0c9511ea41d5fc, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-259.md
 
 ### KF-260 — Label chips are blue-tinted instead of neutral chips [LOW | OPEN | Task modal]
+- Status: RELEASED 2026-10-12T00:15Z — independent verifier confirmed fix content present in deployed tree (origin/main 52bf7626; app tree byte-identical to production 8794cb26): label chips neutral (#fff5e1 bg, #3d3d3c text, no blue tint). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`). Severity note: keeps the draft's LOW (V3:KF-243 was filed LOW; the §4 table's MEDIUM tag was a typo).
 - ChipFlow behavior: labels render as light-blue/blue-text pills ("feature", "backend").
 - KanbanFlow behavior: labels render as neutral gray/white chips with dark text (GM-073).
@@ -1699,6 +1701,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-085.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
 
 ### KF-266 — Reports toolbar icon is a play triangle instead of the stacked-layers icon [LOW | OPEN | Task modal]
+- Status: RELEASED 2026-10-12T00:15Z — independent verifier confirmed fix content present in deployed tree (origin/main 52bf7626; app tree byte-identical to production 8794cb26): reports toolbar icon is the stacked-layers glyph, not a play triangle. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: the Reports button shows a ▶ play triangle.
 - KanbanFlow behavior: the Reports button shows a stacked-layers icon (GM-076 names it the "☰-stack" glyph).
@@ -1708,6 +1711,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: RELEASED 2026-10-06T11:56Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (already live, no new deploy): release SHA a364f29 (ancestor of live HEAD): stacked-layers Reports toolbar icon svg 22x20 in templates/modal.html, added line present; green-box chipflow.service active, /api/v1/version build_sha confirmed, served static/app.js byte-identical to tree (sha256 99a64188…).
 
 ### KF-267 — Delete toolbar icon is red instead of gray [LOW | OPEN | Task modal]
+- Status: RELEASED 2026-10-12T00:15Z — independent verifier confirmed fix content present in deployed tree (origin/main 52bf7626; app tree byte-identical to production 8794cb26): delete toolbar icon is gray like its siblings (no tm-danger in modal). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: the trash icon is red.
 - KanbanFlow behavior: the trash icon is dark gray like the other icons (GM-076).
@@ -1717,6 +1721,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: RELEASED 2026-10-06T11:56Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (already live, no new deploy): release SHA 09aa2e5 (ancestor of live HEAD): Delete toolbar icon tm-icon-btn without tm-danger in templates/modal.html, added line present; green-box chipflow.service active, /api/v1/version build_sha confirmed, served static/app.js byte-identical to tree (sha256 99a64188…).
 
 ### KF-268 — Labels dialog Save button is blue instead of green [LOW | OPEN | Task modal]
+- Status: RELEASED 2026-10-12T00:15Z — independent verifier confirmed fix content present in deployed tree (origin/main 52bf7626; app tree byte-identical to production 8794cb26): labels dialog is the GM-080 dropdown with no Save button at all (KF-328 rebuild). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (waves V3 and V5 independent verifiers; see `.dev/evidence/kf-drafts/TRIAGE.md`). Merge of V3:KF-253 (GM-080) + V5:KF-246's Save-color part (GM-158).
 - ChipFlow behavior: the Labels dialog's Save button is blue (Cancel is white); V5 confirms the blue `.btn-primary` accent (`#2563eb`) in the dialog markup.
 - KanbanFlow behavior: the Save button is green (GM-080, GM-158).
@@ -2386,6 +2391,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: spot-checker B report, `.dev/evidence/kf-drafts/SPOT-B.md` (incidental section).
 
 ### KF-319 — Task modal sits ~15px lower than KanbanFlow (4vh overlay padding vs fixed ~25px top offset) [LOW | VERIFIED | Task modal]
+- Status: RELEASED 2026-10-12T00:15Z — independent verifier confirmed fix content present in deployed tree (origin/main 52bf7626; app tree byte-identical to production 8794cb26): modal overlay top offset is a fixed 25px at every viewport size, not 4vh. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the KF-250 spot-checker (independent pass 2; the KF-250 verifier had noted this as a candidate separate defect in its §8 observations).
 - Status: BUILT — built by muse-pi (muse-pi) 2026-10-04T08:19:43Z; branch fix/KF-319; evidence /home/senkwich/chipflow-worker/evidence/KF-319-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-319-l0.log
 - Status: VERIFIED — verified by muse-code (muse-code) 2026-10-04T19:17:44Z; evidence /home/senkwich/chipflow-worker/evidence/KF-319-verifier.md
