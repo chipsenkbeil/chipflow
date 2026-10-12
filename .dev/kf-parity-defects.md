@@ -2667,6 +2667,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:54` renders the menu item (`data-report="due"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Due date performance report is not available in ChipFlow yet."
 
 ### KF-342 — Reports menu: "Monte Carlo forecasting" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T04:05Z — built, independently verified, and deployed to production a8bd27a: Monte Carlo forecasting report: throughput-sampled simulations with percentile forecast lines. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Monte Carlo forecasting is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:55` renders the menu item (`data-report="montecarlo"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Monte Carlo forecasting report is not available in ChipFlow yet."
@@ -2684,6 +2685,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:57` renders the menu item (`data-report="throughput"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Throughput report is not available in ChipFlow yet."
 
 ### KF-345 — Reports menu: "Time estimate" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T04:05Z — built, independently verified, and deployed to production a8bd27a: time estimate report: color × column estimate table. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Time estimate is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:58` renders the menu item (`data-report="estimate"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Time estimate report is not available in ChipFlow yet."
