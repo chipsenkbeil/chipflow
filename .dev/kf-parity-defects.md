@@ -2631,6 +2631,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: OPEN — verifier (independent) 2026-10-05T20:40Z REJECTED commit 99c3e6a; returned to OPEN. Reason: commit contaminated — contains unverified changes for KF-293 (tooltip/labels), KF-295 (Print sheet), KF-306 (column-delete dialog), plus a KF-292 refactor, in addition to the KF-281 fix. The KF-281 fix itself is correct (big 00:00 + green Start + Settings in footer, L0 green), but the commit cannot be released as-is. Action required: split commit 99c3e6a to isolate KF-281 changes only; the KF-293/KF-295/KF-306 builders (still in-flight) must rebase. Evidence: independent verifier report.
 
 ### KF-336 — Reports menu: "Board history" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T03:40Z — built, independently verified, and deployed to production 93954ab: board history report: newest-first activity feed with expandable moved-event compare table and user/type filters. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Board history is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:49` renders the menu item (`data-report="history"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Board history report is not available in ChipFlow yet."
@@ -2642,6 +2643,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:50` renders the menu item (`data-report="burndown"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Burndown report is not available in ChipFlow yet."
 
 ### KF-338 — Reports menu: "Calendar" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T03:40Z — built, independently verified, and deployed to production 93954ab: calendar report: Monday-start month grid with due-date chips and user/color/label/swimlane filters. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Calendar is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:51` renders the menu item (`data-report="calendar"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Calendar report is not available in ChipFlow yet."
