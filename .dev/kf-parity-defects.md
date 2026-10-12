@@ -1386,6 +1386,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-01T04:25:09Z — deployed 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-232.md
 
 ### KF-233 — Boards button and top-bar colors differ (#111827/#1f2943 vs #333333/#515151; 31px vs ~47px tall) [MEDIUM | OPEN | Top bar]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): top bar #333333/36px, Boards button #515151 full-height. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: dark top bar bg `#111827`, 40px tall; "☰ Boards" button bg `#1f2943`, rect ≈ (16,4,99,31) CSS px at 1440w — a 31px button vertically centered with ~4px margins.
 - KanbanFlow behavior: dark top bar bg `#333333`, 38px tall; "☰ Boards" button bg `#515151`, rect ≈ (11,5,113,47) CSS px — ~47px tall, filling the bar nearly edge-to-edge vertically (GM-001).
@@ -1394,6 +1395,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T02:48:30Z — deployed 8e0c5db1ac1f12803c4cfec3dc5048d9182d1f1a, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-233.md
 
 ### KF-234 — Member avatar is dark circle/white initials, not white circle + brown-initials disc [LOW | OPEN | Top bar]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): member avatar white circle, brown #98540f initials. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Status: FIXED 2026-10-03T18:12Z — release SHA `5043e2fe7c1cd725ff62f6e25f11e76d6b29ef9a` (Git Data API push, base ed1e426^ → head ed1e426; diff BASE..HEAD: static/style.css only). Deployed to green-box (chipflow.service only); green-box-local `/api/v1/version` reports the release SHA. Blind verifier VERIFIED 2026-10-03T18:07Z + mandatory independent spotcheck PASS 2026-10-03T18:11:23Z. Evidence: `.dev/evidence/verifier-20261003-kf-234.md`, `.dev/evidence/spotcheck-20261003-kf-234.md`, `.dev/evidence/deploy-20261003-kf-234.md`.
 - Status: RELEASED 2026-10-06T11:56Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (already live, no new deploy): release SHA 5043e2f (ancestor of live HEAD): static/style.css top-bar avatar white circle/brown initials (button.user-avatar, color #98540f) all 5 added lines present; green-box chipflow.service active, /api/v1/version build_sha confirmed, served static/app.js byte-identical to tree (sha256 99a64188…).
@@ -1427,6 +1429,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-002.md`, `.dev/evidence/kf-drafts/kf-draft-v1-GM-016.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-002.png`, `vs-GM-015.png`, `vs-GM-016.png`; candidate `cf-2880.png`.
 
 ### KF-238 — Menu hamburger is thin outline bars, not thick solid bars [LOW | OPEN | Board header row]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): hamburger is three solid 2px #494949 bars. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Status: FIXED 2026-10-03T20:05:00Z — release SHA dd14fc09b593997fb4259ee8a7f7ee9cc81370a9 (remote main, product-only: static/style.css + templates/board.html); VERIFIED 2026-10-03 (5/5 contract expectations; evidence `.dev/evidence/verifier-20261003-kf-238.md`); spotcheck PASS 2026-10-03T19:47:02Z (evidence `.dev/evidence/spotcheck-20261003-kf-238.md`); deployed to green-box via pin bump in modules/chipflow.nix (dry-activate: chipflow.service sole affected unit), green-box-local /api/v1/version build_sha matches release SHA.
 - Status: RELEASED 2026-10-06T11:56Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (already live, no new deploy): release SHA dd14fc0 (ancestor of live HEAD): #board-menu-btn solid 2px bars #494949 styling + board.html markup all 11 added lines present; green-box chipflow.service active, /api/v1/version build_sha confirmed, served static/app.js byte-identical to tree (sha256 99a64188…).
@@ -1436,6 +1439,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-020.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-020.png`; candidate `cf-2880.png`.
 
 ### KF-239 — Timer pill lives in gray board row as light pill, not in dark top bar as dark chip [MEDIUM | OPEN | Board header row]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): timer pill inside dark top bar (bg #484848, white text). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: `button#timer-pill` at (1168,46,89,28) in the GRAY board-header row; light pill bg `#e8eaed`; pomodoro idle shows green ▶, dark "25:00", gray ▾; stopwatch idle shows red ■, "00:00", ▾.
 - KanbanFlow behavior: the idle pill sits in the DARK TOP BAR at top-right — a dark chip with green ▶, "25:00", ⌄ (pomodoro) or red ■, "00:00", ⌄ (stopwatch) (GM-009, GM-010; KF-098 verified 2026-09-29).
@@ -1445,6 +1449,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T04:06:48Z — deployed 31da0a63ecb90c2089933210bcde06699ef63be6, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-239.md
 
 ### KF-240 — Boards drawer is white panel; selection highlight blue `#e0e7ff`, not green indicator [LOW | OPEN | Boards drawer]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): boards drawer replaced by KF-330 light dropdown (intent satisfied by supersession). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Status: FIXED 2026-10-03T20:19:00Z — fix commit cca20c3 (boards drawer darkened to #333333, 3px #16a34a green selection indicator), verified 5/5 contract expectations (evidence `.dev/evidence/verifier-20261003-kf-240.md`), mandatory independent spotcheck PASS 2026-10-03T20:13:19Z (evidence `.dev/evidence/spotcheck-20261003-kf-240.md`), released `f062516a2fcc91e83f04644c69761d4610df0f7a` on remote main (Git Data API), deployed to green-box (dry-activate sole unit chipflow.service, switch OK), green-box-local `/api/v1/version` reports build_sha `f062516a2fcc91e83f04644c69761d4610df0f7a` (2026-10-03T20:19Z). Deploy report: `.dev/evidence/deploy-20261003-kf-240.md`.
 - ChipFlow behavior: drawer is a WHITE panel (~440 CSS px wide) with header "Boards" + green "+ New board" button, search box ("Search boards" ✓), hint text "Drag to add to Favorites" ✓, "FAVORITES" and "ALL BOARDS" sections; the active board row is highlighted light INDIGO/BLUE `#e0e7ff`.
@@ -1462,6 +1467,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-01T20:31:00Z — deployed 6089eab39ea298d2337fb7af99ea1aa9294d2c6b, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-241.md
 
 ### KF-242 — Card icon row missing description and subtask icons (3 of 5) [MEDIUM | OPEN | Task cards]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): card icon row shows all 5 icons in GM-069 order. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior (task with description, due date, 2 subtasks, comment, 2.5h logged, one assignee): the attribute icon row shows only 3 icons — calendar, comment, clock.
 - KanbanFlow behavior: the icon row shows 5 icons in order — description (document), calendar (due), subtask list, comment, clock (time). The description icon is missing even though the task has a description; the subtask icon is missing even though the task has 2 subtasks (the "2 hidden (2 done)" subtask section on the card still renders — only the icon is absent) (GM-069).
@@ -1475,6 +1481,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-02T05:52:18Z — deployed 5c747a88bbcc8bde9db98998213285debdce5859, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-242.md
 
 ### KF-243 — Assignee avatar sits at end of card icon row instead of top-right of title row [LOW | OPEN | Task cards]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): card assignee avatar placement matches GM-069 (pixel-settled). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: the assignee avatar ("A") renders at the right end of the attribute icon row, below the title.
 - KanbanFlow behavior: the assignee avatar sits at the top-right of the card's title row, aligned with the task name (GM-069).
@@ -1483,6 +1490,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-03T21:15:00Z — independent spotcheck PASS 2026-10-03T21:08:22Z (.dev/evidence/spotcheck-20261003-kf-243.md); pushed 0433449576c317178697135b0a71ee7c7039dc6d to chipsenkbeil/chipflow main; deployed to green-box (dry-activate: chipflow.service sole affected unit; switch OK; service active); /api/v1/version build_sha=0433449576c317178697135b0a71ee7c7039dc6d confirmed green-box-local 2026-10-03T21:14Z. Deploy report: .dev/evidence/deploy-20261003-kf-243.md
 
 ### KF-244 — Card due line renders orange-brown instead of dark text [LOW | OPEN | Task cards]
+- Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): card due line dark text #222222. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior (task due 2026-10-02 17:00, `due_done:true`): the card's "Due: Friday 5:00 PM (Done)" line renders in an orange-brown hue.
 - KanbanFlow behavior: the equivalent due line renders in dark/near-black text (GM-069).
