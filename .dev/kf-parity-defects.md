@@ -2636,6 +2636,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:49` renders the menu item (`data-report="history"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Board history report is not available in ChipFlow yet."
 
 ### KF-337 — Reports menu: "Burndown" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T02:40Z — built, independently verified, and deployed to production 4a900de: burndown report: 30-day remaining-tasks line chart. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Burndown is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:50` renders the menu item (`data-report="burndown"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Burndown report is not available in ChipFlow yet."
@@ -2646,6 +2647,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:51` renders the menu item (`data-report="calendar"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Calendar report is not available in ChipFlow yet."
 
 ### KF-339 — Reports menu: "Cumulative flow" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T02:40Z — built, independently verified, and deployed to production 4a900de: cumulative flow diagram: 30-day per-column stacked area chart. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Cumulative flow is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:52` renders the menu item (`data-report="flow"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Cumulative flow report is not available in ChipFlow yet."
@@ -2704,3 +2706,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-20 verifier's residual note.
 - Behavior: `.timer-page` (shared shell for report pages incl. the new Export page and the pre-existing timer statistics page) has no dark-mode variants; `.report-desc`/`h1` render low-contrast on the dark body. Pre-existing, not a KF-346 regression.
 - Fix direction: add dark-mode variants for the report-page shell (`.timer-page`, `.report-desc`, headings).
+
+### KF-350 — Cumulative flow: renaming a column leaves a phantom band under the old name [LOW | OPEN | Reports]
+- Status: OPEN — filed 2026-10-11 by Dale from the batch-22 verifier's residual note.
+- Behavior: the cumulative-flow timeline is name-based from history detail strings ("Moved from X to Y"), so after a column rename (e.g. "In progress" → "Doing") a task whose last event names the old column is attributed to the stale name on the current day while the renamed column shows 0. Daily totals still sum correctly.
+- Fix direction: for the task's latest position, prefer `colNameById[task.column_id]` over the history-derived name.
