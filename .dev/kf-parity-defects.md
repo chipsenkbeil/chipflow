@@ -2681,6 +2681,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:58` renders the menu item (`data-report="estimate"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Time estimate report is not available in ChipFlow yet."
 
 ### KF-346 — Reports menu: "Export" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T01:40Z — built, independently verified, and deployed to production d10b16c: Export is a functional full-page report (Excel .xls, RFC-4180 CSV, XML, pretty JSON) backed by the shared export-data dataset. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Export is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:60` renders the menu item (`data-report="export"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Export report is not available in ChipFlow yet."
@@ -2696,3 +2697,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-15 verifier's probe note.
 - Behavior: a bare local datetime (no UTC offset) is accepted by the task API, but `format_due_card` cannot RFC3339-parse it, so no due row renders. The UI always sends `toISOString()`, so this is a latent edge under real usage, not a live bug.
 - Fix direction: either reject non-RFC3339 datetimes at the API boundary or make the renderer tolerate bare local datetimes.
+
+### KF-349 — Report pages have no dark-mode variants (low-contrast text on dark body) [LOW | OPEN | Reports]
+- Status: OPEN — filed 2026-10-11 by Dale from the batch-20 verifier's residual note.
+- Behavior: `.timer-page` (shared shell for report pages incl. the new Export page and the pre-existing timer statistics page) has no dark-mode variants; `.report-desc`/`h1` render low-contrast on the dark body. Pre-existing, not a KF-346 regression.
+- Fix direction: add dark-mode variants for the report-page shell (`.timer-page`, `.report-desc`, headings).
