@@ -2709,6 +2709,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: either reject non-RFC3339 datetimes at the API boundary or make the renderer tolerate bare local datetimes.
 
 ### KF-349 — Report pages have no dark-mode variants (low-contrast text on dark body) [LOW | OPEN | Reports]
+- Status: RELEASED 2026-10-12T04:25Z — built, independently verified, and deployed to production 5244f3c: report pages dark-mode variants: body.dark-scoped CSS covering the full report surface (measured WCAG AA). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-20 verifier's residual note.
 - Behavior: `.timer-page` (shared shell for report pages incl. the new Export page and the pre-existing timer statistics page) has no dark-mode variants; `.report-desc`/`h1` render low-contrast on the dark body. Pre-existing, not a KF-346 regression.
 - Fix direction: add dark-mode variants for the report-page shell (`.timer-page`, `.report-desc`, headings).
@@ -2731,6 +2732,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 
 ### KF-350 — Cumulative flow: renaming a column leaves a phantom band under the old name [LOW | OPEN | Reports]
+- Status: RELEASED 2026-10-12T04:25Z — built, independently verified, and deployed to production 5244f3c: CFD latest position prefers colNameById[task.column_id]: no phantom old-name band after column rename. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-22 verifier's residual note.
 - Behavior: the cumulative-flow timeline is name-based from history detail strings ("Moved from X to Y"), so after a column rename (e.g. "In progress" → "Doing") a task whose last event names the old column is attributed to the stale name on the current day while the renamed column shows 0. Daily totals still sum correctly.
 - Fix direction: for the task's latest position, prefer `colNameById[task.column_id]` over the history-derived name.
