@@ -1357,6 +1357,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/final-battery-20261001.md` (timer section).
 
 ### KF-230 — Column delete is unreachable in the UI; deleteColumn() is dead code [MEDIUM | FIXED | Columns]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (already fixed in the deployed tree): column menu renders all four items incl. delete, wired to deleteColumn. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 from the final golden-master battery (browser-verified on the deployed tree, build c3307b7).
 - ChipFlow behavior: the column menu (right-click, KF-038/KF-223) offers exactly three items — Edit, Collapse, Show details. There is no Delete item; the layout-edit view offers only Add column / Add swimlane / drag-reorder; and `deleteColumn()` (static/app.js:814, with the KF-047 styled confirm dialog and the "server will refuse until tasks are moved" message) is never called from anywhere — grep over static/app.js and templates/ finds zero callers. The server-side `DELETE /api/columns/:id` endpoint exists and works, but no UI entry point reaches it, so a column created in the UI can never be deleted in the UI.
 - KanbanFlow behavior: the column menu includes "Delete column" (with confirmation when the column holds tasks).
@@ -1506,6 +1507,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: derive each card's border color from its face color instead of the fixed dark value.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v2-GM-051-border.md`; `.dev/evidence/kf-drafts/v2-evidence/g-corner.png` (KanbanFlow) vs `c-corner.png` (ChipFlow); goldens `.dev/evidence/golden-masters/task-cards/GM-05{1,2,3}-*.png`.
 ### KF-246 — Layout editor missing the green "Add column" button at the right end of the column list [LOW | OPEN | Columns]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (already fixed in the deployed tree): green "+ Add column" button at right end of layout editor. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior (opened via the board-bar "Edit board layout" pencil): header "Layout: <board>" ✓; blue "+ Add column" and "+ Add swimlane" buttons in the header ✓; columns listed in board order ✓ — but there is NO green "Add column" button at the right end of the column list (only "← Back to board" below the lists), and the header's Add-column button is blue, not green.
 - KanbanFlow behavior (GM-043 verbatim catalog): header "Layout: General" with buttons Add column, Add swimlane; column list in board order; green Add column button at right.
@@ -1551,6 +1553,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: OPEN — verifier muse-code 2026-10-04T23:44:55Z rejected the fix; returned to OPEN; evidence /home/senkwich/chipflow-worker/evidence/KF-248-verifier.md
 
 ### KF-249 — Color legend strip 29px vs 38px; all 4 segment colors differ; not flush to viewport bottom [MEDIUM | OPEN | Color legend]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (built, verified, and deployed to production d1d7d0f): color legend fills from palette bg, edges #f5cc00/#59d600/#70b0ff/#ff858f (independently re-derived). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: legend strip is 29px tall; segment fills `#ffffe0 / #e4ffd1 / #d6e9ff / #ffe0e3`; labels "1 Pomodoro / 2 Pomodori / 3 Pomodori / >3 Pomodori" (text matches); the strip sits in-flow at y 824–852 with a 47px board-bg gap below it — NOT flush to the viewport bottom.
 - KanbanFlow behavior: legend strip is 38px tall (34px of segments); segment fills `#ffffe2 / #e1fec7 / #d1e1fd / #f7cdd1`; same four labels; the strip is flush to the viewport bottom (GM-139).
@@ -2151,6 +2154,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-131.md`; `/tmp/gm-verify-v5/cand-*-colors.png`, `/tmp/gm-verify-v5/zoom-row.png` (scratch; not archived).
 
 ### KF-301 — Default color marker reads "(default)" instead of "(Default)" [LOW | VERIFIED | Board settings]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (already fixed in the deployed tree): colors page shows "(Default)" with capital D. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T17:41:29Z: FAILED: verification-incomplete — bwrap blocks all runtime gates and write-confinement blocks the mandated evidence append; staged report KF-301-verifier-20261004-01a10801.md; evidence /home/senkwich/chipflow-worker/evidence/KF-301-verifier.md
 - Note: verifier muse-code 2026-10-04T17:36:50Z: FAILED: verification-incomplete — bwrap blocks all runtime gates and write-confinement blocks the mandated evidence append; evidence /home/senkwich/chipflow-worker/evidence/KF-301-verifier.md
@@ -2247,6 +2251,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-141-KF-244.md`.
 
 ### KF-308 — Built-in Pomodoro template's first column is "Work To-do" instead of "To-do" [LOW | BUILT | Templates]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (built, verified, and deployed to production d1d7d0f): Pomodoro template first column "Work To-do" -> "To-do". Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T18:23:19Z: FAILED: evidence append blocked (edit_file outside-workspace denial; shell bwrap proc-mount denial) and pixdiff/console/test gates unrun — full report staged at /tmp/KF-308-verifier-20261004-muse3.md, static evidence favors fixFAILED: evidence append blocked (edit_file outside-workspace denial; shell bwrap proc-mount denial) and pixdiff/console/test gates unrun — full report staged at /tmp/KF-308-verifier-20261004-muse3.md, static evidence favors fix; evidence /home/senkwich/chipflow-worker/evidence/KF-308-verifier.md
 - Note: verifier muse-code 2026-10-04T18:17:46Z: FAILED: shell unusable (bwrap proc-mount denial on every call, escalation approval-disabled) and evidence file unwritable from this session (absolute and escape writes denied) — pixdiff/tests/console gates unrun, full report staged at /tmp/KF-308-verifier-20261004-muse2.md; static evidence favors fix (To-do at src/db.rs:244, zero Work To-do residuals, apply_template passthrough verified)FAILED: shell still unusable (bwrap proc-mount denial re-confirmed) and evidence file unwritable from this session — pixdiff/tests/console gates unrun, full report staged at /tmp/KF-308-verifier-20261004-muse2.md; static evidence favors fix (To-do at src/db.rs:244, zero Work To-do residuals, apply_template passthrough verified); evidence /home/senkwich/chipflow-worker/evidence/KF-308-verifier.md
@@ -2361,6 +2366,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-045.md`; scratch `/tmp/spot-evidence/p10-edit-column.png` + DOM dumps.
 
 ### KF-316 — "Do today" header: add-task control is a green button, not a bare green glyph; count is muted gray, not near-black [LOW | VERIFIED | Empty states]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (already fixed in the deployed tree): add-task control is a bare green glyph (transparent bg, #3DC54E). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker B breaking V5's GM-156 attribute pass; test server 127.0.0.1:3222, fresh redb; Firefox 1919×998 DPR 1). Breaks the 1px/1-shade bar on two axes.
 - Note: verifier muse-code 2026-10-04T19:04:43Z: FAILED: shell sandbox denies all commands (bwrap mount failure) and evidence path is outside workspace, so pixdiff/console gates could not run; static axes hold (transparent #3DC54E glyph, #111111 count) — staged at KF-316-verifier-20261004-muse-code-2.md; evidence /home/senkwich/chipflow-worker/evidence/KF-316-verifier.md
 - Note: verifier muse-code 2026-10-04T18:59:11Z: FAILED: evidence-path write unreachable from this session; evidence /home/senkwich/chipflow-worker/evidence/KF-316-verifier.md
@@ -2374,6 +2380,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-spotB-GM-156.md`; scratch `/tmp/spotb-master-hdr-zoom.png`, `/tmp/spotb-cf-hdr-zoom.png`.
 
 ### KF-317 — Labels dialog input label/placeholder does not match the master's "Add labels…" [LOW | VERIFIED | Task detail modal]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (already fixed in the deployed tree): labels dialog "Add labels..." label and placeholder. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker B breaking V5's GM-158 partial match; test server 127.0.0.1:3222; verified via DOM). Not a duplicate of KF-268/KF-269 (Save color, suggestions empty text) — this covers the input field's own label/placeholder, which the V5 partial-match claim glossed over.
 - Note: verifier muse-code 2026-10-04T08:18:00Z: Muse Code not authenticated — mechanical gate passed, adversarial pass blocked; needs Chip to run 'muse login'
 - Status: BUILT — built by muse-pi (muse-pi) 2026-10-04T08:14:59Z; branch fix/KF-317; evidence /home/senkwich/chipflow-worker/evidence/KF-317-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-317-l0.log
@@ -2679,11 +2686,13 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:60` renders the menu item (`data-report="export"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Export report is not available in ChipFlow yet."
 
 ### KF-347 — Pomodoro statistics: Break activities tab shows "not available yet" [MEDIUM | OPEN | Timer reports]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (built, verified, and deployed to production d1d7d0f): Break activities statistics tab implemented end-to-end. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the tab exists but has no content.
 - KanbanFlow: Pomodoro Statistics is a full page with working tabs Pomodoros / Interruptions / Break activities / Highscores (v1 S16; frame review).
 - ChipFlow behavior: the tab bar renders, but the Break activities panel (`templates/timer_statistics.html:76`) contains only `<p class="log-status">Break activities are not available yet.</p>` — no activity list, no per-activity stats.
 
 ### KF-348 — API accepts bare local datetimes the due-date renderer cannot parse [LOW | OPEN | Robustness]
+- Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (built, verified, and deployed to production d1d7d0f): bare local datetimes with seconds accepted as server-local, stored as RFC3339. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-15 verifier's probe note.
 - Behavior: a bare local datetime (no UTC offset) is accepted by the task API, but `format_due_card` cannot RFC3339-parse it, so no due row renders. The UI always sends `toISOString()`, so this is a latent edge under real usage, not a live bug.
 - Fix direction: either reject non-RFC3339 datetimes at the API boundary or make the renderer tolerate bare local datetimes.
