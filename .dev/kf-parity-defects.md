@@ -2715,6 +2715,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add dark-mode variants for the report-page shell (`.timer-page`, `.report-desc`, headings).
 
 ### KF-351 — Calendar lacks external iCal feed subscription (LOW)
+- Status: RELEASED 2026-10-12T04:55Z — built, independently verified, and deployed to production cc19c87: calendar iCal feed subscription: unauthenticated feed with 32-byte CSPRNG bearer tokens, reset rotation, minimal payload (security design accepted by verifier; RFC 5545 spec fixes applied). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by batch-24 independent verification.
 - Source: KF-338 verifier (builder flagged as known gap, verifier confirmed).
 - KanbanFlow reference: the calendar supports subscribing to an external iCal feed.
@@ -2724,6 +2725,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 
 ### KF-352 — Calendar does not expand `due_repeat` (LOW)
+- Status: RELEASED 2026-10-12T04:55Z — built, independently verified, and deployed to production cc19c87: calendar expands due_repeat into recurrence instances (weekly/daily/monthly/yearly, month-end clamping, 400-iteration cap). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by batch-24 independent verification.
 - Source: KF-338 verifier (builder flagged as known gap, verifier confirmed).
 - KanbanFlow reference: repeating due dates appear on the calendar for their recurrence instances.
