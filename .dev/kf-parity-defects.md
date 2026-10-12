@@ -1515,6 +1515,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: RELEASED 2026-10-06T11:56Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (already live, no new deploy): release SHA 5075c6a (ancestor of live HEAD): green btn-success layout-add-column-end button at layout-editor list end, app.js wiring, all 11 added lines present; green-box chipflow.service active, /api/v1/version build_sha confirmed, served static/app.js byte-identical to tree (sha256 99a64188…).
 
 ### KF-247 — Layout editor is a full-page in-board view, not a modal dialog over the dimmed board [MEDIUM | OPEN | Columns]
+- Status: INVALID 2026-10-12T00:45Z — enforcing the documented 2026-10-02 planner re-triage ([INVALID] CORRECTION section below): premise contradicted by GM-157; the 2026-10-04 fix branch was rejected by the verifier per the 2026-10-04 CONFLICT note. Do NOT build as written. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T09:37:21Z: Muse Code not authenticated — mechanical gate passed, adversarial pass blocked; needs Chip to run 'muse login'
 - Status: BUILT — built by muse-pi (muse-pi) 2026-10-04T08:56:34Z; branch fix/KF-247; evidence /home/senkwich/chipflow-worker/evidence/KF-247-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-247-l0.log
@@ -1532,6 +1533,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: OPEN — verifier muse-code 2026-10-04T23:40:02Z rejected the fix; returned to OPEN; evidence /home/senkwich/chipflow-worker/evidence/KF-247-verifier.md
 
 ### KF-248 — Collapsed swimlane strip at board edge, title-case, ~30px vs interleaved/UPPERCASE/70px; extra "…" control [MEDIUM | OPEN | Swimlanes]
+- Status: INVALID 2026-10-12T00:45Z — enforcing the documented 2026-10-02 planner re-triage ([INVALID] CORRECTION section below): the strip is a collapsed column, not a swimlane (contradicted by GM-030); covered by KF-223/039/040; the 2026-10-04 fix branch was rejected by the verifier per the 2026-10-04 CONFLICT note. Do NOT build as written. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T09:47:34Z: Muse Code not authenticated — mechanical gate passed, adversarial pass blocked; needs Chip to run 'muse login'
 - Status: BUILT — built by muse-pi (muse-pi) 2026-10-04T09:38:46Z; branch fix/KF-248; evidence /home/senkwich/chipflow-worker/evidence/KF-248-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-248-l0.log
