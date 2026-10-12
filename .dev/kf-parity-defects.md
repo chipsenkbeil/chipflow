@@ -2709,6 +2709,23 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Behavior: `.timer-page` (shared shell for report pages incl. the new Export page and the pre-existing timer statistics page) has no dark-mode variants; `.report-desc`/`h1` render low-contrast on the dark body. Pre-existing, not a KF-346 regression.
 - Fix direction: add dark-mode variants for the report-page shell (`.timer-page`, `.report-desc`, headings).
 
+### KF-351 — Calendar lacks external iCal feed subscription (LOW)
+- Status: OPEN — filed 2026-10-11 by batch-24 independent verification.
+- Source: KF-338 verifier (builder flagged as known gap, verifier confirmed).
+- KanbanFlow reference: the calendar supports subscribing to an external iCal feed.
+- Gap: ChipFlow's calendar (KF-338) renders the month grid and filters but has no iCal feed subscription.
+- Constraint: iCal feeds need unauthenticated per-board feed URLs — security-sensitive; needs a designed approach (unguessable tokens, no account-data exposure), not a bolt-on.
+- Fix direction: design and implement an iCal subscription endpoint with secure tokens, matching KanbanFlow's behavior.
+
+
+### KF-352 — Calendar does not expand `due_repeat` (LOW)
+- Status: OPEN — filed 2026-10-11 by batch-24 independent verification.
+- Source: KF-338 verifier (builder flagged as known gap, verifier confirmed).
+- KanbanFlow reference: repeating due dates appear on the calendar for their recurrence instances.
+- Gap: ChipFlow's calendar (KF-338) shows tasks only on their literal due date; `due_repeat` is not expanded into recurring instances.
+- Fix direction: expand `due_repeat` into its recurrence instances when rendering calendar chips.
+
+
 ### KF-350 — Cumulative flow: renaming a column leaves a phantom band under the old name [LOW | OPEN | Reports]
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-22 verifier's residual note.
 - Behavior: the cumulative-flow timeline is name-based from history detail strings ("Moved from X to Y"), so after a column rename (e.g. "In progress" → "Doing") a task whose last event names the old column is attributed to the stale name on the current day while the renamed column shows 0. Daily totals still sum correctly.
