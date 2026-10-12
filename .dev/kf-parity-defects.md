@@ -2666,11 +2666,13 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow behavior: `templates/board.html:55` renders the menu item (`data-report="montecarlo"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Monte Carlo forecasting report is not available in ChipFlow yet."
 
 ### KF-343 — Reports menu: "Task count" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T02:10Z — built, independently verified, and deployed to production 109aade: task count report: color × column count table from the shared export-data dataset. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Task count is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:56` renders the menu item (`data-report="count"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Task count report is not available in ChipFlow yet."
 
 ### KF-344 — Reports menu: "Throughput" destination unimplemented [MEDIUM | OPEN | Reports]
+- Status: RELEASED 2026-10-12T02:10Z — built, independently verified, and deployed to production 109aade: throughput report: 12-week Monday-start line chart of completed tasks. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-09 by Dale (centralization pass): parity means everything implemented; the menu item exists but has no implementation.
 - KanbanFlow: Throughput is a functional destination in the 15-item Reports menu (v7-e020).
 - ChipFlow behavior: `templates/board.html:57` renders the menu item (`data-report="throughput"`); the `default:` branch of `BoardReports.open` (`static/app.js:5950`) shows toast "Throughput report is not available in ChipFlow yet."
