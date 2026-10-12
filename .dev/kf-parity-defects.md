@@ -1365,6 +1365,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-01T03:13:00Z — deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, /api/v1/version build_sha verified on green-box port 3000. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-230.md
 
 ### KF-231 — Timer chip minutes not zero-padded: "0:03" vs KanbanFlow's "00:02" [LOW | FIXED | Timer]
+- Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): timer chip zero-pads minutes (TimerUI.fmt: 3->"00:03"). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the KF-229 independent verifier (browser-verified on the KF-229 fix tree, commit 667b66d).
 - ChipFlow behavior: a running stopwatch shows the chip counting up as "0:03", "0:04" — `TimerUI.fmt` (static/app.js:2362) zero-pads the minutes only when hours > 0 (`var mm = (h > 0 && m < 10 ? '0' : '') + m;`), so any sub-10-minute value renders as "M:SS".
 - KanbanFlow behavior: the running stopwatch chip shows "00:02" (video evidence v9-e002: "the session appears as a running \"00:02\" chip in the top bar"; `.dev/kf-video-catalog/v9.md` line 19). Minutes are zero-padded to two digits.
@@ -1374,6 +1375,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-01T02:53:00Z — deployed 91230ec8e450c61bd9a74d60cd7f728000d94fdf, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-231.md
 
 ### KF-232 — Timer pill keeps stale running state after UI stop (frozen "24:59", red stop icon, stale tab title) [LOW | FIXED | Timer]
+- Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): timer pill resets cleanly after UI stop (green play, "25:00", normal tab title). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the final golden-master battery (browser-verified on deployed build 91230ec8e450c61bd9a74d60cd7f728000d94fdf, local tree identical: `git diff 91230ec8 HEAD -- src/ static/ templates/` empty).
 - ChipFlow behavior: start a pomodoro via the UI (task modal → Timer → Start Pomodoro), click the timer pill to open the popup, click Stop, then close the popup (click outside). The pill keeps class `running`, the red stop-square icon, the frozen text "24:59", and the tab title stays "24:59 ChipFlow Golden Master — ChipFlow". The underlying stop works — server `/api/timer/status` phase and `TimerUI.state.phase` are both `idle`, tick cleared.
 - KanbanFlow behavior: after stopping a session the timer control returns to the idle state (green play icon, full "25:00" duration, normal tab title).
@@ -1787,6 +1789,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-089.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-reports-menu.png`.
 
 ### KF-276 — Keyboard shortcuts dialog has extra "Add time manually (Y)" / "Add time estimate (E)" rows [LOW | VERIFIED | Task modal]
+- Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): shortcuts dialog shows exactly the 9 master keys, no extra rows. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T15:56:58Z: FAILED: evidence append impossible this session — shell sandbox bwrap failure plus write policy confines file tools to workspace root; full report staged at /tmp/KF-276-verifier-report-20261004-2.md and merged copy at /tmp/KF-276-verifier-merged.md awaiting append; evidence /home/senkwich/chipflow-worker/evidence/KF-276-verifier.md
 - Note: verifier muse-code 2026-10-04T15:52:02Z: FAILED: evidence append impossible this session — shell sandbox bwrap failure plus write policy confines file tools to workspace root; full report staged at /tmp/KF-276-verifier-report.md awaiting appendFAILED: evidence append impossible this session — shell sandbox bwrap failure plus write policy confines file tools to workspace root; full report staged at /tmp/KF-276-verifier-report.md awaiting append; evidence /home/senkwich/chipflow-worker/evidence/KF-276-verifier.md
@@ -1879,6 +1882,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-109.md`; `/tmp/gm-v4-shots/gm109_ctxmenu.png`, `gm109_ctxmenu2.png`, `gm109_cardctx.png` (ephemeral).
 
 ### KF-283 — Default long break is 15 minutes, KanbanFlow shows 10 [MEDIUM | VERIFIED | Timer settings]
+- Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): default long break is 10 minutes (src/models.rs seed + live API). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Status: BUILT — built by muse-pi (muse-pi) 2026-10-04T10:47:44Z; branch fix/KF-283; evidence /home/senkwich/chipflow-worker/evidence/KF-283-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-283-l0.log
 - Status: VERIFIED — verified by muse-code (muse-code) 2026-10-04T19:53:09Z; evidence /home/senkwich/chipflow-worker/evidence/KF-283-verifier.md
@@ -1889,6 +1893,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-112.md`; `/tmp/gm-v4-shots/` settings captures (ephemeral); src/models.rs:449.
 
 ### KF-284 — Break-activities "Add activity" button is blue, KanbanFlow green [LOW | VERIFIED | Timer settings]
+- Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): Add activity button is green (btn-success, rgb(22,163,74)). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T16:22:55Z: FAILED: shell sandbox blocked (bwrap proc denied, escalated approval disabled) so no pixdiff/console evidence; evidence path outside workspace unwritable; static-only: pane button is btn-success green, dialog confirm still blue (scope unresolved); report at /tmp/KF-284-verifier.md; evidence /home/senkwich/chipflow-worker/evidence/KF-284-verifier.md
 - Note: verifier muse-code 2026-10-04T16:18:38Z: FAILED: shell sandbox blocks all execution and evidence path is unwritable, so required pixdiff/console/break-attempt evidence and report persistence are incomplete; evidence /home/senkwich/chipflow-worker/evidence/KF-284-verifier.md
@@ -1949,6 +1954,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-118.md`; `/tmp/gm-v4-shots/gm118_entries.png`, `gm118_manual.png` (ephemeral); GET /api/timer/log JSON.
 
 ### KF-289 — Timer log export menu order: CSV before Excel, KanbanFlow lists Excel first [LOW | VERIFIED | Timer log]
+- Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): timer-log export menu lists Excel first (Excel Detailed/Summary, PDF Summary; resolved via KF-294 verbatim menu restructure). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T06:45:59Z: Muse Code not authenticated — mechanical gate passed, adversarial pass blocked; needs Chip to run 'muse login'
 - Status: BUILT — built by muse-pi (muse-pi) 2026-10-04T06:42:39Z; branch fix/KF-289; evidence /home/senkwich/chipflow-worker/evidence/KF-289-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-289-l0.log
