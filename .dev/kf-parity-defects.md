@@ -2740,18 +2740,21 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: for the task's latest position, prefer `colNameById[task.column_id]` over the history-derived name.
 
 ### KF-353 — Board menu lacks KanbanFlow's toggle switches (and item icons) [MEDIUM]
+- Status: RELEASED 2026-10-12T10:10Z — built, independently verified, and deployed to production 2246458: board menu toggle switches: Dark mode / Color legend / Large task names as menuitemcheckboxes with right-aligned switch spans, separators, aria-checked sync, item icons. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-12 by Chip (with fresh KanbanFlow screenshots).
 - KanbanFlow: the board Menu shows iOS-style toggle switches with visible on/off state for Dark mode, Color legend, and Large task names (right-aligned switches; see Chip's 2026-10-12 menu screenshot). Each menu item also has a leading icon (filter funnel, reports chart, pencil, gear, person, trash, moon, palette, text-size, help).
 - ChipFlow: the same items exist as plain text buttons in a small popup (`.menu-pop`) with no switch UI and no state indication (only the Color legend item gets a checkmark via `::before`). No item icons.
 - Fix direction: render toggle switches for the three toggle items with live on/off state, matching KanbanFlow's switch visuals and placement; add the leading item icons. Keep the existing menu structure and behavior.
 
 ### KF-354 — Color legend shows 4 pomodoro segments instead of all board colors [MEDIUM]
+- Status: RELEASED 2026-10-12T10:10Z — built, independently verified, and deployed to production 2246458: color legend renders all 8 board colors with names and measured fills/edges (supersedes stale GM-139 4-color reading). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-12 by Chip (with fresh KanbanFlow screenshot).
 - KanbanFlow: on the ChipFlow Golden Master board, the bottom legend strip shows ALL 8 board colors with their names — Yellow, Green, Blue, Red, Orange, Purple, Magenta, Cyan (measured fills: #ffffde/#dcfcbe/#c9ddfd/#fce8bd/...). Chip: "color legends show everything".
 - ChipFlow: the legend is filtered by `is_pomodoro_legend_color()` to 4 pomodoro-count segments only, based on a stale GM-139 reading (the template comment claims "KanbanFlow's legend shows only the 4 pomodoro-count segments, not all board colors" — contradicted by the fresh screenshot).
 - Fix direction: render one segment per board color with its display name (all 8 on the Golden Master board); drop the 4-color filter. Keep the strip geometry (33px, top rule, band, segment row).
 
 ### KF-355 — Board column bodies are grey instead of KanbanFlow's white [LOW]
+- Status: RELEASED 2026-10-12T10:10Z — built, independently verified, and deployed to production 2246458: board column bodies #ffffff, column headers #ebebeb (was #f7f8fa / #eef0f2). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-12 by Chip (with fresh KanbanFlow screenshot; "the visuals look different, slight grey").
 - KanbanFlow: column bodies are pure white (pixel-measured #ffffff on the Golden Master board); column headers #ebebeb.
 - ChipFlow: `.board-cell` background is #f7f8fa (light grey); `.columnHeader` is #eef0f2 (vs #ebebeb).
