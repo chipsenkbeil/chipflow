@@ -21,6 +21,7 @@
 ## Timer (KF-001–KF-021)
 
 ### KF-001 — Reconcile TimerUI with the real /api/timer/status shape — popup, pill, and card indicators never reflect live state **[VERIFIED]**
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-110): the idle pomodoro popup has no big "25:00" readout and no green ▶ Start, which this section's KanbanFlow line specifies. It shows Task and Duration (15/25/50 min) selects, a blue "Start Pomodoro" and a "Time log" button. The stopwatch tab already matches (KF-281). Fix direction: mirror the stopwatch idle layout with the configured work time. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/crop-popup-idle.png, .dev/evidence/r2-battery-20261016/modal/shots/s07-timer-idle-02-popup-idle.png
 - Surface: timer · Category: broken · Severity: high
 - KanbanFlow: idle popup shows big "25:00" + green ▶ Start; running panel counts down (v1 S4, v3 S2); header pill shows "▶ 25:00 ▾" idle / live countdown while running (v3-e022, v9-e002); task row shows the current task; TODAY lists entries (v1 S4).
@@ -41,6 +42,7 @@
 - ChipFlow: the `mt-*` dialog (templates/board.html:78-109) has no working JS. `ManualTime` targets `manual-time-*`/`edit-entry-*` ids that exist nowhere (static/app.js:1358-1490); `submit()` posts to `/api/time-entries` (no such route — the server endpoint is `POST /api/time/manual`, src/routes.rs:1594) with the wrong body shape; `ManualTime.open` crashes on null; the task datalist is never populated; From/To→Duration never computed; calendar button/popup and comment toggle unwired; the future-time overlay is never shown (error path targets a nonexistent `#future-time-overlay`).
 
 ### KF-004 — Rewire the Edit time-entry dialog end to end [HIGH | DEPLOYED | Timer]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-138): for a 24 s entry the Edit Pomodoro entry dialog loads From 16:06:05 = To 16:06:05 and Duration "—", and Update without changes fails "End time must be after start time."; saving 08:00:00-08:20:00 stored the range but kept `duration_display` "24s". The button never shows "Updating…". Timer log modal rows carry no `data-entry-id`, so the dialog opens only from the task sub-view. Fix direction: load the true end time and recompute the duration from the saved range. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/s13.out, .dev/evidence/r2-battery-20261016/modal/shots/s13-edit-01-edit-entry.png
 - Status: RELEASED 2026-10-06T08:23Z — Round-8 deploy marker verified TRUE by fleet-release worker: fix content present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (EditEntry.open fetch .catch + isNaN(start.getTime()) Invalid Date guard for started_at); chipflow.service active, /api/v1/version = 11d7734 on 127.0.0.1:3000 and the public tunnel.
 - Status: DEPLOYED — released 2026-10-06T04:14Z in Round-8 (build 11d7734faeab44e59bcedf416d2634745034a760); verified PASS by independent verifier (L0 green).
@@ -61,6 +63,7 @@
 - ChipFlow: nothing ever populates `#why-stop-reasons` (zero references in static/app.js), so the menu opens empty. `beginWhy` then throws on `document.getElementById('why-task-name')` / `#why-elapsed`, neither of which exists in templates/board.html:65-75.
 
 ### KF-006 — Restore the break flow **[VERIFIED 2026-09-29]** — real-Chromium run vs fresh DB: pomodoro forced to 00:00 shows single green Take break (rgb(22,163,74)); clicking it starts a short-break session ('SHORT BREAK 4:59 … Stop Switch task'); dead Pause/Resume branch removed — running session now shows only red Stop (rgb(220,38,38)) + Switch task, matching KanbanFlow (no /api/timer/pause|resume exist).
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-117): with `long_break_every:2` the first break after the first completed pomodoro was long, because an interrupted pomodoro counted toward the cycle. "Back to work" started a pomodoro with `task_id:null`; it completed and was never logged (`log_timer_session` skips task-less sessions, `src/routes.rs` ~7015), and the next break was long again. No short break was ever produced. KanbanFlow's setting counts breaks ("Every 4th break") and its take-break panel keeps the task row. Fix direction: keep the task across the break, log task-less sessions, count only completed pomodori toward the cycle. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/s08.out
 - Surface: timer · Category: broken · Severity: high
 - KanbanFlow: at 00:00 the panel shows "00:00" with a single green "Take break" button next to the clock (v8 S1; v8-e001 verified).
@@ -82,6 +85,7 @@
 - ChipFlow: `#timer-foot-mode` always shows "Stopwatch" (templates/board.html:58); `switchModeTab` only toggles nonexistent `.timer-modes button`s (static/app.js:1143-1150), so clicking changes nothing.
 
 ### KF-010 — Wire the popup "Change task" button; "Select open task" state
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-116); first status line for this section. "Select open task" cannot be reached: opening a task modal hides the timer popup, and the modal overlay (z 100) intercepts clicks on the pill, so the popup never shows beside another task's modal and the link stays "Change task". Fix direction: let the popup sit above the modal overlay. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/s08.out, .dev/evidence/r2-battery-20261016/modal/shots/s08-timer-04-select-open-task.png
 - Surface: timer · Category: broken · Severity: medium
 - KanbanFlow: task-row link reads "Change task" normally, "Select open task" when a different task's modal is open (v1-02073, zoom-verified; frame review).
@@ -108,6 +112,7 @@
 - ChipFlow: the modal shows "🍅 N Pomodori", "⏱ Nm spent", and an extra "⚠ N interruptions" stat with no KanbanFlow counterpart (templates/modal.html:69-74).
 
 ### KF-015 — Use the "Pomodoro" / "Stopped with reason 'X'" tooltip on P badges
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-103); first status line for this section. A completed pomodoro's P badge tooltip reads "Stopped with reason 'completed'", because `finishSession` sends `reason:'completed'` and the server stores it as `interrupt_reason`; the task time-log sub-view labels stopwatch entries "Stopped Pomodoro with reason 'Other'". The timer log modal calls the same completed entry "Successful Pomodoro", so the two views disagree. Fix direction: send no reason on completion and branch the sub-view text on `kind`. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
 - Surface: timer · Category: divergent · Severity: low
 - KanbanFlow: per-task P-badge tooltips read "Pomodoro", or "Stopped with reason 'Other'" for stopped sessions (v3-01594; frame review).
@@ -380,6 +385,7 @@
 - ChipFlow: item reads "Add time estimate" and follows "Manual time entry" (templates/modal.html:17-22).
 
 ### KF-067 — Match the Time spent row format ("● 2 Pomodori" / "2m")
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-094); first status line for this section. With 1 completed and 9 stopped pomodori on #11 the task modal shows only "4h 4m" and no pomodoro text. KanbanFlow shows "🍅 1 Pomodoro" / "● 2 Pomodori" beside Time spent once pomodori exist (KF-014, frame review §c v3-01323). Fix direction: show the count when non-zero; keep "2h 30m" alone when zero (GM-073). Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
 - Surface: task modal · Category: divergent · Severity: medium
 - KanbanFlow: labeled rows "Color" and "Time spent"; Time spent reads "● 2 Pomodori" and "2m" (v7 S1; v7-e002, v7-e015, v7-e021).
@@ -568,6 +574,7 @@
 - ChipFlow: only a "+ Add comment" toggle exists in each dialog (templates/board.html:100, 132); no labels affordance anywhere.
 
 ### KF-103 — Live-increment the card badge during a run ("42m + 1m") and revert on discard
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-073); first status line for this section. The live increment is not inline: KanbanFlow (10-05 capture, waiting for break) reads "2h 46m + 42m / 8h" with a red inline "+ 42m"; ChipFlow shows "2h 30m / 8h" with no live part in that state and, while running, a separate bold line "2h 30m + 0m" under the icon row. The 2h 46m vs 2h 30m base is the R3 fixture gap, not this defect. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-073-074-card11.png
 - Surface: cross-surface (timer, cards) · Category: missing · Severity: medium
 - KanbanFlow: the card's time badge live-increments during the run ("42m + 1m") and reverts if the session is discarded (v4-00001–00002; frame review §P1-7).
@@ -1853,6 +1860,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-096.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-time-log-view.png`.
 
 ### KF-278 — Hovering Time spent shows no tooltip and no hover menu [MEDIUM | BUILT | Task modal]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-093): hover shows only the tooltip, stacked with a native `title`; the "Add time entry / Open time log" menu opens only on click, where this section specifies a hover menu. `wireTimeSpentHover` appends another tooltip and menu node to `<body>` on every modal open (4 of each after 4 opens). Fix direction: open on hover, drop the `title`, reuse one node. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/shots/s01-modal-06-hover-time-spent.png, .dev/evidence/r2-battery-20261016/modal/s17.out
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-3 batch; already live, no new deploy): static/app.js wireTimeSpentHover + static/style.css .tm-time-tooltip/.tm-time-menu; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED 2026-10-05T19:35Z — release SHA `bb586ddd5aad07ec5691468b50629a86e5998017` (Round-3 batch KF-278/285/287/288/297/302/304/311/315/323; Git Data API push, base `aa41e9a9`; 9 product files, patches applied clean over Round-2 release, L0 re-greened). Deployed to green-box via homelab-dale-chipflow/modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`bb586ddd5aad07ec5691468b50629a86e5998017`. Deploy report: `.dev/evidence/deploy-20261005-round3.md`.
@@ -1865,6 +1873,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add the hover tooltip and hover menu per the master.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-075.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-hover-timespent.png`.
 ### KF-279 — Timer popup TODAY section differs: "Today" w/o day total, red dots, "2:14 PM · 0m" format, no per-entry trash, running session never listed as "— pending" [MEDIUM | BUILT | Timer popup]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-115): this release took green dots from a capture whose task was green; the 10-05 KanbanFlow capture (`kanbanflow-pomodoro-panel-20261005.png`) shows dots in the task colour (orange). Against it, ChipFlow's heading reads "TODAY 1M" (CSS uppercase of "1m") with no pomodoro count where KanbanFlow reads "TODAY 58m 1 Pomodoro", dots are hard-coded `#4ade80`, the pending row reads "— pending" without its start time ("10:35 PM – pending"), entries carry × instead of ⋮, and × deletes with no confirmation. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/shots/s09-stops-03-B-today.png
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-5 batch; already live, no new deploy): static/app.js KF-279 TODAY {total}m heading/green dots/per-entry trash/pending entry + style.css KF-279 trash; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED (2026-10-05T20:10Z, Round-5, SHA 8de92e60)
@@ -1994,6 +2003,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-118.md`; `/tmp/gm-v4-shots/gm118_entries.png`, `gm118_manual.png` (ephemeral); GET /api/timer/log JSON.
 
 ### KF-289 — Timer log export menu order: CSV before Excel, KanbanFlow lists Excel first [LOW | VERIFIED | Timer log]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-141): the timer log Export menu reads "Excel (Detailed) / Excel (Summary) / PDF (Summary)", the Time spent report's items (`templates/board.html` `#log-export-menu`), where KanbanFlow and this release have "Download Excel file", "Download CSV file" (GM-119). Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/shots/s12-log-07-log-export-menu.png
 - Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): timer-log export menu lists Excel first (Excel Detailed/Summary, PDF Summary; resolved via KF-294 verbatim menu restructure). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
@@ -2540,6 +2550,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Note: build attempt by muse-pi (muse-pi) 2026-10-04T05:52:20Z failed (l0=pass changes=0 pi_rc=0); evidence /home/senkwich/chipflow-worker/evidence/KF-275-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-275-l0.log
 
 ### KF-325 — Running timer card lacks the orange dashed timer-selected outline [HIGH | DEPLOYED | Timer]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-074): KanbanFlow keeps the dashed `#FAA200` outline (6 on, 3 off) in place of the card border through the waiting-for-break state (10-05 capture). ChipFlow draws no outline in that state, and while the pomodoro runs it draws `2px dashed rgb(250,162,0)` outside a solid border with a 1 px gap (KF-327 shares this). Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-073-074-card11.png, .dev/evidence/r2-battery-20261016/pixel/shots/G_running.log.json
 - Status: RELEASED 2026-10-09T11:22:39Z — fix content verified present in deployed GitHub tree a2f9b16c6879e6e22d41f31dd6d32634707b2cf6 (commit b431437: running-pill restyle (timer-pill-stopbox, #484848 bg, white countdown); already live, no new deploy): green-box chipflow.service active, /api/v1/version build_sha=a2f9b16 confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js+style.css byte-identical to tree.
  - Status: VERIFIED — fixed 2026-10-05 by the round-1 builder (attempt 1). Commit b431437 in pomodoro-kanban. Running pill restyled to KanbanFlow: bg #515151→#484848, running icon is now a solid 20×20 #ff7070 rounded square (was a #dc2626 text glyph), countdown text #fca5a5→#fff. Computed styles match golden measurements exactly (GM-103). Evidence: .dev/evidence/round1-contracts.md, .dev/evidence/kf328-evidence.md (KF-328). Verifier has final say. L3 verified 2026-10-05 by independent verifier (blind). Evidence: .dev/evidence/verifier-round1-20261005.md. — filed 2026-10-05 by the visual-review pass (Dale orchestrator) on the 57-pair golden-master visual QA.
@@ -2874,6 +2885,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Severity: both batches rated MEDIUM; R2-054 alone was LOW.
 
 ### KF-366 — Pomodoro take-break panel layout, colours and sections differ [MEDIUM]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-112, R2-113, R2-114). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-112-113-114-panel.png, .dev/evidence/r2-battery-20261016/pixel/measure/G.txt
 - KanbanFlow (10-05 capture, pomodoro done, waiting for break): 260 px `#3E3E3E` panel (x 1472-1731, y 40-438), "Time until break" with a 108x42 `#49A849` Take break button, a `#515151` task row (y 164-193) with dot, bold name and "Change task", a TODAY log, and a `#2E2E2E` footer band (y 388-438) with four icon tabs (labels 236x10).
 - ChipFlow: 320 px `#1F2937` panel (x 1591-1910, y 43-320), large "00:00" digits, a 98x26 `#16A34A` button, a "Skip" link, no task row or "Change task" (KF-010), no footer band, labels 258x12.
@@ -2930,6 +2942,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: raise the body limit on the attachment route to about 14 MiB (base64 of 10 MiB), or document the real cap.
 
 ### KF-375 — Tab title and pill freeze while the timer popup is open [LOW]
+- Note 2026-10-16: wording per the 10-16 references (ref 03, ref 07): after a stop with a task still selected the title returns to the idle title "25:00 <board>", not the plain board name; the point of this defect (the title must not freeze on the stopped countdown) is met.
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-126). Evidence: .dev/evidence/r2-battery-20261016/modal/s08.out, .dev/evidence/r2-battery-20261016/modal/s09.out, .dev/evidence/r2-battery-20261016/modal/s10.out
 - KanbanFlow: the tab title counts down live (KF-020) and returns to normal after a stop (KF-232).
 - ChipFlow: with the popup open, the pill and title stopped at "00:53" while the pomodoro ran to 0:00 and still read "00:53 ChipFlow Golden Master" after the status went idle. After a discard with the popup open the title kept "00:56". Both correct themselves once the popup closes. KF-232 fixed the after-close case only.
@@ -2948,6 +2962,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: use `user_initials` for card chips.
 
 ### KF-378 — Board-header and card avatars lack the timing play badge [LOW]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-011). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-011-header-avatar.png, .dev/evidence/r2-battery-20261016/pixel/measure/G.txt
 - KanbanFlow (10-05 capture, timing): the board-header "CS" avatar carries a small black play badge at (268,67), and timing card avatars carry one too.
 - ChipFlow: no badge; the pixel at (268,67) is `#F0F0F0`.
@@ -2960,6 +2975,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: call `BoardChrome.openHelp()` from the button.
 
 ### KF-380 — Expected 401/400 responses log console errors on /login and in manual time entry [LOW]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-006; admin, R2-208; modal, R2-137). Evidence: .dev/evidence/r2-battery-20261016/board/shots/login-fresh.png.log.json, .dev/evidence/r2-battery-20261016/admin/shots/setup-first-run.log.json, .dev/evidence/r2-battery-20261016/modal/s12-log.log.json
 - KanbanFlow: n/a. Contract: the verifier gate requires zero console errors (`.dev/VERIFIER_SPEC.md`).
 - ChipFlow: every `/login` load, with or without a cookie, logs two console errors because the timer bootstrap fetches `/api/timer/settings` and `/api/timer/status` before sign-in (both 401). The manual time entry's future-time check is a server 400 on `POST /api/time/manual`, which Chromium also logs; its wording and dialog state are correct.
@@ -3021,6 +3037,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: render "0h".
 
 ### KF-390 — Timer log day header and manual-entry wording differ [LOW]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-139). Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
 - KanbanFlow: day header "Friday, 10 July — 3h 20m — 8 Pomodoros" (day before month); manual rows "Manually added time" (frame review §c v3-02891).
 - ChipFlow: "Friday, October 16 — 4m — 9 Pomodoros"; manual rows "Manual entry". Status lines, dots and per-day "Add time entry" match.
@@ -3160,12 +3177,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: reserve the controls' width in the header so the title truncates before them.
 
 ### KF-412 — Timer entries are grouped by the UTC day, not the local day [MEDIUM]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-17 by the timer verifier (verify-e); fix in progress on branch fix/timer. Evidence: scratchpad verify-e report (candidate 1)
 - KanbanFlow: the timer's TODAY list and the long-break cycle follow the user's local day.
 - ChipFlow: `entries_today`, the log's `day_key` and `pomodoro_count` bucket by UTC, so in Chicago the TODAY list and the long-break cycle reset at 19:00 local and a 7:30 PM entry is grouped under the next day.
 - Fix direction: bucket by the server's local day, the same zone the due-date code uses.
 
 ### KF-413 — The long break defaults to 10 minutes; KanbanFlow's default is 15 [LOW]
+- Status: RELEASED 2026-10-16 — batch-34, production d230d76 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-34-20261016/verify-e3-report.md (integrated release candidate), earlier passes in verify-e-report.md and verify-e2-report.md.
 - Status: OPEN — filed 2026-10-17 from the live timer reference; fix in progress on branch fix/timer. Evidence: .dev/evidence/kf-reference-20261016/timer/08-settings-general.jpg
 - KanbanFlow: timer settings > General shows a default long break of 15 minutes (live, 2026-10-16).
 - ChipFlow: defaults to 10 minutes (KF-283 followed the older GM-112 capture).
