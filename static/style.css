@@ -4628,9 +4628,9 @@ button.tm-label-chip { cursor: pointer; }
 
 .bshell-back-icon {
   flex: none;
-  width: 10px;
-  height: 16px;
-  margin-right: 7px;
+  width: 12px;
+  height: 18px;
+  margin-right: 5px;
   position: relative;
   top: -1px;
 }
@@ -4656,10 +4656,11 @@ button.tm-label-chip { cursor: pointer; }
   padding: 10px 0 1rem;
 }
 
-/* KF-331: the reference's nav pitch is 38.75px (rows step 39 39 38 39). */
+/* KF-331: 38.796875px reproduces the reference's nav row rounding exactly
+   (text tops step 39 39 38 39 39 39 39 38). */
 .bshell-nav-item {
   display: block; padding: 0 1rem 0 1.5rem;
-  font-size: 18px; line-height: 38.75px;
+  font-size: 18px; line-height: 38.796875px;
   color: #444; text-decoration: none;
 }
 
