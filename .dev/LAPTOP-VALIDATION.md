@@ -48,9 +48,30 @@ Expected at handoff:
 - `cargo test` reports 96 passed and 0 failed. The count can grow
   as tests are added. Failures cannot.
 - The node check prints nothing and exits 0.
-- The tracker counter prints `OPEN: 1 (KF-331)`, `DEPLOYED: 0`, a
-  RELEASED count of 109, and an excluded line of
-  `FIXED=56 CLOSED=2 INVALID=2`.
+- The tracker counter prints `OPEN: 2 (KF-356 KF-357)`, `DEPLOYED: 0`,
+  a RELEASED count of 110, and an excluded line of
+  `FIXED=56 CLOSED=2 INVALID=2` (as of the KF-331 release,
+  2026-10-16; the handoff value was OPEN 1, RELEASED 109).
+
+### Caveats found on Chip's laptop (2026-10-16)
+
+- Two due-date tests (`format_due_card_weekday_near_absolute_far`,
+  `format_due_modal_relative_and_done_marker`) fail on any host whose
+  local zone is not UTC: they build a local wall-clock string and
+  append `Z`. Run `TZ=UTC cargo test` until the tests are fixed.
+- `~/.cargo/config.toml` shares `build.build-dir` across checkouts, so
+  a release build in one worktree can reuse another worktree's embedded
+  `static/` files. Pass `--config 'build.build-dir="target/build"'` to
+  every cargo command in a worktree whose output is compared or
+  released, and confirm the binaries differ before comparing them.
+- Agents may not run `python3` on this laptop. `.dev/tools/tracker_count.lua`
+  (`luajit .dev/tools/tracker_count.lua .dev/kf-parity-defects.md`)
+  prints the same report as the Python counter and reproduced the
+  handoff counts above. In place of `node --check`,
+  `/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc -e "checkSyntax('<abs path>/static/app.js')"`
+  exits 0 on valid syntax and 3 on a syntax error.
+- green-box's LAN address is unreachable away from home; reach it over
+  the tailnet with `ssh -o HostName=100.121.59.71 greenbox`.
 
 ## A throwaway instance on port 3200
 
