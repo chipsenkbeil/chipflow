@@ -1315,6 +1315,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add a per-board `color_legend` boolean (default OFF for new boards); put a "Color legend" toggle in the board Menu (≡ Menu, board-bar far right); when ON render the footer as one labeled segment per enabled board color in palette order using custom names (keep KF-210 bottom-anchored + KF-212 full-bleed); when OFF render nothing. Migrate existing boards to ON (preserves their current rendering). Related: KF-205, KF-121 (both divergent, based on Chip's customized board — re-evaluate after this lands); KF-083 (default color), KF-084 (color rename dialog).
 
 ### KF-223 — Column menu contents differ from KanbanFlow [MED | FIXED | Columns]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-b4-report.md (27 px count-only strip; vertical name clipped with an ellipsis; 377 px details popover on the header rule).
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-041, R2-042, R2-044, R2-047): the "verified live" Collapse and Show details specs in this section are contradicted by the recovered 09-30 captures. Collapsed strip: KanbanFlow is 27 px wide (To Do x 479-505; adjacent strips 625-651 and 653-679), its `#EEEEEE` header keeps the normal height (y 81-115) and holds only the count ("5", `#111111`, 7x9), the name "TO DO" (`#555555`) runs vertically in the white body (y 146-199) reading top to bottom, and an overdue column gets only a 3 px `#FF8080` line at the header bottom (y 116-118), no text. ChipFlow's strip is 21 px (x 474-494), its white header stretches to y 229 (so every column header grows), the count box is 10x9, the name sits in the header reading bottom to top, and a vertical "1 overdue task" in `#DC2626` (y 98-167) overprints the count with no line. Show details: KanbanFlow draws a 377 px box (x 56-432, y 117-183) with a `#C3C3C3` border, an `#EEEEEE` title band (y 118-147) and a centered `#666666` title; ChipFlow draws a 223 px rounded white card (x 5-227, y 234-309) with a left-aligned `#111827` title and no band. KF-039 carries the same contradicted strip spec. Severity HIGH (the strip breaks the header row height for the whole board). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-041-042-strip.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-043-044-strips.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-047-popover.png, .dev/evidence/r2-battery-20261016/pixel/measure/B.txt, .dev/evidence/r2-battery-20261016/pixel/measure/D.txt
 - Status: FIXED 2026-09-30 — independent verifier passed (diff review, node --check, cargo fmt --check, cargo build, clippy 0 warnings, cargo test 56/56; functional tests on :3108 with fresh DB: 34/34 — menu exactly Edit/Collapse/Show details, popover position/content/dismiss, collapse → 22px white strip, red badge only when WIP exceeded, red vertical overdue indicator with exact tooltips, uppercase vertical name, click-anywhere-to-expand, collapse label swaps to "Expand", persistence across reload AND full server restart; regression: ≡ board Menu, KF-222 legend toggle, Edit dialog all OK). Deployed in `7a9a465eb8af69ef61501f6761c3d31ab1720857`; `systemctl is-active chipflow.service` → active and green-box-local `/api/v1/version` reports the new SHA. (Deploy report `.dev/evidence/deploy-2026-09-30-kf223.md`.)
 - ChipFlow behavior: column menu has 6 items — Edit / Move left / Move right / Add to left / Add to right / Delete.
@@ -2821,6 +2822,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: render the board page's global top bar on the board settings pages, keeping the container 40 px below it.
 
 ### KF-358 — Board has no framed gutter and column bodies stop after the last card [HIGH]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-b4-report.md (gutter, frame, full-height bodies; frame top and header rule stay while scrolling, including over folded strips; layout-view divider).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-013). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-013-board-bottom.png, .dev/evidence/r2-battery-20261016/pixel/measure/A-ae.txt
 - KanbanFlow (09-30 capture, 1919x998): the board sits in a 10 px `#F2F2F2` gutter with a 1 px `#C3C3C3` frame at x 10 / 1908 and y 80 / 988. Columns are 379 px with `#E4E4E4` separators at x 390/770/1149/1529, and the white bodies run to y 987 whatever the card count.
 - ChipFlow: the table spans x 0-1918 with no frame, the bodies end at y 505 (last card plus padding), and the `#EEF0F3` page shows below. Diff 1,308,830 of 1,769,318 px below the header row. KF-355's white bodies hold, but only behind cards.
@@ -2908,6 +2910,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: implement the three settings, or remove them from the dialog.
 
 ### KF-372 — Built-in Pomodoro template seeds the plain 10-colour palette [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-028). Evidence: .dev/evidence/r2-battery-20261016/board/s3-boards.json
 - KanbanFlow (KF-331 capture): "1 Pomodoro (Default)", "2 Pomodori", "3 Pomodori", ">3 Pomodori" enabled, the other 6 colours disabled. The 09-30 batteries verified this on ChipFlow (`.dev/fidelity-status.md`), and the template's own description promises pomodori colours.
 - ChipFlow: a board created from the template gets Yellow through White, all 10 enabled with plain names (reproduced by the pixel and modal batches too). Columns and starter tasks still match GM-141 (KF-307, KF-308).
@@ -2920,6 +2923,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: keep dark text on task-coloured surfaces, and give headers, the board bar, the modal and settings inputs AA-contrast dark styles.
 
 ### KF-374 — API attachment uploads over ~1.5 MB fail with 413 despite the documented 10 MiB cap [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-211). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log
 - KanbanFlow: n/a. Contract: the "10 MiB cap" in `agent-guide.md` and `agents/skill.md`, and `Db::MAX_ATTACHMENT_BYTES`.
 - ChipFlow: no `DefaultBodyLimit` is set, so axum's 2 MiB default applies to the base64 JSON body. 1,500,000 raw bytes are accepted; 1,600,000 and 8,000,000 get 413 "Failed to buffer the request body".
@@ -2998,6 +3002,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: raise the placeholder rule's specificity.
 
 ### KF-387 — Task grouping_date is stored but never used [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c3-report.md (grouping_date drives Done groups; strict YYYY-MM-DD; real drags inside a Done group persist; cross-board Done drops land beside the target card).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-057). Evidence: .dev/evidence/r2-battery-20261016/board/s8d-cols.json
 - KanbanFlow: has an "Edit grouping date" action (v1-S2, KF-050); KF-140's live menu omits it, so it may appear only on Done-column cards (needs a capture). Contract: the task API accepts and documents `grouping_date`.
 - ChipFlow: there is no UI to edit it, and a value set through PATCH is stored but the Done group still comes from `completed_at`. The agent docs also say `null` clears it; only `""` does (KF-398).
@@ -3022,6 +3027,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: day-first date and KanbanFlow's wording.
 
 ### KF-391 — Statistics Highscores shows a "0 Best day" with no data [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-151). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/single-board-01-stats-empty.png
 - KanbanFlow: empty statistics show "No data to display" (KF-092).
 - ChipFlow: on an empty DB, Highscores shows "0 Best day — Friday, Oct 16" while the other tabs show the empty state.
@@ -3052,30 +3058,35 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: show the error inside the dialog, or disable "Copy palette" until a board is picked.
 
 ### KF-396 — Whitespace-only or over-long board name returns a bare HTTP 500 page [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-193). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/bs-general-03-blank.png
 - KanbanFlow: no capture.
 - ChipFlow: a spaces-only name passes the browser's `required` check; it, or any name over 100 characters, makes `POST /b/{id}/settings` return 500 with the plain text "board name must be 1-100 characters".
 - Fix direction: return 400 and re-render the General tab with the message.
 
 ### KF-397 — CHIPFLOW_API_TOKEN cannot bootstrap the API before /setup [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-210). Evidence: .dev/evidence/r2-battery-20261016/admin/server-headless.log
 - KanbanFlow: n/a. Contract: `agent-guide.md:19` and `deploy/nixos/README.md:38` promise headless bootstrap "without touching the UI".
 - ChipFlow: the auth middleware checks `user_count()==0` first and sends every request, token-authenticated `/api/*` calls included, to `/setup` with a 303. After setup the env token works and still cannot mint tokens (403).
 - Fix direction: let the env token through before setup (or add an API setup endpoint), or correct the docs to say `/setup` comes first.
 
 ### KF-398 — Agent guide and skill describe API behaviour that does not exist [LOW]
+- Status: OPEN — 2026-10-17: most doc corrections shipped in batch-33 (1c0c67a), but verify-c3 found the docs promised a 400 for non-four-digit years, signs and odd separators the binary accepted. The rest is fixed and verified on branch fix/due-followup (7dc6944 behavior, f5be0fe docs; verify-d1 and verify-d2 PASS), pending release.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-211). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log, .dev/evidence/r2-battery-20261016/admin/api-battery2.log, .dev/evidence/r2-battery-20261016/admin/seed-log.out
 - KanbanFlow: n/a. Contract: AGENTS.md requires `agent-guide.md`, `agents/skill.md` and `agents.json` to stay accurate.
 - ChipFlow: the docs are wrong in 6 places: stopped pomodori do not count toward the task total (`pomodori_completed` stays 0, matching KF-200); no "✓ <date>" stamp appears when a task moves to Done; `GET /api/tasks/{id}` has no `attachments` or `download_url`; `grouping_date: null` is ignored (only `""` clears); comments, attachments, time entries, `completed_at` and `due_at` are RFC3339 strings, not Unix seconds; the attachment cap is ~1.5 MB, not 10 MiB (KF-374). The discovery files themselves are public and their links resolve.
 - Fix direction: correct both docs, or change the API to match (null clears, attachments listed).
 
 ### KF-399 — OpenAPI omits three /api routes [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-212). Evidence: .dev/evidence/r2-battery-20261016/admin/route-ops.txt, .dev/evidence/r2-battery-20261016/admin/openapi-ops.txt
 - KanbanFlow: n/a. Contract: `agent-guide.md` calls `/api/v1/openapi.json` the contract for every endpoint.
 - ChipFlow: the spec has 80 operations against 106 in the router; GET `/api/tasks/{id}/card`, GET `/api/tasks/{id}/modal` and GET `/api/timer/settings` have no `#[utoipa::path]`. HTML pages are covered inconsistently (board settings pages are in the spec, report pages and `/setup` are not).
 - Fix direction: annotate the three routes and decide whether HTML pages belong in the spec.
 
 ### KF-400 — Task API stores unparseable due_at strings [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c3-report.md (DST transition seconds in London, New York and Dublin; seconds = 60 is a 400 in every form; RFC3339 stored as sent).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-215). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log
 - KanbanFlow: n/a. Contract: KF-348's fix direction (reject what the renderer cannot parse); KF-348 fixed only bare local datetimes.
 - ChipFlow: POST and PATCH accept "next tuesday", "garbage" and "2026-13-45" (201/200) and store them verbatim; the card then shows no due date. The modal batch saw the same for "2026-10-25 01:30" (ambiguous at the UK DST change) and "2027-03-28 01:30" (nonexistent) via `normalize_due_input` (`src/routes.rs` ~2236), and those dues still appear on the calendar while vanishing from the card, modal and iCal feed.
@@ -3088,6 +3099,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add KanbanFlow's Delete button to the dialog, PATCHing `due_at: null` (and clearing `due_repeat`/`due_done`) on the open task only.
 
 ### KF-402 — Re-saving an unchanged due date resets due_done when the timestamp format differs [LOW]
+- Status: RELEASED 2026-10-17 — batch-33, production 1c0c67a (release commit 9be2b41 plus a test-only commit; homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy). Blind verification: .dev/evidence/batch-33-20261017/ verify-c-report.md, regression-checked in verify-c3-report.md.
 - Status: OPEN — filed 2026-10-16 from the KF-360 verification (scenario s18). Evidence: .dev/evidence/kf360-hotfix-20261016/kf360-verify-20261016.md (observation 2)
 - KanbanFlow: n/a (data integrity; an unchanged due date keeps its done state).
 - ChipFlow: the PATCH handler resets `due_done` when `due_at != existing.due_at` as strings (`src/routes.rs` ~2097), so a stored `…T08:00:00Z` re-sent by the dialog as `…T08:00:00.000Z` counts as a change and clears the done flag.
@@ -3122,3 +3134,75 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow: n/a (data integrity).
 - ChipFlow: the last-board guard counts archived boards, so with one active and one archived board the active one can be deleted, after which `/` redirects into the archived board.
 - Fix direction: count only active boards in the guard (or unarchive one before allowing the delete).
+
+### KF-408 — A rejected task write can still save part of the request [HIGH]
+- Status: OPEN — filed 2026-10-17 by the agentctl items 1-3 verifier; the owner made it a prerequisite for claims. Fix in progress on branch feat/agentctl-api. Evidence: scratchpad verify-i1 report (mixed PATCH case)
+- KanbanFlow: n/a (API integrity). Owner rule: a 4xx means nothing changed.
+- ChipFlow: `PATCH /api/tasks/{id}` with `{"metadata":{"z":1},"estimate_hours":-5}` returns 400 but stores `z`; a name plus a bad estimate stores the name; `POST /api/tasks` with a bad estimate returns 400 after the task exists.
+- Fix direction: validate the whole request before any write, then apply every write in one redb write transaction, for every task-mutating route.
+
+### KF-409 — Saving the due dialog unchanged drops the seconds and clears Done [MEDIUM]
+- Status: OPEN — filed 2026-10-17 by the batch-33 verifier (verify-c3); fix verified on branch fix/due-followup (000c5ff), pending release. Evidence: .dev/evidence/batch-33-20261017/verify-c3-report.md (observation 1)
+- KanbanFlow: re-saving an unchanged due date keeps it.
+- ChipFlow: on a due of `2026-10-20T10:00:59Z` marked done, opening the due dialog and pressing Add unchanged saves `T10:00:00.000Z` and clears due_done.
+- Fix direction: when neither field changed, send the stored due string back unchanged.
+
+### KF-410 — Saving the due dialog unchanged moves the second occurrence of a repeated hour [LOW]
+- Status: OPEN — filed 2026-10-17 by the batch-33 verifier (verify-c3); fix verified on branch fix/due-followup (000c5ff), pending release. Evidence: .dev/evidence/batch-33-20261017/verify-c3-report.md (observation 2)
+- KanbanFlow: n/a (exact instant should be kept).
+- ChipFlow: in Europe/London, a due of `2026-10-25T01:30:00+00:00` (the second 01:30) re-saved unchanged becomes `00:30Z`, one hour earlier, and due_done clears.
+- Fix direction: same as KF-409; keep the stored instant on an unchanged save.
+
+### KF-411 — A long column name runs under the column's green add button [LOW]
+- Status: OPEN — filed 2026-10-17 by the batch-33 verifier (verify-c3); present on the baseline too. Evidence: .dev/evidence/batch-33-20261017/verify-c3-report.md (observation 3)
+- KanbanFlow: the column title is truncated before the header controls.
+- ChipFlow: the title's ellipsis runs underneath the "+" add button.
+- Fix direction: reserve the controls' width in the header so the title truncates before them.
+
+### KF-412 — Timer entries are grouped by the UTC day, not the local day [MEDIUM]
+- Status: OPEN — filed 2026-10-17 by the timer verifier (verify-e); fix in progress on branch fix/timer. Evidence: scratchpad verify-e report (candidate 1)
+- KanbanFlow: the timer's TODAY list and the long-break cycle follow the user's local day.
+- ChipFlow: `entries_today`, the log's `day_key` and `pomodoro_count` bucket by UTC, so in Chicago the TODAY list and the long-break cycle reset at 19:00 local and a 7:30 PM entry is grouped under the next day.
+- Fix direction: bucket by the server's local day, the same zone the due-date code uses.
+
+### KF-413 — The long break defaults to 10 minutes; KanbanFlow's default is 15 [LOW]
+- Status: OPEN — filed 2026-10-17 from the live timer reference; fix in progress on branch fix/timer. Evidence: .dev/evidence/kf-reference-20261016/timer/08-settings-general.jpg
+- KanbanFlow: timer settings > General shows a default long break of 15 minutes (live, 2026-10-16).
+- ChipFlow: defaults to 10 minutes (KF-283 followed the older GM-112 capture).
+- Fix direction: default to 15 for settings not yet saved; keep values a user has saved.
+
+### KF-414 — Safari cannot read due dates written with a lowercase z [MEDIUM]
+- Status: OPEN — filed 2026-10-17 by the KF-398 docs verifier (verify-d2); fix verified on branch fix/due-safari (9cfcd03), pending release.
+- KanbanFlow: n/a (cross-browser correctness).
+- ChipFlow: the server stores RFC3339 due values as sent, including a lowercase `t`/`z` or a space separator, which the docs allow. JavaScriptCore returns Invalid Date for a lowercase `z`, so in Safari such dues vanish from the calendar, the date filter, the due dialog prefill and the due report, and an unchanged save in the dialog erases the due date.
+- Fix direction: parse every due value in the client through one helper that normalizes the documented forms.
+
+### KF-415 — The server never shuts down cleanly, so redb needs crash repair after every restart [MEDIUM]
+- Status: OPEN — filed 2026-10-17 by the schema-version builder and verifier; fix in progress on branch feat/schema-version (f4b7f95).
+- KanbanFlow: n/a (operations).
+- ChipFlow: `main` has no graceful shutdown, so `systemctl stop` or restart leaves the redb file needing repair on the next open.
+- Fix direction: handle SIGTERM and SIGINT with axum's graceful shutdown and drop the database handle so redb closes the file cleanly.
+
+### KF-416 — Calendar day columns have unequal widths and can overflow the header [LOW]
+- Status: OPEN — filed 2026-10-17 by the KF-414 verifier (verify-d3); present on the baseline too.
+- KanbanFlow: n/a until compared with the premium calendar; the grid should keep equal day columns.
+- ChipFlow: day columns size to their content, so with long task chips the grid runs past the header's close button (grid right edge about x 1492 against the header at about 1409).
+- Fix direction: fixed-width day columns with truncated chips.
+
+### KF-417 — Clearing the due dialog's time field silently saves 09:00 [LOW]
+- Status: OPEN — filed 2026-10-17 by the due-date verifier (verify-d1); present on the baseline too.
+- KanbanFlow: the due dialog requires a time and shows "Invalid date or time" when it is empty.
+- ChipFlow: an empty time field saves the due at 09:00 while the field is shown empty.
+- Fix direction: refuse an empty time with KanbanFlow's message.
+
+### KF-418 — Unpadded grouping_date values stored before the strict rule are ignored without notice [LOW]
+- Status: OPEN — filed 2026-10-17 by the stream C verifier (verify-c2).
+- KanbanFlow: n/a.
+- ChipFlow: before batch-33 any string was stored as `grouping_date`; values like "2026-1-5" already in a database are now ignored for Done grouping, are not migrated, and the API still returns them.
+- Fix direction: normalize valid unpadded dates on read or clear invalid ones, and report what was changed.
+
+### KF-419 — A task created directly in the Done column has no completion time [LOW]
+- Status: OPEN — filed 2026-10-17 by the stream C verifier (verify-c2).
+- KanbanFlow: a task in Done shows under its completion date group.
+- ChipFlow: a task POSTed straight into the Done column has `completed_at: null` and groups under "Completed" rather than "Today".
+- Fix direction: set `completed_at` when a task is created in an is_done column.
