@@ -1,0 +1,50 @@
+KF 'In Review' ink:
+box x 1309-1376 y 93-103 (68x11) centroid 1342.42,98.95 mass 58958
+CF 'In Review' ink:
+box x 1304-1381 y 98-109 (78x12) centroid 1342.42,104.31 mass 83945
+KF 'In Progress 5/3' ink:
+box x 907-1019 y 94-106 (113x13) centroid 957.45,99.42 mass 84535
+CF 'In Progress 5/3' ink:
+box x 898-1020 y 98-112 (123x15) centroid 952.37,104.69 mass 113547
+KF WIP count '5 / 3' ink x990-1030:
+box x 997-1019 y 96-104 (23x9) centroid 1007.24,100.09 mass 15250
+CF WIP count ink x993-1030:
+box x 998-1020 y 101-109 (23x9) centroid 1008.71,105.06 mass 16172
+KF count color px:
+           762: (238,238,238,255) #EEEEEEFF srgba(238,238,238,1)
+            16: (139,0,0,255) #8B0000FF DarkRed
+             4: (213,178,178,255) #D5B2B2FF srgba(213,178,178,1)
+             4: (144,13,13,255) #900D0DFF srgba(144,13,13,1)
+CF count color:
+           725: (235,235,235) #EBEBEB grey92
+             7: (232,235,235) #E8EBEB srgb(232,235,235)
+             6: (139,0,0) #8B0000 DarkRed
+             5: (235,220,176) #EBDCB0 srgb(235,220,176)
+KF In Progress red line rows x=900:
+110-115 (6) #EEEEEE
+116-118 (3) #FF8080
+119-125 (7) #FFFFFF
+CF red line x=900:
+115-120 (6) #EBEBEB
+121-123 (3) #FF8080
+124-130 (7) #EBEBEB
+KF red line extent y=117:
+765-769 (5) #C3C3C3
+770-770 (1) #D3D3D3
+771-778 (8) #C3C3C3
+779-1140 (362) #FF8080
+1141-1148 (8) #C3C3C3
+1149-1149 (1) #D3D3D3
+1150-1155 (6) #C3C3C3
+CF red line extent y=122:
+765-766 (2) #EBEBEB
+767-767 (1) #D4D7DC
+768-776 (9) #EBEBEB
+777-777 (1) #EBE6E6
+778-778 (1) #FF8585
+779-1138 (360) #FF8080
+1139-1139 (1) #FF8585
+1140-1140 (1) #EBE6E6
+1141-1149 (9) #EBEBEB
+1150-1150 (1) #D4D7DC
+1151-1155 (5) #EBEBEB

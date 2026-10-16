@@ -1,0 +1,57 @@
+{
+  "url": "http://127.0.0.1:3250/login",
+  "out": "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/board/shots/login-fresh.png",
+  "viewport": {
+    "width": 1905,
+    "height": 1000
+  },
+  "deviceScaleFactor": 1,
+  "fullPage": false,
+  "waitMs": 1500,
+  "playwrightVersion": "1.63.0",
+  "capturedAt": "2026-10-16T15:25:52.524Z",
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://127.0.0.1:3250/api/timer/settings",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "location": {
+        "url": "http://127.0.0.1:3250/api/timer/status",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": [
+    {
+      "url": "http://127.0.0.1:3250/api/timer/settings",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:3250/api/timer/status",
+      "status": 401
+    }
+  ],
+  "browserVersion": "153.0.8010.12",
+  "status": 200,
+  "finalUrl": "http://127.0.0.1:3250/login",
+  "layout": {
+    "innerWidth": 1905,
+    "clientWidth": 1905,
+    "scrollbarWidth": 0,
+    "scrollHeight": 1000,
+    "devicePixelRatio": 1
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "name": "setup-first-run",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "playwright": "1.63.0",
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:3270/login"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:3270/login"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:3270/login?error=1"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:3270/login?error=1"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:3270/login?error=1"
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "url": "http://127.0.0.1:3270/login?error=1"
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": [
+    {
+      "url": "http://127.0.0.1:3270/api/timer/settings",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/timer/status",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/timer/settings",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/timer/status",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/timer/settings",
+      "status": 401
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/timer/status",
+      "status": 401
+    }
+  ],
+  "dialogs": [],
+  "notes": [
+    {
+      "root_redirects_to": "http://127.0.0.1:3270/setup"
+    },
+    {
+      "intro": "Welcome! Create your admin account to get started."
+    },
+    {
+      "short_pw_error": "Password must be at least 8 characters."
+    },
+    {
+      "mismatch_error": "Passwords do not match."
+    },
+    {
+      "blank_user_error": "Choose a username."
+    },
+    {
+      "after_create_url": "http://127.0.0.1:3270/login"
+    },
+    {
+      "bad_login_url": "http://127.0.0.1:3270/login?error=1"
+    },
+    {
+      "bad_login_msg": "Invalid username or password."
+    },
+    {
+      "unknown_user_msg": "Invalid username or password."
+    },
+    {
+      "good_login_url": "http://127.0.0.1:3270/b/06aa3032-0bd5-465f-83e8-5b335a86f198"
+    },
+    {
+      "title": "General — ChipFlow"
+    },
+    {
+      "setup_revisit_url": "http://127.0.0.1:3270/b/06aa3032-0bd5-465f-83e8-5b335a86f198"
+    }
+  ],
+  "browser": "153.0.8010.12"
+}

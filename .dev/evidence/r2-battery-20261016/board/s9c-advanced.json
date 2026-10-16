@@ -1,0 +1,30 @@
+{
+  "sub": {
+    "hidden": true,
+    "display": "none",
+    "box": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "style": "left: 4px; top: 4px;",
+    "items": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done"
+    ]
+  },
+  "click": "not clickable: TimeoutError: locator.click: Timeout 3000ms exceeded.",
+  "colAfter": "To Do",
+  "log": {
+    "name": "s9c",
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "badResponses": [],
+    "dialogs": []
+  }
+}

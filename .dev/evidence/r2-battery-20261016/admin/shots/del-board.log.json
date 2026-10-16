@@ -1,0 +1,52 @@
+{
+  "name": "del-board",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "playwright": "1.63.0",
+  "consoleErrors": [],
+  "pageErrors": [
+    "ReferenceError: showConfirmDialog is not defined",
+    "ReferenceError: showConfirmDialog is not defined"
+  ],
+  "failedRequests": [],
+  "httpErrors": [],
+  "dialogs": [],
+  "notes": [
+    {
+      "heading": "Delete board “Dale's \"fidelity\" <test> & co”?"
+    },
+    {
+      "warning": [
+        "This will permanently delete the board Dale's \"fidelity\" <test> & co and all of its columns, swimlanes, tasks, time entries, and task colors.",
+        "This cannot be undone."
+      ]
+    },
+    {
+      "buttons": [
+        "Cancel",
+        "Archive board",
+        "Delete board"
+      ]
+    },
+    {
+      "confirm_visible": false
+    },
+    {
+      "confirm_message": null
+    },
+    {
+      "after_cancel_url": "http://127.0.0.1:3270/b/98436f65-fadb-4f7c-bb06-f494d3c61b23/settings/delete"
+    },
+    {
+      "after_cancel_dialog_hidden": true
+    },
+    {
+      "exists_after_cancel": true
+    }
+  ],
+  "browser": "153.0.8010.12",
+  "error": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#confirm-ok')\u001b[22m\n\n    at /private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/admin/d-delete.mjs:27:96\n    at async scenario (/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/admin/lib.mjs:72:5)\n    at async file:///private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/admin/d-delete.mjs:6:1"
+}

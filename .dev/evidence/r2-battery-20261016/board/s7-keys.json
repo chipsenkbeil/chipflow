@@ -1,0 +1,99 @@
+{
+  "dialogRows": [
+    "V — Open Move dialog",
+    "T — Open Timer menu",
+    "P — Open Reports menu",
+    ". — Open More menu",
+    "↑ ↓ — Navigate subtask list",
+    "Cmd + ↑ ↓ — Move subtask in list",
+    "Esc — Close window / discard changes",
+    "Cmd + Enter — Save changes",
+    "Delete — Delete task"
+  ],
+  "dialogTitle": "Keyboard shortcuts",
+  "boardT": {
+    "before": false,
+    "afterT": true,
+    "afterTT": false
+  },
+  "boardP": {
+    "open": [
+      "reports-menu"
+    ],
+    "items": [
+      "Time spent",
+      "Pomodoro statistics"
+    ]
+  },
+  "modal": {
+    "T": [
+      "tm-timer-menu"
+    ],
+    "P": [
+      "reports-menu"
+    ],
+    "pItems": [
+      "Time log",
+      "Print",
+      "History",
+      "Time in column"
+    ],
+    "Y": [
+      "manual-time-overlay"
+    ],
+    "E": [
+      "estimate-dialog"
+    ],
+    "V": [
+      "move-task-dialog"
+    ],
+    "dot": [
+      "tm-more-menu"
+    ],
+    "stillOpen": true
+  },
+  "esc": {
+    "afterFirst": {
+      "modal": true,
+      "draft": ""
+    },
+    "afterSecond": {
+      "modal": false
+    }
+  },
+  "ctrlEnter": {
+    "modalClosed": true,
+    "cardText": "Build payment webhook handler — édité ✓\n0h / 8h\nDue: Sunday 5:00 PM",
+    "apiName": "Build payment webhook handler — édité ✓"
+  },
+  "metaEnter": {
+    "modalClosed": true,
+    "apiName": "Build payment webhook handler",
+    "cardHasOld": 0
+  },
+  "tInField": {
+    "menus": [],
+    "value": "Build payment webhook handlert"
+  },
+  "deleteKey": {
+    "open": [
+      "confirm-dialog"
+    ],
+    "confirmText": "Delete task Delete this task and its time entries? Cancel Delete",
+    "gone": true,
+    "cardGone": true,
+    "modalClosed": true,
+    "count": "5",
+    "countExpected": 5
+  },
+  "log": {
+    "name": "s7",
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      "DELETE http://127.0.0.1:3250/api/tasks/d907cc8c-7d2e-493e-97ae-869fe6e2b74d net::ERR_ABORTED"
+    ],
+    "badResponses": [],
+    "dialogs": []
+  }
+}

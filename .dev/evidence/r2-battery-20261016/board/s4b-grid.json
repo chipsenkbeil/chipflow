@@ -1,0 +1,120 @@
+{
+  "heads": [
+    {
+      "cls": "corner-cell",
+      "col": "(corner)",
+      "x": 0
+    },
+    {
+      "cls": "columnHeader",
+      "col": "Backlog",
+      "x": 150
+    },
+    {
+      "cls": "columnHeader",
+      "col": "To Do",
+      "x": 495
+    },
+    {
+      "cls": "columnHeader",
+      "col": "In Progress",
+      "x": 839
+    },
+    {
+      "cls": "columnHeader",
+      "col": "In Review",
+      "x": 1184
+    },
+    {
+      "cls": "columnHeader",
+      "col": "Done",
+      "x": 1528
+    }
+  ],
+  "rows": [
+    {
+      "label": "(no label th)",
+      "cells": [
+        {
+          "tag": "TD",
+          "dataCol": "Backlog",
+          "x": 0,
+          "visuallyUnder": "(corner)"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "To Do",
+          "x": 150,
+          "visuallyUnder": "Backlog"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "In Progress",
+          "x": 495,
+          "visuallyUnder": "To Do"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "In Review",
+          "x": 839,
+          "visuallyUnder": "In Progress"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "Done",
+          "x": 1184,
+          "visuallyUnder": "In Review"
+        }
+      ]
+    },
+    {
+      "label": "Lane 2 — renamed",
+      "cells": [
+        {
+          "tag": "TH",
+          "dataCol": "(label)",
+          "x": 0,
+          "visuallyUnder": "(corner)"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "Backlog",
+          "x": 150,
+          "visuallyUnder": "Backlog"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "To Do",
+          "x": 495,
+          "visuallyUnder": "To Do"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "In Progress",
+          "x": 839,
+          "visuallyUnder": "In Progress"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "In Review",
+          "x": 1184,
+          "visuallyUnder": "In Review"
+        },
+        {
+          "tag": "TD",
+          "dataCol": "Done",
+          "x": 1528,
+          "visuallyUnder": "Done"
+        }
+      ]
+    }
+  ],
+  "log": {
+    "name": "s4b",
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "badResponses": [],
+    "dialogs": []
+  }
+}

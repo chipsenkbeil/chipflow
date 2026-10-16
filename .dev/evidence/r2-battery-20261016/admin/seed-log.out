@@ -1,0 +1,35 @@
+T11=f89ab48a-4cf4-4267-a352-455cf85c6b45 T7=ee3ff34e-a3ab-4a7f-b8af-52557bf89e8e T3=e146210d-6b20-4769-a055-9e824e7bda12
+{"pomodoro_minutes":1,"break_activities":[{"id":"91022146-ea75-4c4f-acfb-a61a33eea53b","name":"Stretch","description":"Walk around","daily_goal":2,"daily_limit":null}]}
+# completed pomodoro on #11 (today)
+{"mode":"pomodoro","duration_secs":60}
+{"discarded":false,"minutes":1,"completed":true}
+# stopped pomodoro with reason Email on #7
+{"discarded":false,"minutes":0,"completed":false}
+# stopped pomodoro with reason Meeting on #3
+{"discarded":false,"minutes":0,"completed":false}
+# 31-second stopwatch session on #3
+{"discarded":false,"minutes":0,"completed":false}
+# short break attributed to Stretch
+{"discarded":false,"minutes":0,"completed":true}
+# second completed pomodoro on #11
+{"discarded":false,"minutes":1,"completed":true}
+# manual entries on earlier days, one with labels and a note
+{"id":"80f009d8-6c26-4c7b-83b6-a39e948cb2d0","minutes":75}
+{"id":"747c5d1a-8327-44d2-8a60-c58d65ab977d","minutes":50}
+{"id":"5c208155-6da6-4ddf-8f71-bd0b3d130b7b","minutes":30}
+{"pomodoro_minutes":25}
+# resulting log
+{"date":"Oct 16, 2026","kind":"pomodoro","minutes":1,"badge_code":"P","badge_title":"Pomodoro","interrupt_reason":null,"task_name":"Build payment webhook handler","labels":[],"note":""}
+{"date":"Oct 16, 2026","kind":"stopwatch","minutes":0,"badge_code":"S","badge_title":"Stopwatch","interrupt_reason":null,"task_name":"Research offline sync strategies","labels":[],"note":""}
+{"date":"Oct 16, 2026","kind":"pomodoro","minutes":0,"badge_code":"P","badge_title":"Stopped with reason 'Meeting'","interrupt_reason":"Meeting","task_name":"Research offline sync strategies","labels":[],"note":""}
+{"date":"Oct 16, 2026","kind":"pomodoro","minutes":0,"badge_code":"P","badge_title":"Stopped with reason 'Email'","interrupt_reason":"Email","task_name":"Fix pagination bug in search results","labels":[],"note":""}
+{"date":"Oct 16, 2026","kind":"pomodoro","minutes":1,"badge_code":"P","badge_title":"Pomodoro","interrupt_reason":null,"task_name":"Build payment webhook handler","labels":[],"note":""}
+{"date":"Oct 15, 2026","kind":"manual","minutes":150,"badge_code":"M","badge_title":"Manually added","interrupt_reason":null,"task_name":"Build payment webhook handler","labels":[],"note":""}
+{"date":"Oct 14, 2026","kind":"manual","minutes":30,"badge_code":"M","badge_title":"Manually added","interrupt_reason":null,"task_name":"Build payment webhook handler","labels":[],"note":"Spec reading"}
+{"date":"Oct 13, 2026","kind":"manual","minutes":50,"badge_code":"M","badge_title":"Manually added","interrupt_reason":null,"task_name":"Research offline sync strategies","labels":[],"note":""}
+{"date":"Oct 12, 2026","kind":"manual","minutes":75,"badge_code":"M","badge_title":"Manually added","interrupt_reason":null,"task_name":"Fix pagination bug in search results","labels":["review","pairing"],"note":"Pairing on the fix"}
+{"name":"Research offline sync strategies","pomodori_completed":0,"interruptions":1,"total_minutes":50}
+{"name":"Fix pagination bug in search results","pomodori_completed":0,"interruptions":1,"total_minutes":75}
+{"name":"Build payment webhook handler","pomodori_completed":2,"interruptions":0,"total_minutes":182}
+SEED-LOG-DONE
+rc=0

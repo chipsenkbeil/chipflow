@@ -1,0 +1,297 @@
+{
+  "panel": {
+    "box": [
+      1660,
+      76,
+      245,
+      924
+    ],
+    "viewport": [
+      1905,
+      1000
+    ],
+    "btnBox": [
+      1719,
+      42,
+      33,
+      28
+    ],
+    "btnCovered": false,
+    "headings": [
+      "USER",
+      "COLOR",
+      "DATE",
+      "LABELS"
+    ],
+    "user": [
+      "Show all (selected)",
+      "Timer users",
+      "Unassigned",
+      "audit"
+    ],
+    "color": [
+      "Show all (selected)",
+      "Yellow",
+      "Green",
+      "Blue",
+      "Red",
+      "Orange",
+      "Purple",
+      "Magenta",
+      "Cyan"
+    ],
+    "date": [
+      "Show all (selected)",
+      "No due date",
+      "Overdue",
+      "Due today",
+      "Due tomorrow",
+      "Due in 7 days",
+      "Due in 14 days",
+      "Due in 30 days",
+      "Due in 90 days"
+    ],
+    "labels": [
+      "backend",
+      "bug",
+      "chore",
+      "design",
+      "docs",
+      "feature",
+      "frontend",
+      "research"
+    ],
+    "labelsHtml": "<label class=\"filter-opt\"><input type=\"checkbox\" name=\"f-label\" value=\"backend\"> backend</label><label class=\"filter-opt\"><input type=\"checkbox\" name=\"f-label\" value=\"bug\"> bug</label><label class=\"filter-opt\"><input type=\"checkbox\" name=\"f-label\" value=\"chore\"> chore</label><label class=\"filter-opt",
+    "remember": {
+      "type": "checkbox",
+      "checked": false,
+      "label": "Remember filter"
+    },
+    "bookmarks": "Bookmarks (0)",
+    "bookmarksClickable": "auto",
+    "bg": "rgb(255, 255, 255)",
+    "closedByFunnel": true
+  },
+  "unfiltered": {
+    "cards": 22,
+    "counts": [
+      "Backlog=5",
+      "To Do=5",
+      "In Progress=5 / 3!",
+      "In Review=4",
+      "Done=3"
+    ],
+    "overdue": [
+      "To Do:1 overdue task"
+    ]
+  },
+  "colorBlue": {
+    "cards": [
+      "Set up CI/CD pipeline for staging",
+      "Refactor authentication middleware",
+      "Rewrite user profile page"
+    ],
+    "counts": [
+      "Backlog=1",
+      "To Do=1",
+      "In Progress=0 / 3",
+      "In Review=1",
+      "Done=0"
+    ],
+    "overdue": [
+      "To Do:1 overdue task"
+    ],
+    "expected": [
+      "Set up CI/CD pipeline for staging",
+      "Refactor authentication middleware",
+      "Rewrite user profile page"
+    ]
+  },
+  "colorOrange": {
+    "cards": [
+      "Write API documentation for v2 endpoints",
+      "Build payment webhook handler",
+      "Improve dashboard load time"
+    ],
+    "counts": [
+      "Backlog=0",
+      "To Do=1",
+      "In Progress=1 / 3",
+      "In Review=1",
+      "Done=0"
+    ]
+  },
+  "colorReset": {
+    "cards": 22,
+    "counts": [
+      "Backlog=5",
+      "To Do=5",
+      "In Progress=5 / 3!",
+      "In Review=4",
+      "Done=3"
+    ]
+  },
+  "userUnassigned": {
+    "cards": 22,
+    "expected": 17
+  },
+  "userMe": {
+    "label": "audit",
+    "cards": 22,
+    "expected": 5
+  },
+  "userTimerIdle": {
+    "cards": 0
+  },
+  "userTimerRunning": {
+    "cards": [
+      "Build payment webhook handler"
+    ],
+    "counts": [
+      "Backlog=0",
+      "To Do=0",
+      "In Progress=1 / 3",
+      "In Review=0",
+      "Done=0"
+    ]
+  },
+  "date_none": [
+    "Set up CI/CD pipeline for staging",
+    "Migrate user analytics to new provider",
+    "Research offline sync strategies",
+    "Evaluate error reporting tools",
+    "Write API documentation for v2 endpoints",
+    "Add keyboard shortcuts to task editor",
+    "Refactor authentication middleware",
+    "Add export to CSV feature",
+    "Fix memory leak in image cache",
+    "Implement push notifications",
+    "Update dependencies to latest LTS",
+    "Add two-factor authentication",
+    "Rewrite user profile page",
+    "Improve dashboard load time",
+    "Fix date formatting in reports",
+    "Launch beta signup page",
+    "Set up error monitoring",
+    "Migrate to new design system tokens"
+  ],
+  "date_overdue": [
+    "Fix pagination bug in search results"
+  ],
+  "date_today": [
+    "Implement dark mode toggle"
+  ],
+  "date_tomorrow": [],
+  "date_7": [
+    "Implement dark mode toggle",
+    "Build payment webhook handler"
+  ],
+  "date_14": [
+    "Implement dark mode toggle",
+    "Build payment webhook handler"
+  ],
+  "date_30": [
+    "Implement dark mode toggle",
+    "Build payment webhook handler"
+  ],
+  "date_90": [
+    "Redesign onboarding flow",
+    "Implement dark mode toggle",
+    "Build payment webhook handler"
+  ],
+  "dateExpected": [
+    [
+      "Redesign onboarding flow",
+      "2026-11-15T23:59:59.000Z",
+      false
+    ],
+    [
+      "Implement dark mode toggle",
+      "2026-10-16T16:00:00.000Z",
+      false
+    ],
+    [
+      "Fix pagination bug in search results",
+      "2026-10-11T16:00:00.000Z",
+      false
+    ],
+    [
+      "Build payment webhook handler",
+      "2026-10-18T16:00:00.000Z",
+      false
+    ]
+  ],
+  "dateExpectedUndated": 18,
+  "labelsBoard": [
+    "backend",
+    "chore",
+    "research",
+    "design",
+    "feature",
+    "bug",
+    "docs",
+    "frontend"
+  ],
+  "label1": {
+    "label": "backend",
+    "cards": [
+      "Set up CI/CD pipeline for staging",
+      "Refactor authentication middleware",
+      "Build payment webhook handler",
+      "Set up error monitoring"
+    ],
+    "expected": [
+      "Set up CI/CD pipeline for staging",
+      "Refactor authentication middleware",
+      "Build payment webhook handler",
+      "Set up error monitoring"
+    ],
+    "counts": [
+      "Backlog=1",
+      "To Do=1",
+      "In Progress=1 / 3",
+      "In Review=0",
+      "Done=1"
+    ]
+  },
+  "label2": {
+    "labels": [
+      "backend",
+      "bug"
+    ],
+    "cards": [],
+    "expectedAnd": []
+  },
+  "labelPlusColor": [],
+  "remember": {
+    "colorAfterReload": "red",
+    "rememberChecked": true,
+    "cards": [
+      "Fix pagination bug in search results",
+      "Fix memory leak in image cache"
+    ],
+    "filterBtnActive": true,
+    "panelOpen": false,
+    "otherBoard": {
+      "color": "red",
+      "cards": 0,
+      "total": 3
+    },
+    "afterUntick": {
+      "color": "all",
+      "cards": 22
+    }
+  },
+  "bookmarksClick": {
+    "text": "Bookmarks (0)",
+    "newDialogs": []
+  },
+  "log": {
+    "name": "s5",
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "badResponses": [],
+    "dialogs": []
+  }
+}

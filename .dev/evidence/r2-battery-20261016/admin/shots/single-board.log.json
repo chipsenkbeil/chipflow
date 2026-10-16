@@ -1,0 +1,52 @@
+{
+  "name": "single-board",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "playwright": "1.63.0",
+  "consoleErrors": [],
+  "pageErrors": [
+    "ReferenceError: showConfirmDialog is not defined"
+  ],
+  "failedRequests": [],
+  "httpErrors": [],
+  "dialogs": [],
+  "notes": [
+    {
+      "stats_chart": "No data to display"
+    },
+    {
+      "stats_summary": "0 Pomodori 0m Total time 0m Average pomodoro 0 Interruptions"
+    },
+    {
+      "stats_interruptions": "Interruptions by reason No data to display"
+    },
+    {
+      "stats_breaks": "No break activities defined"
+    },
+    {
+      "stats_highscores": "0 Best day — Friday, Oct 16 0 Longest streak (days)"
+    },
+    {
+      "spent_empty": "No entries exist for the given filter."
+    },
+    {
+      "spent_total": "Total: 0m"
+    },
+    {
+      "copy_dialog": "Copy from board × Replace this board's palette with a copy of another board's. Tasks keep their colors by matching the standard color value. There are no other boards to copy from. Cancel"
+    },
+    {
+      "copy_confirm_present": 0
+    },
+    {
+      "delete_last_ui_error": ""
+    },
+    {
+      "url": "http://127.0.0.1:3270/b/06aa3032-0bd5-465f-83e8-5b335a86f198/settings/delete"
+    }
+  ],
+  "browser": "153.0.8010.12"
+}

@@ -1,0 +1,363 @@
+{
+  "name": "s12-log",
+  "viewport": {
+    "width": 1905,
+    "height": 1000
+  },
+  "dpr": 1,
+  "playwrightVersion": "1.63.0",
+  "browserVersion": "153.0.8010.12",
+  "started": "2026-10-16T15:15:21.180Z",
+  "consoleErrors": [
+    {
+      "tag": "p1",
+      "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "loc": {
+        "url": "http://127.0.0.1:3260/api/time/manual",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "tag": "p1",
+      "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "loc": {
+        "url": "http://127.0.0.1:3260/api/time/manual",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "tag": "p1",
+      "url": "http://127.0.0.1:3260/b/930aa16d-1ea8-4cfa-8676-c28f430ba17d",
+      "err": "net::ERR_ABORTED"
+    }
+  ],
+  "httpErrors": [
+    {
+      "tag": "p1",
+      "url": "http://127.0.0.1:3260/api/time/manual",
+      "status": 400
+    }
+  ],
+  "notes": [
+    {
+      "mt-open": "Add time manually | × | Task | Date | 📅 | From | To | Duration | 0h | Add labels | Add comment | Cancel | Add"
+    },
+    {
+      "mt-fields": {
+        "task": "",
+        "date": "2026-10-16",
+        "from": "",
+        "to": ""
+      }
+    },
+    {
+      "mt-calendar": {
+        "id": "mt-cal-popup",
+        "cls": "mt-cal-popup",
+        "text": "< | October 2026 | > | Sun | Mon | Tue | Wed | Thu | Fri | Sat | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | Today | yesterday | This month",
+        "selBg": "rgb(37, 99, 235)"
+      }
+    },
+    {
+      "mt-date-after-yesterday": "2026-10-15"
+    },
+    {
+      "mt-duration": "1h 30m"
+    },
+    {
+      "mt-duration-zero": "—"
+    },
+    {
+      "mt-expanded": "Add time manually | × | Task | Date | 📅 | From | To | Duration | 1h 30m | Add labels | Add comment | Cancel | Add"
+    },
+    {
+      "mt-visible-inputs": [
+        {
+          "id": "mt-task",
+          "type": "text",
+          "ph": ""
+        },
+        {
+          "id": "mt-date",
+          "type": "text",
+          "ph": ""
+        },
+        {
+          "id": "mt-from",
+          "type": "time",
+          "ph": ""
+        },
+        {
+          "id": "mt-to",
+          "type": "time",
+          "ph": ""
+        },
+        {
+          "id": "mt-labels-check",
+          "type": "checkbox",
+          "ph": ""
+        },
+        {
+          "id": "mt-labels-input",
+          "type": "text",
+          "ph": "Type a label and press Enter..."
+        },
+        {
+          "id": "mt-comment-check",
+          "type": "checkbox",
+          "ph": ""
+        },
+        {
+          "id": "mt-comment",
+          "type": "textarea",
+          "ph": "Comment (optional)"
+        }
+      ]
+    },
+    {
+      "mt-added": {
+        "delta": 1,
+        "entry": {
+          "id": "7f97a45a-9e5f-407a-93ba-eecadc1252fa",
+          "task_id": "d2b3a595-38c7-4b28-8588-0c3907141071",
+          "task_name": "Build payment webhook handler",
+          "board_id": "930aa16d-1ea8-4cfa-8676-c28f430ba17d",
+          "board_name": "ChipFlow Golden Master",
+          "minutes": 90,
+          "duration_display": "90m",
+          "kind": "manual",
+          "badge_code": "M",
+          "badge_title": "Manually added",
+          "interrupted": false,
+          "interrupt_reason": null,
+          "note": "R2 manual comment",
+          "day_key": "2026-10-15",
+          "date": "Oct 15, 2026",
+          "time_range": "9:00 AM – 10:30 AM",
+          "end": "10:30 AM",
+          "labels": [
+            "r2label"
+          ],
+          "created_by": "audit"
+        },
+        "dialogHidden": true
+      }
+    },
+    {
+      "future-error": {
+        "overlay": "You can not enter a time in the future | OK",
+        "visible": true
+      }
+    },
+    {
+      "future-after-ok": {
+        "dialogOpen": true,
+        "from": "23:00",
+        "to": "23:30",
+        "task": "Build payment webhook handler"
+      }
+    },
+    {
+      "modal-time-spent": "4h 4m"
+    },
+    {
+      "modal-pomodoro-counter": null
+    },
+    {
+      "subview": "In Progress · Created: Today | × | ← Build payment webhook handler | Time log | + ADD ENTRY | Today ·4m | a | audit | 1m | P | ⚠ | Stopped Pomodoro with reason ‘Email’ | 4:14 PM - 4:15 PM | 🗑 | a | audit | 24s | P | ⚠ | Stopped Pomodoro with reason ‘Switched task’ | 4:12 PM - 4:12 PM | 🗑 | a | audit | 42s | P | ⚠ | Stopped Pomodoro with reason ‘R2 pre-cleanup’ | 4:12 PM - 4:12 PM | 🗑 | a | audit | 25s | S | ⚠ | Stopped Pomodoro with reason ‘Other’ | 4:11 PM - 4:11 PM | 🗑 | a | audit | 49s | S | ⚠ | Stopped Pomodoro with reason ‘R2 pre-cleanup’ | 4:11 PM - 4:11 PM | 🗑 | a | audit | 2m | S | ⚠ | Stopped Pomodoro with reason ‘R2 pre-cleanup’ | 4:09 PM - 4:11 PM | 🗑 | a | audit | 24s | P | ⚠ | Stopped Pomodoro with reason ‘No reason’ | 4:07 PM - 4:07 PM | 🗑 | a | audit | 26s | P | ⚠ | Stopped Pomodoro with reason ‘R2 new reason’ | 4:06 PM - 4:06 PM | 🗑 | a | audit | 24s | P | ⚠ | Stopped Pomodoro with reason ‘Task done’ | 4:06 PM - 4:06 PM | 🗑 | a | audit | 24s | P | ⚠ | Stopped Pomodoro with reason ‘Email’ | 4:06 PM - 4:06 PM | 🗑 | a | audit | 1m | P | 4:01 PM - 4:02 PM | 🗑 | a | audit | 52s | P | ⚠ | Stopped Pomodoro with reason ‘R2 cleanup’ | 3:59 PM - 3:59 PM | 🗑 | Yesterday ·4h | a | audit | 150m | 9:00 AM - 11:30 AM | 🗑 | a | audit | 90m | 9:00 AM - 10:30 AM | R2 manual comment | r2label | 🗑"
+    },
+    {
+      "subview-badges": [
+        {
+          "t": "P",
+          "title": "Stopped with reason 'Email'"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'Switched task'"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'R2 pre-cleanup'"
+        },
+        {
+          "t": "S",
+          "title": "Stopwatch"
+        },
+        {
+          "t": "S",
+          "title": "Stopwatch"
+        },
+        {
+          "t": "S",
+          "title": "Stopwatch"
+        },
+        {
+          "t": "P",
+          "title": "Pomodoro"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'R2 new reason'"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'Task done'"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'Email'"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'completed'"
+        },
+        {
+          "t": "P",
+          "title": "Stopped with reason 'R2 cleanup'"
+        }
+      ]
+    },
+    {
+      "log-modal": {
+        "text": "Timer log | × | Board | All boards | General | ChipFlow Golden Master | Period: | < | This month | > | Entry type | All | Pomodoros | Stopwatch sessions | Manual entries | 🖶 | ⇩ | ⟳ | ⚙ | × | Friday, October 16 — 4m — 9 Pomodoros | Add time entry | P | Build payment webhook handler | 4:14 PM – 4:15 PM | Stopped Pomodoro with reason ‘Email’ | 1m | P | Build payment webhook handler | 4:12 PM – 4:12 PM | Stopped Pomodoro with reason ‘Switched task’ | 24s | P | Build payment webhook handler | 4:12 PM – 4:12 PM | Stopped Pomodoro with reason ‘R2 pre-cleanup’ | 42s | S | Build payment webhook handler | 4:11 PM – 4:11 PM | Stopwatch session — Other | 25s | S | Build payment webhook handler | 4:11 PM – 4:11 PM | Stopwatch session — R2 pre-cleanup | 49s | S | Build payment webhook handler | 4:09 PM – 4:11 PM | Stopwatch session — R2 pre-cleanup | 2m | P | Build payment webhook handler | 4:07 PM – 4:07 PM | Stopped Pomodoro with reason ‘No reason’ | 24s | P | Build payment webhook handler | 4:06 PM – 4:06 PM | Stopped Pomodoro with reason ‘R2 new reason’ | 26s | P | Build payment webhook handler | 4:06 PM – 4:06 PM | Stopped Pomodoro with reason ‘Task done’ | 24s | P | Build payment webhook handler | 4:06 PM – 4:06 PM | Stopped Pomodoro with reason ‘Email’ | 24s | P | Build payment webhook handler | 4:01 PM – 4:02 PM | Successful Pomodoro | 1m | P | Build payment webhook handler | 3:59 PM – 3:59 PM | Stopped Pomodoro with reason ‘R2 cleanup’ | 52s | Thursday, October 15 — 4h — 0 Pomodoros | Add time entry | M | Build payment webhook handler | 9:00 AM – 11:30 AM | Manual entry | 150m | M | Build payment webhook handler | 9:00 AM – 10:30 AM | Manual entry | R2 manual comment | r2label | 90m",
+        "boards": [
+          "All boards",
+          "General",
+          "ChipFlow Golden Master"
+        ],
+        "types": [
+          "All",
+          "Pomodoros",
+          "Stopwatch sessions",
+          "Manual entries"
+        ]
+      }
+    },
+    {
+      "log-modal-colors": [
+        {
+          "t": "Stopped Pomodoro with reason ‘Email’",
+          "color": "rgb(248, 113, 113)"
+        },
+        {
+          "t": "Stopped Pomodoro with reason ‘Switched task’",
+          "color": "rgb(248, 113, 113)"
+        },
+        {
+          "t": "Stopped Pomodoro with reason ‘R2 pre-cleanup’",
+          "color": "rgb(248, 113, 113)"
+        },
+        {
+          "t": "Stopwatch session — Other",
+          "color": "rgb(156, 163, 175)"
+        },
+        {
+          "t": "Stopwatch session — R2 pre-cleanup",
+          "color": "rgb(156, 163, 175)"
+        },
+        {
+          "t": "Stopwatch session — R2 pre-cleanup",
+          "color": "rgb(156, 163, 175)"
+        },
+        {
+          "t": "Stopped Pomodoro with reason ‘No reason’",
+          "color": "rgb(248, 113, 113)"
+        },
+        {
+          "t": "Stopped Pomodoro with reason ‘R2 new reason’",
+          "color": "rgb(248, 113, 113)"
+        }
+      ]
+    },
+    {
+      "log-day-headers": [
+        "Friday, October 16 — 4m — 9 Pomodoros | Add time entry",
+        "Thursday, October 15 — 4h — 0 Pomodoros | Add time entry"
+      ]
+    },
+    {
+      "log-export-menu": [
+        "Excel (Detailed)",
+        "Excel (Summary)",
+        "PDF (Summary)"
+      ]
+    },
+    {
+      "log-export-download": {
+        "name": "timer-log-detailed.xls"
+      }
+    },
+    {
+      "log-manual-only": "Thursday, October 15 — 4h — 0 Pomodoros | Add time entry | M | Build payment webhook handler | 9:00 AM – 11:30 AM | Manual entry | 150m | M | Build payment webhook handler | 9:00 AM – 10:30 AM | Manual entry | R2 manual comment | r2label | 90m"
+    },
+    {
+      "period-next-sequence": [
+        "Last month",
+        "Custom (absolute)"
+      ]
+    },
+    {
+      "custom-abs-dialog": {
+        "visible": true,
+        "text": "← | Custom (absolute) | × | Start date | End date | < | October 2026 | > | Sun | Mon | Tue | Wed | Thu | Fri | Sat | 27 | 28 | 29 | 30 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | < | November 2026 | > | Sun | Mon | Tue | Wed | Thu | Fri | Sat | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 1 | 2 | 3 | 4 | 5 | Done"
+      }
+    },
+    {
+      "custom-abs-result": "Thursday, October 15 — 4h — 0 Pomodoros | Add time entry | M | Build payment webhook handler | 9:00 AM – 11:30 AM | Manual entry | 150m | M | Build payment webhook handler | 9:00 AM – 10:30 AM | Manual entry | R2 manual comment | r2label | 90m"
+    },
+    {
+      "custom-rel-visible": {
+        "label": "Custom (relative)",
+        "rel": true
+      }
+    },
+    {
+      "custom-rel-1day": "Friday, October 16 — 4m — 9 Pomodoros | Add time entry | P | Build payment webhook handler | 4:14 PM – 4:15 PM | Stopped Pomodoro with reason ‘Email’ | 1m | P | Build payment webhook handler | 4:12 PM – 4:12 PM | Stopped Pomodoro with reason ‘Switched task’ | 24s | P | Build payment webhook handler | 4:12 PM – 4:12 PM | Stopped Pomodoro with reason ‘R2 pre-cleanup’ | 42s | S | Build payment webhoo"
+    },
+    {
+      "log-empty-state": "No entries exist for the given filter"
+    },
+    {
+      "entry-count": 14
+    },
+    {
+      "edit-entry": {
+        "visible": false,
+        "text": "Edit Pomodoro entry |      |      |        |         Date ✓ |          |            |           📅 |          |        |      |      |       Task |        |      |      |       From |       To |       Duration0h |      |      |      Add labels |      |        |        |        |      |      Add comment |      |      |       Cancel |       Update",
+        "fields": {
+          "date": "",
+          "task": "",
+          "from": "",
+          "to": "",
+          "fromType": "time",
+          "step": "1"
+        }
+      }
+    }
+  ],
+  "shots": [
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-01-mt-open.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-02-mt-calendar.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-03-mt-expanded.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-04-future-error.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-05-subview-timelog.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-06-log-modal.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-07-log-export-menu.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-08-custom-absolute.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-09-custom-relative.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-10-log-empty.png",
+    "/private/tmp/claude-501/-Users-senkwich-projects-chipflow/c29fc99b-2474-4af8-b8d8-9e151ce77b7e/scratchpad/r2/results/modal/shots/s12-log-11-edit-entry.png"
+  ],
+  "ok": true,
+  "finished": "2026-10-16T15:15:42.080Z"
+}

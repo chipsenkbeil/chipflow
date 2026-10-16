@@ -1,0 +1,252 @@
+{
+  "addDialog": {
+    "visible": true,
+    "title": "Add swimlane",
+    "btn": "Add"
+  },
+  "emptyName": {
+    "stillOpen": true,
+    "toast": "Swimlane name is required."
+  },
+  "lanesApi": [
+    "Default",
+    "Lane Two",
+    "Lane Three ✨ with a fairly long swimlane name that keeps going"
+  ],
+  "folded": [
+    {
+      "name": "Lane Two",
+      "side": "right",
+      "box": [
+        1841,
+        86,
+        32,
+        473
+      ],
+      "weight": "400",
+      "color": "rgb(17, 17, 17)",
+      "writing": "vertical-rl",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "textTransform": "none",
+      "fontSize": "13.12px",
+      "overflow": false,
+      "bg": "rgb(243, 244, 246)"
+    },
+    {
+      "name": "Lane Three ✨ with a fairly long swimlane name that keeps going",
+      "side": "right",
+      "box": [
+        1873,
+        86,
+        32,
+        473
+      ],
+      "weight": "400",
+      "color": "rgb(17, 17, 17)",
+      "writing": "vertical-rl",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "textTransform": "none",
+      "fontSize": "13.12px",
+      "overflow": false,
+      "bg": "rgb(243, 244, 246)"
+    }
+  ],
+  "laneLabelsVisible": 0,
+  "stripMenu": {
+    "btnVisible": true,
+    "menuVisible": true,
+    "items": [
+      "Rename",
+      "Move up",
+      "Move down",
+      "Delete"
+    ],
+    "renameDialogOpened": false,
+    "deleteConfirmOpened": false
+  },
+  "unfolded": [
+    {
+      "name": "Lane Two",
+      "box": [
+        0,
+        466,
+        150,
+        97
+      ],
+      "writing": "vertical-rl",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "weight": "700",
+      "color": "rgb(75, 85, 99)"
+    }
+  ],
+  "rows": [
+    {
+      "label": "(none)",
+      "cards": 20
+    },
+    {
+      "label": "Lane Two",
+      "cards": 2
+    }
+  ],
+  "foldedAfter": [
+    {
+      "name": "Lane Three ✨ with a fairly long swimlane name that keeps going",
+      "side": "right",
+      "box": [
+        1873,
+        86,
+        32,
+        477
+      ],
+      "weight": "400",
+      "color": "rgb(17, 17, 17)",
+      "writing": "vertical-rl",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "textTransform": "none",
+      "fontSize": "13.12px",
+      "overflow": false,
+      "bg": "rgb(243, 244, 246)"
+    }
+  ],
+  "firstLane": {
+    "firstCardName": "Migrate user analytics to new provider",
+    "cardBox": {
+      "x": 6.59375,
+      "y": 147.15625,
+      "width": 136.8125,
+      "height": 77.390625
+    },
+    "headerBox": {
+      "x": 0,
+      "y": 85.96875,
+      "width": 1873,
+      "height": 54.59375
+    },
+    "topElementAtCardCenter": "Migrate user analytics to new provider",
+    "modalOpened": true
+  },
+  "laneMenu": {
+    "items": [
+      "Rename",
+      "Move up",
+      "Move down",
+      "Delete"
+    ],
+    "deleteColor": "rgb(220, 38, 38)",
+    "rename": {
+      "visible": true,
+      "title": "Rename swimlane",
+      "prefilled": "Lane Two",
+      "btn": "Save"
+    },
+    "afterRename": [
+      "Default",
+      "Lane 2 — renamed",
+      "Lane Three ✨ with a fairly long swimlane name that keeps going"
+    ],
+    "afterUp": [
+      "Default",
+      "Lane 2 — renamed",
+      "Lane Three ✨ with a fairly long swimlane name that keeps going"
+    ],
+    "rowsAfterUp": [
+      "(none)",
+      "Lane 2 — renamed"
+    ],
+    "afterUpAtTop": [
+      "Default",
+      "Lane 2 — renamed",
+      "Lane Three ✨ with a fairly long swimlane name that keeps going"
+    ],
+    "toastAtTop": "",
+    "deleteConfirm": {
+      "visible": true,
+      "text": "Delete swimlane Delete swimlane \"Lane 2 — renamed\"? It still holds 2 task(s) — the server will refuse until they are moved or deleted. Cancel Delete"
+    },
+    "afterDeleteNonEmpty": {
+      "lanes": [
+        "Default",
+        "Lane 2 — renamed",
+        "Lane Three ✨ with a fairly long swimlane name that keeps going"
+      ],
+      "toast": "Could not delete swimlane."
+    }
+  },
+  "emptyLaneDelete": {
+    "confirmVisible": false,
+    "lanes": [
+      "Default",
+      "Lane 2 — renamed",
+      "Lane Three ✨ with a fairly long swimlane name that keeps going"
+    ]
+  },
+  "allFolded": {
+    "strips": [
+      {
+        "name": "Default",
+        "side": "left",
+        "box": [
+          0,
+          86,
+          32,
+          130
+        ],
+        "weight": "400",
+        "color": "rgb(17, 17, 17)",
+        "writing": "vertical-rl",
+        "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+        "textTransform": "none",
+        "fontSize": "13.12px",
+        "overflow": false,
+        "bg": "rgb(243, 244, 246)"
+      },
+      {
+        "name": "Second lane",
+        "side": "right",
+        "box": [
+          1873,
+          86,
+          32,
+          130
+        ],
+        "weight": "400",
+        "color": "rgb(17, 17, 17)",
+        "writing": "vertical-rl",
+        "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+        "textTransform": "none",
+        "fontSize": "13.12px",
+        "overflow": false,
+        "bg": "rgb(243, 244, 246)"
+      }
+    ],
+    "rows": 0,
+    "popup": {
+      "cls": "add-task-popup",
+      "text": "Add\nCancel"
+    },
+    "tasks": [
+      {
+        "name": "Created with all lanes folded",
+        "lane": "Default"
+      }
+    ],
+    "visibleCardNow": true,
+    "visibleAfterReload": true
+  },
+  "allFoldedBoard": "aff834ed-f846-402f-9e56-b1c49e92167c",
+  "log": {
+    "name": "s4",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    ],
+    "pageErrors": [],
+    "failedRequests": [
+      "PATCH http://127.0.0.1:3250/api/swimlanes/78bcfc5d-9e44-45d7-bdb1-a69770373279 net::ERR_ABORTED"
+    ],
+    "badResponses": [
+      "400 DELETE http://127.0.0.1:3250/api/swimlanes/78bcfc5d-9e44-45d7-bdb1-a69770373279"
+    ],
+    "dialogs": []
+  }
+}

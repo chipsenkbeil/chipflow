@@ -1,0 +1,602 @@
+### task-create-html
+POST /api/tasks {"name":"API probe html","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","size":2}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-green taskBorderColor-green taskColorVars-green"
+         data-task-id="26afb87e-8d6f-4c06-9185-2774e778fd32" data-color-value="green"
+         data-task-name="API probe html" data-grouping-date=""
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="0" data-subtasks-done="0"
+         tabindex="0" title="Green">
+
+### task-create-json
+POST /api/tasks {"name":"API probe json","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef"}
+-> 201 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","name":"API probe json","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","swimlane_id":"41fd9284-657f-49c0-aba6-28b0fb126add"}
+
+### task-create-estimate
+POST /api/tasks {"name":"API est","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","estimate_hours":4.0}
+-> 201 [application/json] {"id":"4d963a01-328d-4f6a-b552-df90aabbe1af","name":"API est","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","swimlane_id":"41fd9284-657f-49c0-aba6-28b0fb126add"}
+
+### task-get-est
+GET /api/tasks/4d963a01-328d-4f6a-b552-df90aabbe1af 
+-> 200 [application/json] {"id":"4d963a01-328d-4f6a-b552-df90aabbe1af","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+est size=null estimate=null
+
+### task-create-due-rfc
+POST /api/tasks {"name":"API due rfc","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","due_at":"2026-10-20T17:00:00Z","due_repeat":"every week"}
+-> 201 [application/json] {"id":"b928c01c-79a1-404e-a22e-ddbcf71d4ce6","name":"API due rfc","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","swimlane_id":"41fd9284-657f-49c0-aba6-28b0fb126add"}
+
+### task-get-due
+GET /api/tasks/b928c01c-79a1-404e-a22e-ddbcf71d4ce6 
+-> 200 [application/json] {"id":"b928c01c-79a1-404e-a22e-ddbcf71d4ce6","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":"2026-10-20T17:00:00Z","due_repeat":"every week","due_done":false}
+
+due_at="2026-10-20T17:00:00Z" due_repeat="every week"
+
+### task-create-due-local
+POST /api/tasks {"name":"API due local","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","due_at":"2026-10-20 17:00"}
+-> 201 [application/json] {"id":"ec2a4702-6f37-4211-b84e-f30c461ac141","name":"API due local","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","swimlane_id":"41fd9284-657f-49c0-aba6-28b0fb126add"}
+
+### task-get-due-local
+GET /api/tasks/ec2a4702-6f37-4211-b84e-f30c461ac141 
+-> 200 [application/json] {"id":"ec2a4702-6f37-4211-b84e-f30c461ac141","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":"2026-10-20T17:00:00+01:00","due_repeat":null,"due_done":false}
+
+local due_at="2026-10-20T17:00:00+01:00" (expect 2026-10-20 17:00 BST = 1792512042)
+
+### task-create-due-bare
+POST /api/tasks {"name":"API due bare","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","due_at":"2026-10-21"}
+-> 201 [application/json] {"id":"7303a49f-18a7-4a2f-9398-b44dbe14df61","name":"API due bare","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","swimlane_id":"41fd9284-657f-49c0-aba6-28b0fb126add"}
+
+### task-get-due-bare
+GET /api/tasks/7303a49f-18a7-4a2f-9398-b44dbe14df61 
+-> 200 [application/json] {"id":"7303a49f-18a7-4a2f-9398-b44dbe14df61","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":"2026-10-21T23:59:59+01:00","due_repeat":null,"due_done":false}
+
+bare due_at="2026-10-21T23:59:59+01:00" (end of day 2026-10-21 local 23:59:59 = 1792623599)
+
+### task-create-due-bad
+POST /api/tasks {"name":"API due bad","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","due_at":"next tuesday"}
+-> 201 [application/json] {"id":"f2555664-03b1-4600-9fcd-7304ae324440","name":"API due bad","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef","swimlane_id":"41fd9284-657f-49c0-aba6-28b0fb126add"}
+
+### task-create-no-column
+POST /api/tasks {"name":"x"}
+-> 400 [text/plain; charset=utf-8] invalid JSON: missing field `column_id` at line 1 column 12
+
+### task-create-bad-column
+POST /api/tasks {"name":"x","column_id":"nope"}
+-> 400 [text/plain; charset=utf-8] unknown column
+
+### task-create-empty-name
+POST /api/tasks {"name":"","column_id":"8044f9e9-28b3-4547-a074-c60aacf740ef"}
+-> 400 [text/plain; charset=utf-8] task name is required
+
+### task-patch-est
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"estimate_hours":4.0}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date=""
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="0" data-subtasks-done="0"
+         tabindex="0" title="Yel
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+after est4 size=null estimate=null
+
+### task-patch-est0
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"estimate_hours":0}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date=""
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="0" data-subtasks-done="0"
+         tabindex="0" title="Yel
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+after est0 estimate=null
+
+### task-move-done
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/move {"column_id":"1a22f11d-41bd-43a3-b048-42de5bca0201","position":1.0}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date=""
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="0" data-subtasks-done="0"
+         tabindex="0" title="Yel
+
+### task-card
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/card 
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date=""
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="0" data-subtasks-done="0"
+         tabindex="0" title="Yel
+
+card has check mark: 0
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+completed_at after done=null
+
+### task-move-out
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/move {"column_id":"ec098151-cf54-4cef-8c4c-8d8e899a2151","position":1.0}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date=""
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="0" data-subtasks-done="0"
+         tabindex="0" title="Yel
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+completed_at after move out=null
+
+### task-move-missing-pos
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/move {"column_id":"ec098151-cf54-4cef-8c4c-8d8e899a2151"}
+-> 400 [text/plain; charset=utf-8] invalid JSON: missing field `position` at line 1 column 52
+
+### task-detail-keys
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+keys=["due_at","due_done","due_repeat","grouping_date","id","labels","member_ids","subtasks","watched"]
+
+### subtask-create
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/subtasks {"name":"Write tests"}
+-> 200 [application/json] {"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write tests","done":false}
+
+### subtask-create2
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/subtasks {"name":"Second"}
+-> 200 [application/json] {"id":"c9483c08-b638-4d19-bf61-bc9028dcb21a","name":"Second","done":false}
+
+### subtask-patch
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/subtasks/5b4b9475-e915-45b0-a16e-2ef608c69426 {"name":"Write more tests","done":true}
+-> 200 [application/json] {"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}
+
+### subtask-order
+PUT /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/subtasks/order {"order":["c9483c08-b638-4d19-bf61-bc9028dcb21a","5b4b9475-e915-45b0-a16e-2ef608c69426"]}
+-> 200 [application/json] ["c9483c08-b638-4d19-bf61-bc9028dcb21a","5b4b9475-e915-45b0-a16e-2ef608c69426"]
+
+### task-get-subtasks
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":[],"grouping_date":null,"watched":false,"subtasks":[{"id":"c9483c08-b638-4d19-bf61-bc9028dcb21a","name":"Second","done":false},{"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+subtasks=[{"id":"c9483c08-b638-4d19-bf61-bc9028dcb21a","name":"Second","done":false},{"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}]
+
+### subtask-delete
+DELETE /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/subtasks/c9483c08-b638-4d19-bf61-bc9028dcb21a 
+-> 200 [] 
+
+### members
+GET /api/members 
+-> 200 [application/json] [{"id":"c8d06fa5-069d-4bd1-adcf-fe4e40c8673a","username":"audit"}]
+
+### task-members
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"member_ids":["c8d06fa5-069d-4bd1-adcf-fe4e40c8673a"],"grouping_date":"2026-10-05"}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="1" data-subtasks-done="1"
+         tabindex="0" 
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":["c8d06fa5-069d-4bd1-adcf-fe4e40c8673a"],"grouping_date":"2026-10-05","watched":false,"subtasks":[{"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+member_ids=["c8d06fa5-069d-4bd1-adcf-fe4e40c8673a"] grouping_date="2026-10-05"
+
+### task-grouping-null
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"grouping_date":null}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at=""
+         data-labels="[]"
+         data-subtasks-total="1" data-subtasks-done="1"
+         tabindex="0" 
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":["c8d06fa5-069d-4bd1-adcf-fe4e40c8673a"],"grouping_date":"2026-10-05","watched":false,"subtasks":[{"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}],"labels":[],"due_at":null,"due_repeat":null,"due_done":false}
+
+grouping_date after null="2026-10-05"
+
+### task-watch
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/watch {"watched":true}
+-> 200 [application/json] {"watched":true}
+
+### task-labels
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"labels":["frontend","urgent"]}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at=""
+         data-labels="[&quot;frontend&quot;,&quot;urgent&quot;]"
+         data-subtasks-total="1" data-s
+
+### board-labels
+GET /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/labels 
+-> 200 [application/json] ["backend","bug","chore","design","docs","feature","frontend","research","urgent"]
+
+### task-due-patch
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"due_at":"2026-10-05T17:00:00Z","due_repeat":"every week"}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at="2026-10-05T17:00:00Z"
+         data-labels="[&quot;frontend&quot;,&quot;urgent&quot;]"
+         data-subta
+
+### task-due-done
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"due_done":true}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at="2026-10-05T17:00:00Z"
+         data-labels="[&quot;frontend&quot;,&quot;urgent&quot;]"
+         data-subta
+
+### task-card
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/card 
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at="2026-10-05T17:00:00Z"
+         data-labels="[&quot;frontend&quot;,&quot;urgent&quot;]"
+         data-subta
+
+card shows (Done): 1
+
+### task-due-clear
+PATCH /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 {"due_at":"","due_repeat":null}
+-> 200 [text/html; charset=utf-8] 
+<article class="task-card taskColor-yellow taskBorderColor-yellow taskColorVars-yellow"
+         data-task-id="c43838d5-de2c-4d87-a849-7ca1aad62df5" data-color-value="yellow"
+         data-task-name="API probe json" data-grouping-date="2026-10-05"
+         data-total-minutes="0" data-due-at=""
+         data-labels="[&quot;frontend&quot;,&quot;urgent&quot;]"
+         data-subtasks-total="1" data-s
+
+### task-get
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":["c8d06fa5-069d-4bd1-adcf-fe4e40c8673a"],"grouping_date":"2026-10-05","watched":true,"subtasks":[{"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}],"labels":["frontend","urgent"],"due_at":null,"due_repeat":null,"due_done":false}
+
+after clear due_at=null due_repeat=null labels=["frontend","urgent"] watched=true
+
+### comment-create
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/comments {"body":"Blocked on review"}
+-> 200 [application/json] {"id":"8a7ce72e-4344-4709-9c67-6a37fb5c698e","author":"api-token","body":"Blocked on review","created_at":"2026-10-16T14:49:44.227122+00:00"}
+
+### comment-create-author
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/comments {"body":"Second","author":"Dale"}
+-> 200 [application/json] {"id":"8c9be6e0-840e-4ab6-8525-31447706654f","author":"Dale","body":"Second","created_at":"2026-10-16T14:49:44.266146+00:00"}
+
+### comment-list
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/comments 
+-> 200 [application/json] [{"id":"8a7ce72e-4344-4709-9c67-6a37fb5c698e","author":"api-token","body":"Blocked on review","created_at":"2026-10-16T14:49:44.227122+00:00"},{"id":"8c9be6e0-840e-4ab6-8525-31447706654f","author":"Dale","body":"Second","created_at":"2026-10-16T14:49:44.266146+00:00"}]
+
+### comment-delete
+DELETE /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/comments/8a7ce72e-4344-4709-9c67-6a37fb5c698e 
+-> 200 [] 
+
+### comment-list-after
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/comments 
+-> 200 [application/json] [{"id":"8c9be6e0-840e-4ab6-8525-31447706654f","author":"Dale","body":"Second","created_at":"2026-10-16T14:49:44.266146+00:00"}]
+
+### attach-upload
+POST /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/attachments {"name":"probe.txt","mime":"text/plain","data":"aGVsbG8gd29ybGQ="}
+-> 200 [application/json] {"id":"4013496a-7478-4652-a93b-4a43b4743dc8","name":"probe.txt","mime":"text/plain","size":11,"uploaded_by":"api-token","created_at":"2026-10-16T14:49:44.383099+00:00"}
+
+### task-get-attach
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","member_ids":["c8d06fa5-069d-4bd1-adcf-fe4e40c8673a"],"grouping_date":"2026-10-05","watched":true,"subtasks":[{"id":"5b4b9475-e915-45b0-a16e-2ef608c69426","name":"Write more tests","done":true}],"labels":["frontend","urgent"],"due_at":null,"due_repeat":null,"due_done":false}
+
+attachments=null
+
+### attach-download
+GET /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/attachments/4013496a-7478-4652-a93b-4a43b4743dc8/file 
+-> 200 [text/plain] hello world
+
+### attach-delete
+DELETE /api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5/attachments/4013496a-7478-4652-a93b-4a43b4743dc8 
+-> 200 [] 
+
+### attach-11MiB
+-> 413 Failed to buffer the request body: length limit exceeded
+
+### timer-start
+POST /api/timer/start {"mode":"pomodoro","task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5"}
+-> 200 [application/json] {"active":true,"phase":"pomodoro","mode":"pomodoro","mode_title":"Pomodoro","task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","task_name":"API probe json","task_color":"#ffffe0","task_url":"/api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5","started_at":1792162186,"duration_secs":1500,"remaining_seconds":1500,"total_seconds":1500,"pomodoro_count":0}
+
+### timer-status
+GET /api/timer/status 
+-> 200 [application/json] {"active":true,"phase":"pomodoro","mode":"pomodoro","mode_title":"Pomodoro","task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","task_name":"API probe json","task_color":"#ffffe0","task_url":"/api/tasks/c43838d5-de2c-4d87-a849-7ca1aad62df5","started_at":1792162186,"duration_secs":1500,"remaining_seconds":1500,"total_seconds":1500,"pomodoro_count":0}
+
+status keys=["active","duration_secs","mode","mode_title","phase","pomodoro_count","remaining_seconds","started_at","task_color","task_id","task_name","task_url","total_seconds"]
+
+### timer-retarget
+POST /api/timer/retarget {"task_id":"4d963a01-328d-4f6a-b552-df90aabbe1af"}
+-> 200 [application/json] {"active":true,"phase":"pomodoro","mode":"pomodoro","mode_title":"Pomodoro","task_id":"4d963a01-328d-4f6a-b552-df90aabbe1af","task_name":"API est","task_color":"#ffffe0","task_url":"/api/tasks/4d963a01-328d-4f6a-b552-df90aabbe1af","started_at":1792162186,"duration_secs":1500,"remaining_seconds":1500,"total_seconds":1500,"pomodoro_count":0}
+
+### timer-status2
+GET /api/timer/status 
+-> 200 [application/json] {"active":true,"phase":"pomodoro","mode":"pomodoro","mode_title":"Pomodoro","task_id":"4d963a01-328d-4f6a-b552-df90aabbe1af","task_name":"API est","task_color":"#ffffe0","task_url":"/api/tasks/4d963a01-328d-4f6a-b552-df90aabbe1af","started_at":1792162186,"duration_secs":1500,"remaining_seconds":1500,"total_seconds":1500,"pomodoro_count":0}
+
+### timer-stop-short
+POST /api/timer/stop {"completed":true}
+-> 200 [application/json] {"discarded":true,"minutes":null,"completed":true}
+
+### timer-log-after-short
+GET /api/timer/log?task_id=4d963a01-328d-4f6a-b552-df90aabbe1af 
+-> 200 [application/json] {"entries":[],"has_more":false,"total":0}
+
+### timer-start-bad-mode
+POST /api/timer/start {"mode":"nap"}
+-> 400 [text/plain; charset=utf-8] unknown timer mode: nap
+
+### timer-today
+GET /api/timer/today 
+-> 200 [application/json] []
+
+### timer-settings
+GET /api/timer/settings 
+-> 200 [application/json] {"pomodoro_minutes":25,"short_break_minutes":5,"long_break_minutes":10,"long_break_every":4,"ding_enabled":true,"notifications_enabled":true,"interrupt_reasons":["Boss interrupted","Colleague interrupted","Context switch","Dog","Email","Family","Finished with no new task","Food Delivery","Meeting","Other","Phone call","Restroom","Sleep","Web browsing","Workchat"],"ticking_mode":"never","alarm_soun
+
+### manual-ok
+POST /api/time/manual {"task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","date":"2026-10-14","from":"09:00","to":"10:30","note":"Deep work","labels":["a","b"]}
+-> 200 [application/json] {"id":"c359d158-cd03-46d5-a6b6-475d412fc3c9","minutes":90}
+
+### manual-future
+POST /api/time/manual {"task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","date":"2027-01-01","from":"09:00","to":"10:00"}
+-> 400 [text/plain; charset=utf-8] You can not enter a time in the future
+
+### manual-zero
+POST /api/time/manual {"task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","date":"2026-10-14","from":"09:00","to":"09:00"}
+-> 400 [text/plain; charset=utf-8] End time must be after start time
+
+### manual-negative
+POST /api/time/manual {"task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","date":"2026-10-14","from":"10:00","to":"09:00"}
+-> 400 [text/plain; charset=utf-8] End time must be after start time
+
+### timer-log-task
+GET /api/timer/log?task_id=c43838d5-de2c-4d87-a849-7ca1aad62df5 
+-> 200 [application/json] {"entries":[{"id":"c359d158-cd03-46d5-a6b6-475d412fc3c9","task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","task_name":"API probe json","board_id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5","board_name":"ChipFlow Golden Master","minutes":90,"duration_display":"90m","kind":"manual","badge_code":"M","badge_title":"Manually added","interrupted":false,"interrupt_reason":null,"note":"Deep work","day_key":"2
+
+log entry keys=["badge_code","badge_title","board_id","board_name","created_by","date","day_key","duration_display","end","id","interrupt_reason","interrupted","kind","labels","minutes","note","task_id","task_name","time_range"]
+
+### time-entry-get
+GET /api/time/entries/c359d158-cd03-46d5-a6b6-475d412fc3c9 
+-> 200 [application/json] {"id":"c359d158-cd03-46d5-a6b6-475d412fc3c9","task_id":"c43838d5-de2c-4d87-a849-7ca1aad62df5","task_name":"API probe json","minutes":90,"note":"Deep work","started_at":"2026-10-14T09:00:00+01:00","labels":["a","b"]}
+
+### time-entry-delete
+DELETE /api/time/entries/c359d158-cd03-46d5-a6b6-475d412fc3c9 
+-> 200 [] 
+
+### time-entry-delete-again
+DELETE /api/time/entries/c359d158-cd03-46d5-a6b6-475d412fc3c9 
+-> 404 [text/plain; charset=utf-8] entry not found
+
+### timer-log-filters
+GET /api/timer/log?board_id=52b5f56d-8ed3-4b6a-b543-5d78b7904ee5&entry_type=manual&from=2026-10-01&to=2026-10-31 
+-> 200 [application/json] {"entries":[{"id":"5c484710-778a-4d28-a83d-60b748d69aeb","task_id":"f89ab48a-4cf4-4267-a352-455cf85c6b45","task_name":"Build payment webhook handler","board_id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5","board_name":"ChipFlow Golden Master","minutes":150,"duration_display":"150m","kind":"manual","badge_code":"M","badge_title":"Manually added","interrupted":false,"interrupt_reason":null,"note":"","day
+
+### time-spent
+GET /api/timer/time-spent?from=2026-10-01&to=2026-10-31&board_id=52b5f56d-8ed3-4b6a-b543-5d78b7904ee5 
+-> 200 [application/json] {"days":[{"date":"2026-10-01","label":"Oct 01","minutes":0,"task_minutes":0,"break_minutes":0,"tasks":[]},{"date":"2026-10-02","label":"Oct 02","minutes":0,"task_minutes":0,"break_minutes":0,"tasks":[]},{"date":"2026-10-03","label":"Oct 03","minutes":0,"task_minutes":0,"break_minutes":0,"tasks":[]},{"date":"2026-10-04","label":"Oct 04","minutes":0,"task_minutes":0,"break_minutes":0,"tasks":[]},{"d
+
+### statistics
+GET /api/timer/statistics?from=2026-10-01&to=2026-10-31&board_id=52b5f56d-8ed3-4b6a-b543-5d78b7904ee5 
+-> 200 [application/json] {"total_pomodori":0,"total_minutes":0,"avg_minutes":0,"interruptions":0,"by_reason":[],"daily":[{"date":"2026-10-01","label":"Oct 01","pomodori":0,"minutes":0},{"date":"2026-10-02","label":"Oct 02","pomodori":0,"minutes":0},{"date":"2026-10-03","label":"Oct 03","pomodori":0,"minutes":0},{"date":"2026-10-04","label":"Oct 04","pomodori":0,"minutes":0},{"date":"2026-10-05","label":"Oct 05","pomodori"
+
+statistics keys=["avg_minutes","best_day","break_activities","by_reason","daily","interruptions","longest_streak","total_minutes","total_pomodori"]
+
+### col-create
+POST /api/columns {"name":"Review","wip_limit":3,"board_id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5"}
+-> 200 [application/json] {"id":"ddc6e1ca-369b-424e-8168-0e48ed567fce"}
+
+### col-create-no-board
+POST /api/columns {"name":"Review2","wip_limit":3}
+-> 200 [application/json] {"id":"45b48f0b-be12-4417-acdc-d429435650fa"}
+
+### board-columns
+GET /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/columns 
+-> 200 [application/json] [{"id":"8044f9e9-28b3-4547-a074-c60aacf740ef","name":"Backlog","wip_limit":null,"is_done":false},{"id":"ec098151-cf54-4cef-8c4c-8d8e899a2151","name":"To Do","wip_limit":null,"is_done":false},{"id":"13d84975-a6e3-42b2-8f7b-3a797c8227a4","name":"In Progress","wip_limit":3,"is_done":false},{"id":"bc4aee3b-52ff-4943-9b02-d153ac0eed3f","name":"In Review","wip_limit":null,"is_done":false},{"id":"1a22f11
+
+### col-patch
+PATCH /api/columns/ddc6e1ca-369b-424e-8168-0e48ed567fce {"name":"In review 2"}
+-> 200 [] 
+
+### col-wip-null
+PATCH /api/columns/ddc6e1ca-369b-424e-8168-0e48ed567fce {"wip_limit":null}
+-> 200 [] 
+
+### board-columns
+GET /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/columns 
+-> 200 [application/json] [{"id":"8044f9e9-28b3-4547-a074-c60aacf740ef","name":"Backlog","wip_limit":null,"is_done":false},{"id":"ec098151-cf54-4cef-8c4c-8d8e899a2151","name":"To Do","wip_limit":null,"is_done":false},{"id":"13d84975-a6e3-42b2-8f7b-3a797c8227a4","name":"In Progress","wip_limit":3,"is_done":false},{"id":"bc4aee3b-52ff-4943-9b02-d153ac0eed3f","name":"In Review","wip_limit":null,"is_done":false},{"id":"1a22f11
+
+new col={"id":"ddc6e1ca-369b-424e-8168-0e48ed567fce","name":"In review 2","wip_limit":null,"is_done":false}
+
+### col-collapse
+PATCH /api/columns/ddc6e1ca-369b-424e-8168-0e48ed567fce {"collapsed":true}
+-> 200 [] 
+
+### col-move
+POST /api/columns/ddc6e1ca-369b-424e-8168-0e48ed567fce/move {"position":2}
+-> 200 [] 
+
+### col-delete-nonempty
+DELETE /api/columns/8044f9e9-28b3-4547-a074-c60aacf740ef 
+-> 400 [text/plain; charset=utf-8] cannot delete column with 11 task(s); move or delete them first
+
+### col-delete-empty
+DELETE /api/columns/ddc6e1ca-369b-424e-8168-0e48ed567fce 
+-> 200 [] 
+
+### swim-delete-last
+DELETE /api/swimlanes/41fd9284-657f-49c0-aba6-28b0fb126add 
+-> 400 [text/plain; charset=utf-8] cannot delete swimlane with 29 task(s); move or delete them first
+
+### swim-create
+POST /api/swimlanes {"name":"Lane 2","board_id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5"}
+-> 200 [application/json] {"id":"5dd6e9b0-802a-4416-9185-63c85b889e4a"}
+
+### swim-patch
+PATCH /api/swimlanes/5dd6e9b0-802a-4416-9185-63c85b889e4a {"name":"Lane two"}
+-> 200 [] 
+
+### swim-move
+POST /api/swimlanes/5dd6e9b0-802a-4416-9185-63c85b889e4a/move {"position":1}
+-> 200 [] 
+
+### swim-delete
+DELETE /api/swimlanes/5dd6e9b0-802a-4416-9185-63c85b889e4a 
+-> 200 [] 
+
+### boards
+GET /api/boards 
+-> 200 [application/json] [{"id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5","name":"ChipFlow Golden Master","archived":false},{"id":"97bb03f3-f928-4715-844a-cdcde4ddf65f","name":"General","archived":false}]
+
+### templates
+GET /api/templates 
+-> 200 [application/json] [{"id":"ecfcf30e-675f-45b5-863c-141f17d1ed62","name":"Kanban basics","description":"Kanban basics: the standard color palette with the classic To-do / In progress / Done column layout.","built_in":true},{"id":"8ba02e37-97f1-49f1-9817-e718aafed4e7","name":"Pomodoro board","description":"Pomodoro board: task colors for 1/2/3/>3 pomodori plus a ready-to-use column and swimlane layout.","built_in":tru
+
+### template-delete-builtin
+DELETE /api/templates/ecfcf30e-675f-45b5-863c-141f17d1ed62 
+-> 400 [text/plain; charset=utf-8] built-in templates cannot be deleted
+
+### board-create-blank
+POST /api/boards {"name":"API blank board"}
+-> 200 [application/json] {"id":"1acc6c5c-07f0-4577-9db0-5bcca0bea70e"}
+
+### blank-columns
+GET /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e/columns 
+-> 200 [application/json] [{"id":"58029f84-0296-45ff-ac93-ed9781b2e700","name":"To-do","wip_limit":null,"is_done":false}]
+
+### blank-colors
+GET /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e/colors 
+-> 200 [application/json] [{"id":"07ef265c-6054-43f9-9d3e-dfcf3739dcaa","value":"yellow","standard_name":"Yellow","label":"Yellow","description":"","enabled":true,"is_default":true,"sort_order":1,"bg":"#ffffe0","border":"#eecd45","light":"#ffffe0"},{"id":"8bf9dae2-3802-4a42-aa3a-2c1040c217bc","value":"green","standard_name":"Green","label":"Green","description":"","enabled":true,"is_default":false,"sort_order":2,"bg":"#dbf
+
+blank colors=[{"value":"yellow","enabled":true,"is_default":true},{"value":"green","enabled":true,"is_default":false},{"value":"blue","enabled":true,"is_default":false},{"value":"red","enabled":true,"is_default":false},{"value":"orange","enabled":true,"is_default":false},{"value":"purple","enabled":true,"is_default":false},{"value":"magenta","enabled":true,"is_default":false},{"value":"cyan","enabled":true,"is_default":false},{"value":"brown","enabled":true,"is_default":false},{"value":"white","enabled":true,"is_default":false}]
+
+### blank-export
+GET /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e/export-data 
+-> 200 [application/json] {"board":{"id":"1acc6c5c-07f0-4577-9db0-5bcca0bea70e","name":"API blank board"},"columns":[{"id":"58029f84-0296-45ff-ac93-ed9781b2e700","name":"To-do"}],"swimlanes":[{"id":"4bfa25b2-681c-45e8-a466-6e690d9a505c","name":"Default"}],"colors":[{"id":"07ef265c-6054-43f9-9d3e-dfcf3739dcaa","value":"yellow","label":"Yellow"},{"id":"8bf9dae2-3802-4a42-aa3a-2c1040c217bc","value":"green","label":"Green"},{"
+
+blank swimlanes=[{"id":"4bfa25b2-681c-45e8-a466-6e690d9a505c","name":"Default"}]
+
+### board-create-pomo
+POST /api/boards {"name":"API Pomodoro board","template_id":"ecfcf30e-675f-45b5-863c-141f17d1ed62"}
+-> 200 [application/json] {"id":"d4c76ede-b0d0-4f15-8c10-a3a0b9c349bc"}
+
+### pomo-export
+GET /api/boards/d4c76ede-b0d0-4f15-8c10-a3a0b9c349bc/export-data 
+-> 200 [application/json] {"board":{"id":"d4c76ede-b0d0-4f15-8c10-a3a0b9c349bc","name":"API Pomodoro board"},"columns":[{"id":"dbc77dd2-a7f2-4d34-ad9b-c191dff06181","name":"To-do"},{"id":"e68fd3cd-d30c-482e-84c7-da5f48e70184","name":"In progress"},{"id":"aff799f2-0b7c-41b5-a090-8bef943726ea","name":"Done"}],"swimlanes":[{"id":"62530ec1-09e6-42c9-8540-0fe37d6ea3d8","name":"Default"}],"colors":[{"id":"929a2550-a3cc-4dd7-a2a8
+
+pomo columns=["To-do","In progress","Done"] swimlanes=["Default"] colors=["Yellow","Green","Blue","Red","Orange","Purple","Magenta","Cyan","Brown","White"]
+
+### pomo-colors
+GET /api/boards/d4c76ede-b0d0-4f15-8c10-a3a0b9c349bc/colors 
+-> 200 [application/json] [{"id":"929a2550-a3cc-4dd7-a2a8-284893ca60c3","value":"yellow","standard_name":"Yellow","label":"Yellow","description":"","enabled":true,"is_default":true,"sort_order":1,"bg":"#ffffe0","border":"#eecd45","light":"#ffffe0"},{"id":"d3739049-0021-4035-9e39-2b5b7582af9d","value":"green","standard_name":"Green","label":"Green","description":"","enabled":true,"is_default":false,"sort_order":2,"bg":"#dbf
+
+pomo colors full=[{"label":"Yellow","enabled":true,"is_default":true},{"label":"Green","enabled":true,"is_default":false},{"label":"Blue","enabled":true,"is_default":false},{"label":"Red","enabled":true,"is_default":false},{"label":"Orange","enabled":true,"is_default":false},{"label":"Purple","enabled":true,"is_default":false},{"label":"Magenta","enabled":true,"is_default":false},{"label":"Cyan","enabled":true,"is_default":false},{"label":"Brown","enabled":true,"is_default":false},{"label":"White","enabled":true,"is_default":false}]
+
+### save-as-template
+POST /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/save-as-template {"name":"My recipe","description":"probe"}
+-> 200 [application/json] {"id":"447d5f16-e317-43a1-a3ba-4e1dc8cd0043"}
+
+### colors
+GET /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors 
+-> 200 [application/json] [{"id":"adeb58e5-de50-4738-8eba-f7c92182943d","value":"yellow","standard_name":"Yellow","label":"Yellow","description":"","enabled":true,"is_default":true,"sort_order":0,"bg":"#ffffe0","border":"#eecd45","light":"#ffffe0"},{"id":"0417cec0-38f2-42d2-beaa-7c0a9a242540","value":"green","standard_name":"Green","label":"Green","description":"","enabled":true,"is_default":false,"sort_order":1,"bg":"#dbf
+
+gm color keys=["bg","border","description","enabled","id","is_default","label","light","sort_order","standard_name","value"]
+
+### color-delete-default
+DELETE /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/adeb58e5-de50-4738-8eba-f7c92182943d 
+-> 400 [text/plain; charset=utf-8] cannot delete the board's default color; pick another default first
+
+### color-patch-long
+PATCH /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/7fea2f82-2a19-40e7-88b9-5745d974ef20 {"label":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+-> 400 [text/plain; charset=utf-8] color label must be at most 50 characters
+
+### color-copy-same
+POST /api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/copy-from {"source_board_id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5"}
+-> 400 [text/plain; charset=utf-8] cannot copy a board's palette onto itself
+
+### color-copy-unknown
+POST /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e/colors/copy-from {"source_board_id":"nope"}
+-> 400 [text/plain; charset=utf-8] unknown source board
+
+### color-copy
+POST /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e/colors/copy-from {"source_board_id":"52b5f56d-8ed3-4b6a-b543-5d78b7904ee5"}
+-> 200 [application/json] {"count":8}
+
+### settings
+GET /api/settings 
+-> 200 [application/json] {"pomodoro_minutes":25,"short_break_minutes":5,"long_break_minutes":10,"long_break_every":4,"ding_enabled":true,"notifications_enabled":true,"interrupt_reasons":["Boss interrupted","Colleague interrupted","Context switch","Dog","Email","Family","Finished with no new task","Food Delivery","Meeting","Other","Phone call","Restroom","Sleep","Web browsing","Workchat"],"ticking_mode":"never","alarm_soun
+
+### settings-put
+PUT /api/settings {"alarm_sound":"chime","alarm_volume":80,"ticking_mode":"always"}
+-> 200 [application/json] {"pomodoro_minutes":25,"short_break_minutes":5,"long_break_minutes":10,"long_break_every":4,"ding_enabled":true,"notifications_enabled":true,"interrupt_reasons":["Boss interrupted","Colleague interrupted","Context switch","Dog","Email","Family","Finished with no new task","Food Delivery","Meeting","Other","Phone call","Restroom","Sleep","Web browsing","Workchat"],"ticking_mode":"always","alarm_sou
+
+### settings-after
+GET /api/settings 
+-> 200 [application/json] {"pomodoro_minutes":25,"short_break_minutes":5,"long_break_minutes":10,"long_break_every":4,"ding_enabled":true,"notifications_enabled":true,"interrupt_reasons":["Boss interrupted","Colleague interrupted","Context switch","Dog","Email","Family","Finished with no new task","Food Delivery","Meeting","Other","Phone call","Restroom","Sleep","Web browsing","Workchat"],"ticking_mode":"always","alarm_sou
+
+alarm="chime" vol=80 tick="always"
+
+### settings-bad-sound
+PUT /api/settings {"alarm_sound":"airhorn"}
+-> 400 [text/plain; charset=utf-8] invalid alarm_sound
+
+### settings-bad-vol
+PUT /api/settings {"alarm_volume":150}
+-> 200 [application/json] {"pomodoro_minutes":25,"short_break_minutes":5,"long_break_minutes":10,"long_break_every":4,"ding_enabled":true,"notifications_enabled":true,"interrupt_reasons":["Boss interrupted","Colleague interrupted","Context switch","Dog","Email","Family","Finished with no new task","Food Delivery","Meeting","Other","Phone call","Restroom","Sleep","Web browsing","Workchat"],"ticking_mode":"always","alarm_sou
+
+### settings-bad-tick
+PUT /api/settings {"ticking_mode":"sometimes"}
+-> 400 [text/plain; charset=utf-8] invalid ticking_mode
+
+### settings-reset
+PUT /api/settings {"alarm_sound":"bell","alarm_volume":50,"ticking_mode":"never"}
+-> 200 [application/json] {"pomodoro_minutes":25,"short_break_minutes":5,"long_break_minutes":10,"long_break_every":4,"ding_enabled":true,"notifications_enabled":true,"interrupt_reasons":["Boss interrupted","Colleague interrupted","Context switch","Dog","Email","Family","Finished with no new task","Food Delivery","Meeting","Other","Phone call","Restroom","Sleep","Web browsing","Workchat"],"ticking_mode":"never","alarm_soun
+
+### board-config
+PUT /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e/config {"legend_visible":true}
+-> 200 [application/json] {"legend_visible":true,"archived":false}
+
+### board-delete
+DELETE /api/boards/1acc6c5c-07f0-4577-9db0-5bcca0bea70e 
+-> 200 [application/json] {"deleted":"1acc6c5c-07f0-4577-9db0-5bcca0bea70e"}
+
+### board-delete-unknown
+DELETE /api/boards/nope 
+-> 404 [text/plain; charset=utf-8] board not found
+
+T1=c43838d5-de2c-4d87-a849-7ca1aad62df5 TE=4d963a01-328d-4f6a-b552-df90aabbe1af PB=d4c76ede-b0d0-4f15-8c10-a3a0b9c349bc

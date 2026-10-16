@@ -1,0 +1,96 @@
+{
+  "name": "us-tokens",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "playwright": "1.63.0",
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "url": "http://127.0.0.1:3270/settings"
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": [
+    {
+      "url": "http://127.0.0.1:3270/api/v1/auth/tokens",
+      "status": 400
+    }
+  ],
+  "dialogs": [],
+  "notes": [
+    {
+      "expiry_options": [
+        "Never",
+        "30 days",
+        "90 days",
+        "1 year"
+      ]
+    },
+    {
+      "expiry_default": "365"
+    },
+    {
+      "rows_before": 4
+    },
+    {
+      "noscope_error": "Could not create token: scopes must be a non-empty subset of [\"read\", \"write\"]"
+    },
+    {
+      "created_shown": true
+    },
+    {
+      "created_prefix": "cf_"
+    },
+    {
+      "listed_immediately": 1
+    },
+    {
+      "row": "ui-probe\tcf_…Fsd8\tread\t2026-10-16\t—\t2026-11-15\tRevoke"
+    },
+    {
+      "form_reset": {
+        "name": "",
+        "expiry": "365",
+        "write": true
+      }
+    },
+    {
+      "token_works": 200
+    },
+    {
+      "readonly_write_status": 403
+    },
+    {
+      "row_after_reload": "ui-probe\tcf_…Fsd8\tread\t2026-10-16\t2026-10-16\t2026-11-15\tRevoke"
+    },
+    {
+      "secret_in_page_after_reload": false
+    },
+    {
+      "confirm_visible": true
+    },
+    {
+      "confirm_message": "Revoke token \"ui-probe\"? Anything using it will stop working."
+    },
+    {
+      "cancel_closes": false
+    },
+    {
+      "escape_closes": true
+    },
+    {
+      "still_listed_after_cancel": 1
+    },
+    {
+      "listed_after_revoke": 0
+    },
+    {
+      "revoked_token_status": 401
+    }
+  ],
+  "browser": "153.0.8010.12"
+}

@@ -21,6 +21,7 @@
 ## Timer (KF-001–KF-021)
 
 ### KF-001 — Reconcile TimerUI with the real /api/timer/status shape — popup, pill, and card indicators never reflect live state **[VERIFIED]**
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-110): the idle pomodoro popup has no big "25:00" readout and no green ▶ Start, which this section's KanbanFlow line specifies. It shows Task and Duration (15/25/50 min) selects, a blue "Start Pomodoro" and a "Time log" button. The stopwatch tab already matches (KF-281). Fix direction: mirror the stopwatch idle layout with the configured work time. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/crop-popup-idle.png, .dev/evidence/r2-battery-20261016/modal/shots/s07-timer-idle-02-popup-idle.png
 - Surface: timer · Category: broken · Severity: high
 - KanbanFlow: idle popup shows big "25:00" + green ▶ Start; running panel counts down (v1 S4, v3 S2); header pill shows "▶ 25:00 ▾" idle / live countdown while running (v3-e022, v9-e002); task row shows the current task; TODAY lists entries (v1 S4).
 - ChipFlow: `updateFromStatus` reads `status.phase / remaining_seconds / total_seconds / session_id / pomodoro_count / task_url` (static/app.js:887-901), but the server returns `{active, mode, mode_title, task_id, task_name, started_at, duration_secs}` (src/routes.rs:2997-3005) — none of the expected fields exist. Consequences: popup clock stuck at "--:--", red ■ Stop shows while idle and green ▶ Start stays hidden, task row always "No task", `#timer-today-list` never populated (no fetch of /api/timer/today), pill always renders "Pomodoro", and `updateCardIndicators` toggles `.card-timer-indicator`, which doesn't exist in templates/task_card.html.
@@ -40,6 +41,7 @@
 - ChipFlow: the `mt-*` dialog (templates/board.html:78-109) has no working JS. `ManualTime` targets `manual-time-*`/`edit-entry-*` ids that exist nowhere (static/app.js:1358-1490); `submit()` posts to `/api/time-entries` (no such route — the server endpoint is `POST /api/time/manual`, src/routes.rs:1594) with the wrong body shape; `ManualTime.open` crashes on null; the task datalist is never populated; From/To→Duration never computed; calendar button/popup and comment toggle unwired; the future-time overlay is never shown (error path targets a nonexistent `#future-time-overlay`).
 
 ### KF-004 — Rewire the Edit time-entry dialog end to end [HIGH | DEPLOYED | Timer]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-138): for a 24 s entry the Edit Pomodoro entry dialog loads From 16:06:05 = To 16:06:05 and Duration "—", and Update without changes fails "End time must be after start time."; saving 08:00:00-08:20:00 stored the range but kept `duration_display` "24s". The button never shows "Updating…". Timer log modal rows carry no `data-entry-id`, so the dialog opens only from the task sub-view. Fix direction: load the true end time and recompute the duration from the saved range. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/s13.out, .dev/evidence/r2-battery-20261016/modal/shots/s13-edit-01-edit-entry.png
 - Status: RELEASED 2026-10-06T08:23Z — Round-8 deploy marker verified TRUE by fleet-release worker: fix content present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (EditEntry.open fetch .catch + isNaN(start.getTime()) Invalid Date guard for started_at); chipflow.service active, /api/v1/version = 11d7734 on 127.0.0.1:3000 and the public tunnel.
 - Status: DEPLOYED — released 2026-10-06T04:14Z in Round-8 (build 11d7734faeab44e59bcedf416d2634745034a760); verified PASS by independent verifier (L0 green).
 - Status: VERIFIED — independent verifier 2026-10-06T04:15Z; reviewed 8563656 (catch on EditEntry.open fetch + Invalid Date guard for started_at); L0 green on commit (fmt/build/clippy 0 warnings/83 tests/node --check); server routes GET/PUT/DELETE /api/time/entries/{id} confirmed; ee-* IDs match template; delegation handles [data-edit-entry]/[data-entry-id].
@@ -59,6 +61,7 @@
 - ChipFlow: nothing ever populates `#why-stop-reasons` (zero references in static/app.js), so the menu opens empty. `beginWhy` then throws on `document.getElementById('why-task-name')` / `#why-elapsed`, neither of which exists in templates/board.html:65-75.
 
 ### KF-006 — Restore the break flow **[VERIFIED 2026-09-29]** — real-Chromium run vs fresh DB: pomodoro forced to 00:00 shows single green Take break (rgb(22,163,74)); clicking it starts a short-break session ('SHORT BREAK 4:59 … Stop Switch task'); dead Pause/Resume branch removed — running session now shows only red Stop (rgb(220,38,38)) + Switch task, matching KanbanFlow (no /api/timer/pause|resume exist).
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-117): with `long_break_every:2` the first break after the first completed pomodoro was long, because an interrupted pomodoro counted toward the cycle. "Back to work" started a pomodoro with `task_id:null`; it completed and was never logged (`log_timer_session` skips task-less sessions, `src/routes.rs` ~7015), and the next break was long again. No short break was ever produced. KanbanFlow's setting counts breaks ("Every 4th break") and its take-break panel keeps the task row. Fix direction: keep the task across the break, log task-less sessions, count only completed pomodori toward the cycle. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/s08.out
 - Surface: timer · Category: broken · Severity: high
 - KanbanFlow: at 00:00 the panel shows "00:00" with a single green "Take break" button next to the clock (v8 S1; v8-e001 verified).
 - ChipFlow: `#timer-popup-breaks` ("Take a break:" + Short/Long break buttons, templates/board.html:50-54) is never unhidden by any JS. `finishSession` posts the invalid stop body (see KF-002) and plays the chime regardless, so a pomodoro that runs to zero is never logged as completed. No "long break every 4th break" logic exists client- or server-side.
@@ -79,6 +82,7 @@
 - ChipFlow: `#timer-foot-mode` always shows "Stopwatch" (templates/board.html:58); `switchModeTab` only toggles nonexistent `.timer-modes button`s (static/app.js:1143-1150), so clicking changes nothing.
 
 ### KF-010 — Wire the popup "Change task" button; "Select open task" state
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-116); first status line for this section. "Select open task" cannot be reached: opening a task modal hides the timer popup, and the modal overlay (z 100) intercepts clicks on the pill, so the popup never shows beside another task's modal and the link stays "Change task". Fix direction: let the popup sit above the modal overlay. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/s08.out, .dev/evidence/r2-battery-20261016/modal/shots/s08-timer-04-select-open-task.png
 - Surface: timer · Category: broken · Severity: medium
 - KanbanFlow: task-row link reads "Change task" normally, "Select open task" when a different task's modal is open (v1-02073, zoom-verified; frame review).
 - ChipFlow: `#timer-popup-task-btn` has no click handler (templates/board.html:48); the only `changeTask()` posts to `/api/timer/change-task`, which has no route (only `/api/timer/retarget`, src/routes.rs:3250) — a 404 — and uses a native `window.prompt` with an invented "Are you sure you want to switch tasks mid-Pomodoro?" confirm (static/app.js:1291-1325).
@@ -104,6 +108,7 @@
 - ChipFlow: the modal shows "🍅 N Pomodori", "⏱ Nm spent", and an extra "⚠ N interruptions" stat with no KanbanFlow counterpart (templates/modal.html:69-74).
 
 ### KF-015 — Use the "Pomodoro" / "Stopped with reason 'X'" tooltip on P badges
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-103); first status line for this section. A completed pomodoro's P badge tooltip reads "Stopped with reason 'completed'", because `finishSession` sends `reason:'completed'` and the server stores it as `interrupt_reason`; the task time-log sub-view labels stopwatch entries "Stopped Pomodoro with reason 'Other'". The timer log modal calls the same completed entry "Successful Pomodoro", so the two views disagree. Fix direction: send no reason on completion and branch the sub-view text on `kind`. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
 - Surface: timer · Category: divergent · Severity: low
 - KanbanFlow: per-task P-badge tooltips read "Pomodoro", or "Stopped with reason 'Other'" for stopped sessions (v3-01594; frame review).
 - ChipFlow: every P badge shows the tooltip "Pomodori" regardless of stopped state (src/routes.rs:669-672, 1401-1404).
@@ -375,6 +380,7 @@
 - ChipFlow: item reads "Add time estimate" and follows "Manual time entry" (templates/modal.html:17-22).
 
 ### KF-067 — Match the Time spent row format ("● 2 Pomodori" / "2m")
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-094); first status line for this section. With 1 completed and 9 stopped pomodori on #11 the task modal shows only "4h 4m" and no pomodoro text. KanbanFlow shows "🍅 1 Pomodoro" / "● 2 Pomodori" beside Time spent once pomodori exist (KF-014, frame review §c v3-01323). Fix direction: show the count when non-zero; keep "2h 30m" alone when zero (GM-073). Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
 - Surface: task modal · Category: divergent · Severity: medium
 - KanbanFlow: labeled rows "Color" and "Time spent"; Time spent reads "● 2 Pomodori" and "2m" (v7 S1; v7-e002, v7-e015, v7-e021).
 - ChipFlow: an icon stats block — "🍅 N Pomodori", "⏱ X spent", "⚠ N interruptions", "Created ..." (templates/modal.html:64-76); no "Time spent" labeled row in KanbanFlow's format.
@@ -452,6 +458,7 @@
 - ChipFlow: one combined list; enable/disable is a per-row "Enabled in picker" checkbox (templates/board_colors.html:14–61).
 
 ### KF-082 — Reorder colors by drag handles, not ▲▼ buttons
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-192); first status line for this section, which the admin battery found recorded as fixed. Disable and Enable work, but drag reorder does nothing before or after reload: `Sortable.get(tbody)` is undefined because the inline script runs before the deferred `Sortable.min.js` loads (`templates/base.html:9`). Fix direction: initialize the sortable after load, or move it into app.js. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/admin/shots/colors-followup.log.json
 - Surface: settings · Category: divergent · Severity: medium
 - KanbanFlow: ⋮⋮ drag handles on each enabled-color row reorder the palette (a8 screenshot).
 - ChipFlow: per-row ▲/▼ buttons that move the color one slot and reload the page (templates/board_colors.html:52–56).
@@ -561,6 +568,7 @@
 - ChipFlow: only a "+ Add comment" toggle exists in each dialog (templates/board.html:100, 132); no labels affordance anywhere.
 
 ### KF-103 — Live-increment the card badge during a run ("42m + 1m") and revert on discard
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-073); first status line for this section. The live increment is not inline: KanbanFlow (10-05 capture, waiting for break) reads "2h 46m + 42m / 8h" with a red inline "+ 42m"; ChipFlow shows "2h 30m / 8h" with no live part in that state and, while running, a separate bold line "2h 30m + 0m" under the icon row. The 2h 46m vs 2h 30m base is the R3 fixture gap, not this defect. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-073-074-card11.png
 - Surface: cross-surface (timer, cards) · Category: missing · Severity: medium
 - KanbanFlow: the card's time badge live-increments during the run ("42m + 1m") and reverts if the session is discarded (v4-00001–00002; frame review §P1-7).
 - ChipFlow: a `<span class="card-live" hidden>` exists in templates/task_card.html with CSS classes for it (static/style.css:355-357), but no JS ever unhides or updates it — the badge never changes during a run.
@@ -642,6 +650,7 @@
 - Not a duplicate: KF-080 covers the missing settings shell/nav; the per-tab title behavior is a detail it doesn't capture.
 
 ### KF-111 — Premium-gated settings nav items (Custom fields, Custom roles) render dimmed in KanbanFlow [LOW | divergent | Settings]
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-185); first status line for this section. The settings nav now exists, but in the KF-331 reference KanbanFlow dims four items (Custom fields, Custom roles, API & Webhooks, Add task from email; grey ink 108/105/135/157 px wide) with no badges, while ChipFlow adds "Premium" pills to the first two (ink 168/165 px) and renders the last two at full `#444444`. Fix direction: drop the pills and dim all four, or record the deliberate difference for the two ChipFlow implements. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-185-dimmed-nav.png
 - KanbanFlow reference: a8 screenshot's left nav shows "Custom fields" and "Custom roles" grayed out (premium-gated); other nav items render at full weight.
 - ChipFlow behavior: No Board settings nav exists at all.
 - Not a duplicate: KF-080 covers the missing shell/nav; the dimmed premium state of two specific items is a distinct visual detail.
@@ -1252,6 +1261,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - OPEN QUESTION (needs a dedicated check): the KanbanFlow worker reported right-clicking a card opens NOTHING — if true, ChipFlow's whole card right-click context menu (Color/Move/etc.) may be a deviation. Verify against the video catalog and live board before acting.
 
 ### KF-215 — Filter panel covers its own toggle button [LOW | FIXED | Board]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-021): this section's KanbanFlow panel docks below the top bar at y≈36 with the funnel moved to x≈1514; ChipFlow's panel docks at y=76 over the Done column and the funnel stays at x=1719. The controls differ too: Labels is a checkbox list where KanbanFlow has an "Add labels..." input, and Remember filter is a checkbox where KanbanFlow has a toggle (KF-175). Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/board/shots/s5-01-panel-open.png
 - Status: FIXED 2026-09-30 (W1/W2/W3 repair batch, merged to master)
 - ChipFlow behavior: open `#filter-panel` (300px wide, x=1300+) overlays `#filter-btn` (x~1426), so the button can't toggle it closed while open — closing requires x or Escape.
 - KanbanFlow behavior: CONFIRMED 2026-09-30 on the golden-master board — the filter is a RIGHT-DOCKED sidebar (~245px wide, full viewport height starting just below the top black header bar, y≈36) and the Filter funnel toggle stays fully visible and clickable in the top toolbar (~x=1514, y≈47); the panel never covers it. ChipFlow's floating 300px panel overlaying the toggle is a real deviation.
@@ -1304,6 +1314,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add a per-board `color_legend` boolean (default OFF for new boards); put a "Color legend" toggle in the board Menu (≡ Menu, board-bar far right); when ON render the footer as one labeled segment per enabled board color in palette order using custom names (keep KF-210 bottom-anchored + KF-212 full-bleed); when OFF render nothing. Migrate existing boards to ON (preserves their current rendering). Related: KF-205, KF-121 (both divergent, based on Chip's customized board — re-evaluate after this lands); KF-083 (default color), KF-084 (color rename dialog).
 
 ### KF-223 — Column menu contents differ from KanbanFlow [MED | FIXED | Columns]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-041, R2-042, R2-044, R2-047): the "verified live" Collapse and Show details specs in this section are contradicted by the recovered 09-30 captures. Collapsed strip: KanbanFlow is 27 px wide (To Do x 479-505; adjacent strips 625-651 and 653-679), its `#EEEEEE` header keeps the normal height (y 81-115) and holds only the count ("5", `#111111`, 7x9), the name "TO DO" (`#555555`) runs vertically in the white body (y 146-199) reading top to bottom, and an overdue column gets only a 3 px `#FF8080` line at the header bottom (y 116-118), no text. ChipFlow's strip is 21 px (x 474-494), its white header stretches to y 229 (so every column header grows), the count box is 10x9, the name sits in the header reading bottom to top, and a vertical "1 overdue task" in `#DC2626` (y 98-167) overprints the count with no line. Show details: KanbanFlow draws a 377 px box (x 56-432, y 117-183) with a `#C3C3C3` border, an `#EEEEEE` title band (y 118-147) and a centered `#666666` title; ChipFlow draws a 223 px rounded white card (x 5-227, y 234-309) with a left-aligned `#111827` title and no band. KF-039 carries the same contradicted strip spec. Severity HIGH (the strip breaks the header row height for the whole board). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-041-042-strip.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-043-044-strips.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-047-popover.png, .dev/evidence/r2-battery-20261016/pixel/measure/B.txt, .dev/evidence/r2-battery-20261016/pixel/measure/D.txt
 - Status: FIXED 2026-09-30 — independent verifier passed (diff review, node --check, cargo fmt --check, cargo build, clippy 0 warnings, cargo test 56/56; functional tests on :3108 with fresh DB: 34/34 — menu exactly Edit/Collapse/Show details, popover position/content/dismiss, collapse → 22px white strip, red badge only when WIP exceeded, red vertical overdue indicator with exact tooltips, uppercase vertical name, click-anywhere-to-expand, collapse label swaps to "Expand", persistence across reload AND full server restart; regression: ≡ board Menu, KF-222 legend toggle, Edit dialog all OK). Deployed in `7a9a465eb8af69ef61501f6761c3d31ab1720857`; `systemctl is-active chipflow.service` → active and green-box-local `/api/v1/version` reports the new SHA. (Deploy report `.dev/evidence/deploy-2026-09-30-kf223.md`.)
 - ChipFlow behavior: column menu has 6 items — Edit / Move left / Move right / Add to left / Add to right / Delete.
 - KanbanFlow behavior: column menu has 3 items — Edit / Collapse / Show details (live golden-master board, right-click menu screenshot).
@@ -1388,6 +1399,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-01T04:25:09Z — deployed 66f84da064dcd8a5c1948f8c6d5e965cfb8346bc, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261001-kf-232.md
 
 ### KF-233 — Boards button and top-bar colors differ (#111827/#1f2943 vs #333333/#515151; 31px vs ~47px tall) [MEDIUM | OPEN | Top bar]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-001): this release matched a reference the recovered captures contradict. The 09-30 KanbanFlow capture (1919x998, Linux Chrome) shows a 34 px `#333333` bar (y 0-33) and a 100x26 `#515151` Boards button at (10,4); the fix targeted 38 px and a ~47 px button from a lost GM-001 note. ChipFlow draws 36 px of `#333333` plus 2 shaded rows (38 px), a rounded 111x30 Boards button at (11,4), and adds a reports button and the timer pill where KanbanFlow's right cluster holds only bell (x 1781-1816), help (1827-1862) and avatar (1873-1908). Masked diff 15852/72922 px. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-001-topbar.png, .dev/evidence/r2-battery-20261016/pixel/measure/A-ae.txt
 - Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): top bar #333333/36px, Boards button #515151 full-height. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: dark top bar bg `#111827`, 40px tall; "☰ Boards" button bg `#1f2943`, rect ≈ (16,4,99,31) CSS px at 1440w — a 31px button vertically centered with ~4px margins.
@@ -1441,6 +1453,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-020.md`; `.dev/evidence/kf-drafts/v1-evidence/vs-GM-020.png`; candidate `cf-2880.png`.
 
 ### KF-239 — Timer pill lives in gray board row as light pill, not in dark top bar as dark chip [MEDIUM | OPEN | Board header row]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-002, R2-010, R2-127): this release was built from v1-era video. All four current KanbanFlow captures (09-30, 10-05 while timing, 10-12 x2) show no timer pill in the top bar and a clock icon at about (1714,57) left of the funnel in the board header row; while timing, the Pomodoro panel drops from that row, and with the popup open the top bar (x 1500-1780) stays plain `#333333`. ChipFlow shows the idle "▶ 25:00 ▾" pill in the dark top bar at (1799,2), has no clock icon, and keeps the pill visible (x 1814-1902) beside the open popup. Fix direction: move the timer control to a clock icon in the board header row, settled against the current captures. Severity MEDIUM (R2-127 alone was LOW). Evidence: .dev/evidence/r2-battery-20261016/board/shots/s1-01-idle.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-010-header-right.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-127-pill-topbar.png
 - Status: RELEASED 2026-10-12T00:30Z — independent verifier confirmed fix content present in deployed tree (origin/main 7b9db095; app tree byte-identical to production 8794cb26): timer pill inside dark top bar (bg #484848, white text). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V1 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: `button#timer-pill` at (1168,46,89,28) in the GRAY board-header row; light pill bg `#e8eaed`; pomodoro idle shows green ▶, dark "25:00", gray ▾; stopwatch idle shows red ■, "00:00", ▾.
@@ -1460,6 +1473,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v1-GM-022.md`; `.dev/evidence/kf-drafts/v1-evidence/cf-drawer-left.png`.
 
 ### KF-241 — Folded-column WIP-violation styling wrong: black count, missing `#ff8080` line, spurious red "5" in strip body [HIGH | OPEN | Columns]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-043): KanbanFlow's over-WIP collapsed In Progress strip shows the count in `#8B0000` (6x9 at x 664-669) and a 21 px `#FF8080` line (x 656-676) at the header bottom (y 116-118), with "IN PROGRESS" in the body (y 147-266). ChipFlow draws the 3 px `#FF8080` line at y 99-101 straight through the count, the count box is 16x9, and the name sits in the white header (y 105-199). Strip width and header height are reopened under KF-223. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-043-044-strips.png, .dev/evidence/r2-battery-20261016/pixel/measure/C.txt
 - Status: RELEASED 2026-10-10T16:35Z — independent verifier confirmed fix content present in deployed tree (origin/main eb3159f0; app tree byte-identical to production 8794cb26): folded-column WIP-violation styling verified: darkred rgb(139,0,0) count, #ff8080 line present, no spurious red digit. Supersedes older Oct-1/2 FIXED lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior (reproduced: "To Do" folded, `collapsed:true`, `wip_limit:3`, 5 tasks): (1) the violated strip-header count "5" renders in near-black/gray (107,114,128) — the unfolded header's "5 / 3" correctly renders darkred `#8B0000` (139,0,0), so the strip uses a different code path; (2) the red warning line under the strip header (`#ff8080` (255,128,128) spanning the full strip width in KF) is entirely absent; (3) a red "5" renders inside the strip body next to the vertical "TO DO" text — KanbanFlow has no such element.
@@ -1501,6 +1515,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED 2026-10-03T21:29:20Z — release 9da8b186651ea24785870d0ae88bb302babb0da7: `.card-dueline` `#9a5b00` → `#222222` (golden text core rgb(34,34,34), GM-069); overdue red preserved; builder/verify/spotcheck evidence `.dev/evidence/builder-20261003-kf-244.md`, `verifier-20261003-kf-244.md`, `spotcheck-20261003-kf-244.md`, `deploy-20261003-kf-244.md`.
 
 ### KF-245 — Card border is near-black instead of a color-matched shade of the card face [MEDIUM | FIXED | Task cards]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-061): four border shades differ from the 09-30 capture: Blue KanbanFlow `#70B0FF` vs ChipFlow `#7FAEF9`, Green `#59D600` vs `#7CD340`, Yellow `#F5CC00` vs `#EECD45`, Red `#FF858F` vs `#EE8B91` (the palette `border` values). Cyan `#00D6D6`, Purple `#C994FF`, Orange `#FAA200`, Magenta `#FF85FF` and all 8 faces are exact. Card spacing and metrics are filed separately as KF-363. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-061-colors-todo.png
 - Status: FIXED 2026-10-02T06:25:51Z — deployed 01e733d5b5dc16ca9bc22523a6487a51f3a6c5ad, /api/v1/version build_sha verified. Evidence: /home/hatch/workspace/pomodoro-kanban/.dev/evidence/deploy-20261002-kf-245.md
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V2 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior (green "Retro categorization" task; also orange "webhook" task): every card renders a 1px border in near-black (31,41,55) regardless of card color.
@@ -1651,6 +1666,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-073.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-modal-cand-crop.png` vs `gm-v3-modal-golden-crop.png`.
 
 ### KF-259 — Due date renders absolute "Oct 02, 2026 5:00 PM" and omits the "(Done)" marker [MEDIUM | OPEN | Task modal]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-065, R2-066, R2-067, R2-091): both the relative format and the "(Done)" rule fail against the captures. With the clock pinned to 2026-09-30 15:22 CDT, KanbanFlow shows "Due: Today 5:00 PM (Done)", "Due: Friday 5:00 PM (Done)" (+2 days) and "Due: 25 September 5:00 PM (Done)" (5 days past, red "!" disc, `#BE0000`/`#8B0000`); the 10-12 capture shows "2 October 5:00 PM (Done)". ChipFlow's `format_due_card` (`src/routes.rs` ~965-971) prints a weekday for anything within ±7 days ("Due: Wednesday 5:00 PM" for today, "Friday" or "Sunday" for past dates), never says "Today", renders overdue in `#DC2626` with no "!" disc, and prints "(Done)" only when `due_done` is true, which no UI control sets. KanbanFlow prints "(Done)" after every seeded due, overdue ones included, inside `span.task-dueDateColumn`, so the parenthetical is most likely the due date's target column name, not a done flag (inference; confirm live). The card line also ignores the default 7-day window (#4, due 30 October, shows a line KanbanFlow hides). The modal shares the text. Fix direction: "Today" for the same day, a weekday only for future dates within the week, "D Month" for past dates, the "!" disc and KanbanFlow reds, the target column name in the parenthetical, and the 7-day window on cards. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-065-due-relative.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-066-due-overdue.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-067-due-absolute.png, .dev/evidence/r2-battery-20261016/modal/s03-edits.log.json
 - Status: RELEASED 2026-10-11T23:45Z — independent verifier confirmed fix content present in deployed tree (origin/main 7fff5504; app tree byte-identical to production 8794cb26): due date renders "Tuesday 5:00 PM (Done)" — relative weekday rule + Done marker. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - ChipFlow behavior: DUE DATE row shows "📅 Oct 02, 2026 5:00 PM" — no "(Done)" marker despite `due_done: true` (confirmed via `GET /api/tasks/{id}`).
@@ -1834,6 +1850,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-096.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-time-log-view.png`.
 
 ### KF-278 — Hovering Time spent shows no tooltip and no hover menu [MEDIUM | BUILT | Task modal]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-093): hover shows only the tooltip, stacked with a native `title`; the "Add time entry / Open time log" menu opens only on click, where this section specifies a hover menu. `wireTimeSpentHover` appends another tooltip and menu node to `<body>` on every modal open (4 of each after 4 opens). Fix direction: open on hover, drop the `title`, reuse one node. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/shots/s01-modal-06-hover-time-spent.png, .dev/evidence/r2-battery-20261016/modal/s17.out
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-3 batch; already live, no new deploy): static/app.js wireTimeSpentHover + static/style.css .tm-time-tooltip/.tm-time-menu; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED 2026-10-05T19:35Z — release SHA `bb586ddd5aad07ec5691468b50629a86e5998017` (Round-3 batch KF-278/285/287/288/297/302/304/311/315/323; Git Data API push, base `aa41e9a9`; 9 product files, patches applied clean over Round-2 release, L0 re-greened). Deployed to green-box via homelab-dale-chipflow/modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`bb586ddd5aad07ec5691468b50629a86e5998017`. Deploy report: `.dev/evidence/deploy-20261005-round3.md`.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V3 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
@@ -1845,6 +1862,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add the hover tooltip and hover menu per the master.
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v3-GM-075.md`; `.dev/evidence/kf-drafts/v3-evidence/gm-v3-hover-timespent.png`.
 ### KF-279 — Timer popup TODAY section differs: "Today" w/o day total, red dots, "2:14 PM · 0m" format, no per-entry trash, running session never listed as "— pending" [MEDIUM | BUILT | Timer popup]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-115): this release took green dots from a capture whose task was green; the 10-05 KanbanFlow capture (`kanbanflow-pomodoro-panel-20261005.png`) shows dots in the task colour (orange). Against it, ChipFlow's heading reads "TODAY 1M" (CSS uppercase of "1m") with no pomodoro count where KanbanFlow reads "TODAY 58m 1 Pomodoro", dots are hard-coded `#4ade80`, the pending row reads "— pending" without its start time ("10:35 PM – pending"), entries carry × instead of ⋮, and × deletes with no confirmation. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/modal/shots/s09-stops-03-B-today.png
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-5 batch; already live, no new deploy): static/app.js KF-279 TODAY {total}m heading/green dots/per-entry trash/pending entry + style.css KF-279 trash; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED (2026-10-05T20:10Z, Round-5, SHA 8de92e60)
 - Status: BUILT — builder subagent 2026-10-05T20:05Z; fresh build (TODAY total, green dots, time ranges, per-entry trash, pending entry).
@@ -1973,6 +1991,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v4-GM-118.md`; `/tmp/gm-v4-shots/gm118_entries.png`, `gm118_manual.png` (ephemeral); GET /api/timer/log JSON.
 
 ### KF-289 — Timer log export menu order: CSV before Excel, KanbanFlow lists Excel first [LOW | VERIFIED | Timer log]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-141): the timer log Export menu reads "Excel (Detailed) / Excel (Summary) / PDF (Summary)", the Time spent report's items (`templates/board.html` `#log-export-menu`), where KanbanFlow and this release have "Download Excel file", "Download CSV file" (GM-119). Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/modal/shots/s12-log-07-log-export-menu.png
 - Status: RELEASED 2026-10-12T00:00Z — independent verifier confirmed fix content present in deployed tree (origin/main 190d7479; app tree byte-identical to production 8794cb26): timer-log export menu lists Excel first (Excel Detailed/Summary, PDF Summary; resolved via KF-294 verbatim menu restructure). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V4 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
 - Note: verifier muse-code 2026-10-04T06:45:59Z: Muse Code not authenticated — mechanical gate passed, adversarial pass blocked; needs Chip to run 'muse login'
@@ -2173,6 +2192,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-132.md`.
 
 ### KF-302 — Quick-add color picker is a dot-only popover, not KanbanFlow's centered named modal [MEDIUM | BUILT | Board settings]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-108, R2-109): this release put a named-colour dialog behind a dot popover; the recovered 09-30 capture shows a different flow. KanbanFlow: column "+" opens one centered modal tinted with the default colour (`#FFFFE0`, x 710-1209, y 25-~325) with a "Task name..." field, a "● Yellow ▾" colour field whose inline dropdown lists 8 rows (36 px pitch, 14 px round saturated dots, bold default), a member row, Save and ×. ChipFlow: an anchored 272x106 popover ("Task name", 8 bare dots, blue Add, Cancel); clicking a dot opens a separate white "Task color" dialog (x 750-1169, 44 px rows, 18 px square face-colour swatches). Overlay KanbanFlow `#616161`, ChipFlow `#6B6C6E`. KF-208's popover claim rests on a ChipFlow screenshot. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-109-color-modal.png, .dev/evidence/r2-battery-20261016/pixel/measure/E.txt, .dev/evidence/r2-battery-20261016/modal/crop-newtask.png, .dev/evidence/r2-battery-20261016/modal/shots/s06-more-05-new-task-modal.png
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-3 batch; already live, no new deploy): static/app.js openNamedColorModal + board.html quick-add-color-modal + style.css quick-add-color-dlg; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED 2026-10-05T19:35Z — release SHA `bb586ddd5aad07ec5691468b50629a86e5998017` (Round-3 batch KF-278/285/287/288/297/302/304/311/315/323; Git Data API push, base `aa41e9a9`; 9 product files, patches applied clean over Round-2 release, L0 re-greened). Deployed to green-box via homelab-dale-chipflow/modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`bb586ddd5aad07ec5691468b50629a86e5998017`. Deploy report: `.dev/evidence/deploy-20261005-round3.md`.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
@@ -2197,6 +2217,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-144.md`.
 
 ### KF-304 — Board delete uses native window.confirm instead of a styled in-page dialog [MEDIUM | BUILT | Board settings]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-200): clicking "Delete board" throws `ReferenceError: showConfirmDialog is not defined`; no dialog appears and no request is sent (two boards, two DBs). `showConfirmDialog` is private to the `static/app.js` IIFE, so the release note's `app.js:878` definition is unreachable from the page, and `templates/board_delete.html` has no `#confirm-dialog`. Archive works; the last-board refusal exists only in the API. No board can be deleted from the UI. Fix direction: expose a styled confirm to the delete page and add an end-to-end test that deletes a board through it. Severity HIGH. Evidence: .dev/evidence/r2-battery-20261016/admin/shots/del-board.log.json, .dev/evidence/r2-battery-20261016/admin/shots/single-board.log.json
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-3 batch; already live, no new deploy): templates/board_delete.html showConfirmDialog('Delete board'…); fn defined static/app.js:878, loaded via base.html; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED 2026-10-05T19:35Z — release SHA `bb586ddd5aad07ec5691468b50629a86e5998017` (Round-3 batch KF-278/285/287/288/297/302/304/311/315/323; Git Data API push, base `aa41e9a9`; 9 product files, patches applied clean over Round-2 release, L0 re-greened). Deployed to green-box via homelab-dale-chipflow/modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`bb586ddd5aad07ec5691468b50629a86e5998017`. Deploy report: `.dev/evidence/deploy-20261005-round3.md`.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (wave V5 independent verifier; see `.dev/evidence/kf-drafts/TRIAGE.md`).
@@ -2224,6 +2245,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-138.md`; `/tmp/gm-verify-v5/cand-delete-board-1920.png` (scratch; not archived).
 
 ### KF-306 — Column delete confirm lacks the "Move the tasks to the column" option and verbatim text [DEPLOYED | VERIFIED | Other dialogs]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-049): deleting a non-empty column with "Move the tasks to the column" fails. `deleteColumn` POSTs the task moves without the required `position` (400 x4), the DELETE then returns 400, "Could not delete column." shows and the tasks stay put. Deleting an empty column works. Fix direction: send an end-of-column position and stop the chain when a move fails. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/board/s8b-cols.json
 - Status: RELEASED 2026-10-09T03:16Z — deployed build a2f9b16c6879e6e22d41f31dd6d32634707b2cf6 (green-box chipflow.service, /api/v1/version confirmed on 127.0.0.1:3000 and public tunnel; served app.js contains verified fix). VERIFIED fix aa7ddf9 (not the rejected fleet branch whose checkbox was non-functional): column-delete dialog with move-tasks checkbox + target dropdown, moves via POST /api/tasks/:id/move. CORRECTION: the 2026-10-05 Round-6 DEPLOYED marker was false — fix content absent from build a073a65d and production until this release.
 - Status: DEPLOYED — released 2026-10-05T20:55Z in Round-6 (build a073a65dc865f0600ccd3feefa3c05cee144f85d); verified PASS by independent verifier (L0 green).
 - Status: VERIFIED — verified 2026-10-05T20:35Z by independent verifier (Dale-subagent); fix in HEAD (commit 99c3e6a): verbatim text, Move-tasks checkbox + target dropdown, requires move target for non-empty, moves via POST /api/tasks/:id/move then DELETE; L0 green.
@@ -2297,6 +2319,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-bell.md`; `.dev/evidence/kf-drafts/SPOT-A.md` (hover measurements); scratch screenshot `/tmp/spot-evidence/p3-bell-clicked.png`.
 
 ### KF-311 — Column header row is shorter and its name smaller than KanbanFlow [MEDIUM | BUILT | Columns]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-036, R2-037): this release raised the row to ~41 px from a lost GM-031 claim; the recovered 09-30 capture shows an `#EEEEEE` header y 81-116 (36 px) with a `#C3C3C3` bottom rule, name ink "In Review" 68x11 and a 22x22 "+" flush right (x 360-381). ChipFlow draws a 10 px `#EEF0F3` gap, then an `#EBEBEB` header y 86-139 (54 px), name ink 78x12, a ~11x11 "+" at x 324-335, and a count cell (see KF-316). The over-WIP line follows the header: KanbanFlow puts the 3 px `#FF8080` line on the header bottom edge (y 116-118) with "5 / 3" at y 96-104, ChipFlow puts it inside the header (y 121-123) with round ends and the count 5 px lower (y 101-109). Diff 130064/134330 px (header), 23396/23400 (WIP line). Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-036-colheader.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-037-wip.png, .dev/evidence/r2-battery-20261016/pixel/measure/R2-036.txt, .dev/evidence/r2-battery-20261016/pixel/measure/R2-036-037.txt
 - Status: RELEASED 2026-10-06T21:00Z — fix content verified present in deployed GitHub tree 11d7734faeab44e59bcedf416d2634745034a760 (Round-3 batch; already live, no new deploy): static/style.css column header height 41px + name font-size 17px; green-box chipflow.service active, /api/v1/version build_sha confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js byte-identical to tree (sha256 99a64188…).
 - Status: DEPLOYED 2026-10-05T19:35Z — release SHA `bb586ddd5aad07ec5691468b50629a86e5998017` (Round-3 batch KF-278/285/287/288/297/302/304/311/315/323; Git Data API push, base `aa41e9a9`; 9 product files, patches applied clean over Round-2 release, L0 re-greened). Deployed to green-box via homelab-dale-chipflow/modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`bb586ddd5aad07ec5691468b50629a86e5998017`. Deploy report: `.dev/evidence/deploy-20261005-round3.md`.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker A breaking V2's GM-031 pass; test server 127.0.0.1:3221).
@@ -2370,6 +2393,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-spotA-GM-045.md`; scratch `/tmp/spot-evidence/p10-edit-column.png` + DOM dumps.
 
 ### KF-316 — "Do today" header: add-task control is a green button, not a bare green glyph; count is muted gray, not near-black [LOW | VERIFIED | Empty states]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-052, R2-036): the "0" this release styled most likely belongs to the collapsed strip beside "Do today" in GM-156. The General-board reference shows no count on the expanded "Do today" header, and neither the GM nor the General capture shows a count cell on any expanded non-WIP header. ChipFlow renders a "0" count cell with a separator on the empty "Do today" header and a count cell with `#D4D7DC` separators (x 350/383) on every expanded header. KF-313's separator and KF-203's count badge have no counterpart in any recovered capture either. Fix direction: drop the count cell from expanded headers (keep the inline WIP "n / m"), or confirm it from a fresh capture. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/board/shots/ref-general-headers.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-036-colheader.png
 - Status: RELEASED 2026-10-12T01:15Z — independent verifier confirmed (already fixed in the deployed tree): add-task control is a bare green glyph (transparent bg, #3DC54E). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-01 by the exhaustive golden-master audit (spot-checker B breaking V5's GM-156 attribute pass; test server 127.0.0.1:3222, fresh redb; Firefox 1919×998 DPR 1). Breaks the 1px/1-shade bar on two axes.
 - Note: verifier muse-code 2026-10-04T19:04:43Z: FAILED: shell sandbox denies all commands (bwrap mount failure) and evidence path is outside workspace, so pixdiff/console gates could not run; static axes hold (transparent #3DC54E glyph, #111111 count) — staged at KF-316-verifier-20261004-muse-code-2.md; evidence /home/senkwich/chipflow-worker/evidence/KF-316-verifier.md
@@ -2511,6 +2535,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Note: build attempt by muse-pi (muse-pi) 2026-10-04T05:52:20Z failed (l0=pass changes=0 pi_rc=0); evidence /home/senkwich/chipflow-worker/evidence/KF-275-builder.md l0 /home/senkwich/chipflow-worker/evidence/KF-275-l0.log
 
 ### KF-325 — Running timer card lacks the orange dashed timer-selected outline [HIGH | DEPLOYED | Timer]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-074): KanbanFlow keeps the dashed `#FAA200` outline (6 on, 3 off) in place of the card border through the waiting-for-break state (10-05 capture). ChipFlow draws no outline in that state, and while the pomodoro runs it draws `2px dashed rgb(250,162,0)` outside a solid border with a 1 px gap (KF-327 shares this). Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-073-074-card11.png, .dev/evidence/r2-battery-20261016/pixel/shots/G_running.log.json
 - Status: RELEASED 2026-10-09T11:22:39Z — fix content verified present in deployed GitHub tree a2f9b16c6879e6e22d41f31dd6d32634707b2cf6 (commit b431437: running-pill restyle (timer-pill-stopbox, #484848 bg, white countdown); already live, no new deploy): green-box chipflow.service active, /api/v1/version build_sha=a2f9b16 confirmed on 127.0.0.1:3000 and public tunnel, served static/app.js+style.css byte-identical to tree.
  - Status: VERIFIED — fixed 2026-10-05 by the round-1 builder (attempt 1). Commit b431437 in pomodoro-kanban. Running pill restyled to KanbanFlow: bg #515151→#484848, running icon is now a solid 20×20 #ff7070 rounded square (was a #dc2626 text glyph), countdown text #fca5a5→#fff. Computed styles match golden measurements exactly (GM-103). Evidence: .dev/evidence/round1-contracts.md, .dev/evidence/kf328-evidence.md (KF-328). Verifier has final say. L3 verified 2026-10-05 by independent verifier (blind). Evidence: .dev/evidence/verifier-round1-20261005.md. — filed 2026-10-05 by the visual-review pass (Dale orchestrator) on the 57-pair golden-master visual QA.
 - Status: RELEASED 2026-10-05T06:24:31Z — running-pill fix already in deployed build e90969e (round-1 batch; deployed to green-box chipflow.service 2026-10-05T05:42Z by earlier release run; /api/v1/version confirms e90969e live this run).
@@ -2603,6 +2628,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/golden-masters/task-detail-modal/GM-070-modal-open.png`; `.dev/evidence/chipflow-captures/modal/GM-070-chipflow.png`; `.dev/evidence/visual-review-20261005.md` (divergence #8).
 
 ### KF-333 — Card Color submenu shows pomodoro-count labels instead of KanbanFlow's 8 color names [MEDIUM | DEPLOYED | Cards]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-076): the 8 names (10 on the Pomodoro board) and recolouring work, but the rows are not tinted: each has a 0.9rem coloured bar on the left, where this section's KanbanFlow line (GM-066) has each row tinted its colour. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/board/shots/s9-02-color-sub.png
 - Status: RELEASED 2026-10-16 — deployed-tree content re-verified present at production 2246458 (STANDARD_COLORS 8 names seeded + tinted submenu); evidence .dev/evidence/deployed-recheck-20261016.md
 - Status: DEPLOYED 2026-10-05T19:20Z — release SHA `aa41e9a98593873e3e56c8ce83832b3a3f6bdf29` (Round-2 batch KF-326/330/331/333/334/335; Git Data API push, base `e90969e0` → merged head `3a1df98`; 6 product files, cherry-picked clean over remote Round-1 release, L0 re-greened on merged tree). Deployed to green-box via modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`aa41e9a98593873e3e56c8ce83832b3a3f6bdf29`. Deploy report: `.dev/evidence/deploy-20261005-round2.md`.
 - Status: OPEN — filed 2026-10-05 by the visual-review-v2 pass (7 re-captured golden pairs, human-style visual QA superseding the naive pixel-diff battery).
@@ -2616,6 +2642,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/golden-masters/task-cards/GM-066-card-color-submenu.png`; `.dev/evidence/chipflow-captures/board/GM-066-chipflow-v2.png`; `.dev/evidence/visual-review-v2-20261005.md` (GM-066 verdict).
 
 ### KF-334 — Card Move submenu shows a flat destination-column list instead of KanbanFlow's relative-move options [MEDIUM | DEPLOYED | Cards]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-077): every card offers only "Move advanced", because the submenu code reads `card.dataset.columnId` and `templates/task_card.html` never renders `data-column-id`. "Move advanced" fills `#card-ctx-submenu` but leaves it hidden, so no card can be moved from the context menu. KF-141 (same menu) regresses with it. Fix direction: take the column from `card.closest('.task-list')` and unhide the submenu after `hideCardSubmenu()`. Severity HIGH. Evidence: .dev/evidence/r2-battery-20261016/board/s9-cards.json, .dev/evidence/r2-battery-20261016/board/s9c-advanced.json, .dev/evidence/r2-battery-20261016/board/shots/s9c-01-after-advanced.png
 - Status: RELEASED 2026-10-16 — deployed-tree content re-verified present at production 2246458 (Move right / Move to bottom / Move advanced submenu); evidence .dev/evidence/deployed-recheck-20261016.md
 - Status: DEPLOYED 2026-10-05T19:20Z — release SHA `aa41e9a98593873e3e56c8ce83832b3a3f6bdf29` (Round-2 batch KF-326/330/331/333/334/335; Git Data API push, base `e90969e0` → merged head `3a1df98`; 6 product files, cherry-picked clean over remote Round-1 release, L0 re-greened on merged tree). Deployed to green-box via modules/chipflow.nix rev+hash pin (dry-activate: chipflow.service sole affected unit; switch OK; service active); green-box-local and public https://chipflow.chip.network/api/v1/version both report build_sha=`aa41e9a98593873e3e56c8ce83832b3a3f6bdf29`. Deploy report: `.dev/evidence/deploy-20261005-round2.md`.
 - Status: OPEN — filed 2026-10-05 by the visual-review-v2 pass (7 re-captured golden pairs, human-style visual QA superseding the naive pixel-diff battery).
@@ -2720,6 +2747,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: either reject non-RFC3339 datetimes at the API boundary or make the renderer tolerate bare local datetimes.
 
 ### KF-349 — Report pages have no dark-mode variants (low-contrast text on dark body) [LOW | OPEN | Reports]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-222): `body.dark` is never set on any report page. `BoardChrome.init` returns before `restorePrefs()` when the page has no `.board-wrap`, so the dark CSS this release shipped never applies on `/timer/statistics`, `/timer/log` or any board report page. Fix direction: restore the dark preference on every page. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/admin/shots/dark-mode.log.json
 - Status: RELEASED 2026-10-12T04:25Z — built, independently verified, and deployed to production 5244f3c: report pages dark-mode variants: body.dark-scoped CSS covering the full report surface (measured WCAG AA). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-20 verifier's residual note.
 - Behavior: `.timer-page` (shared shell for report pages incl. the new Export page and the pre-existing timer statistics page) has no dark-mode variants; `.report-desc`/`h1` render low-contrast on the dark body. Pre-existing, not a KF-346 regression.
@@ -2745,6 +2773,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 
 
 ### KF-350 — Cumulative flow: renaming a column leaves a phantom band under the old name [LOW | OPEN | Reports]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-158): after renaming "In Review" to "Reviewing", the cumulative flow legend lists both names, the tooltip reads "In Review: up to 0 tasks", and the status says "29 tasks across 6 columns" on a 5-column board. Fix direction: attribute history by column id, or drop bands whose name matches no current column. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/admin/shots/br-cumflow-02-after-rename.png
 - Status: RELEASED 2026-10-12T04:25Z — built, independently verified, and deployed to production 5244f3c: CFD latest position prefers colNameById[task.column_id]: no phantom old-name band after column rename. Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-22 verifier's residual note.
 - Behavior: the cumulative-flow timeline is name-based from history detail strings ("Moved from X to Y"), so after a column rename (e.g. "In progress" → "Doing") a task whose last event names the old column is attributed to the stale name on the current day while the renamed column shows 0. Daily totals still sum correctly.
@@ -2758,6 +2787,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: render toggle switches for the three toggle items with live on/off state, matching KanbanFlow's switch visuals and placement; add the leading item icons. Keep the existing menu structure and behavior.
 
 ### KF-354 — Color legend shows 4 pomodoro segments instead of all board colors [MEDIUM]
+- Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-179): the colours were sampled from Chip's colour-managed 10-12 macOS screenshot, which renders KanbanFlow's `#333333` top bar as `#2D2D2D`, so the values in this section's KanbanFlow line (`#ffffde/#dcfcbe/#c9ddfd`...) are display-shifted. The 09-30 Linux capture shows segment faces equal to the card faces (`#FFFFE0 #DBFFC2 #CCE3FF #FFCCD0 #FFEAC2 #EDDBFF #FFE0FF`), top edges equal to the card borders (`#F5CC00 #59D600 #70B0FF #FF858F #FAA200 #C994FF #FF85FF`), rule `#C3C3C3`, band `#F2F2F2`. ChipFlow uses `#FFFFDE #DCFCBE #C9DDFD`..., edges `#EDC82F #6BCA2D #71A4FB`..., rule `#BBBBBB`, band `#F0F0F0`; diff 54892/55044 px. Geometry is exact at 1919 (segment boundaries, rule y 965, label ink); at 1380 boundaries differ by up to 2 px. Fix direction: derive faces and edges from the board palette and the frame from `#C3C3C3`/`#F2F2F2`; treat any hex sampled from the 10-12 screenshots as untrusted. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-179-legend-0930.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-179-legend-1012.png, .dev/evidence/r2-battery-20261016/pixel/measure/F.txt, .dev/evidence/r2-battery-20261016/pixel/measure/I.txt
 - Status: RELEASED 2026-10-12T10:10Z — built, independently verified, and deployed to production 2246458: color legend renders all 8 board colors with names and measured fills/edges (supersedes stale GM-139 4-color reading). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-12 by Chip (with fresh KanbanFlow screenshot).
 - KanbanFlow: on the ChipFlow Golden Master board, the bottom legend strip shows ALL 8 board colors with their names — Yellow, Green, Blue, Red, Orange, Purple, Magenta, Cyan (measured fills: #ffffde/#dcfcbe/#c9ddfd/#fce8bd/...). Chip: "color legends show everything".
@@ -2772,13 +2802,274 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: set column body background to #ffffff and column header to #ebebeb. Verify no other surface depended on the grey.
 
 ### KF-356 — Board settings Colors tab content differs from KanbanFlow inside the settings container [MEDIUM]
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-186): Colors tab content diff 258142/584100 px against the KF-331 reference after shift compensation. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-186-colors-content.png
 - Status: OPEN — filed 2026-10-16 by the KF-331 verifier (ruling on builder call 2: content inside the container is outside KF-331's chrome scope). Evidence: .dev/evidence/kf331-verify-pass1-20261016.md
 - KanbanFlow (`.dev/evidence/kf331-kanbanflow-settings-colors-recovered-20261016.png`): "Enabled colors" heading sits on one line with the "Add custom color", "Set default color" and "Copy from board" buttons; colors render as a table with a `#f5f5f5` header row (Color / Name / Actions), `#dddddd` row rules and Edit / Disable as bordered buttons; intro box face `#d9edf7`, border `#bce8f1`.
 - ChipFlow: buttons render on their own row above the heading; each color is a separate bordered, rounded card with no header row; Edit / Disable render as plain text; intro box face `#eff6ff`, border `#bfdbfe`.
 - Fix direction: rebuild the Colors tab content as KanbanFlow's table layout and info-box palette, measured against the reference above at a 1905 px layout viewport.
 
 ### KF-357 — Board settings page lacks the global dark top bar [MEDIUM]
+- Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-183, R2-184): KanbanFlow's `#333333` bar spans y 0-33, ChipFlow has none (diff 64770/64770 px). Shifted 34 px down, the settings shell is otherwise pixel-exact (nav diff 0/49440, H1 0/27060); the one other difference is the "View board" chevron, about 1 px lower (11x16 box, max delta 85). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-183-184-shell.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-183-chevron.png, .dev/evidence/r2-battery-20261016/pixel/measure/K2.txt
 - Status: OPEN — filed 2026-10-16 by the KF-331 verifier (ruling on builder call 3: not a KF-331 regression, the page never had the bar). Evidence: .dev/evidence/kf331-verify-pass1-20261016.md
 - KanbanFlow (`.dev/evidence/kf331-kanbanflow-settings-colors-recovered-20261016.png`): the 34 px dark top bar (Boards button, centered logo, notification / help / avatar on the right) sits above the board settings page, and the settings container starts 40 px below it (y 74).
 - ChipFlow: the board page draws the KanbanFlow-style top bar, but `/b/:id/settings` renders no top bar, so the container starts at y 40 (`main-colors-1920x1000.png`, `cand-board-1920x1000.png` in `.dev/evidence/kf331-verify-20261016/pass1/`).
 - Fix direction: render the board page's global top bar on the board settings pages, keeping the container 40 px below it.
+
+### KF-358 — Board has no framed gutter and column bodies stop after the last card [HIGH]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-013). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-013-board-bottom.png, .dev/evidence/r2-battery-20261016/pixel/measure/A-ae.txt
+- KanbanFlow (09-30 capture, 1919x998): the board sits in a 10 px `#F2F2F2` gutter with a 1 px `#C3C3C3` frame at x 10 / 1908 and y 80 / 988. Columns are 379 px with `#E4E4E4` separators at x 390/770/1149/1529, and the white bodies run to y 987 whatever the card count.
+- ChipFlow: the table spans x 0-1918 with no frame, the bodies end at y 505 (last card plus padding), and the `#EEF0F3` page shows below. Diff 1,308,830 of 1,769,318 px below the header row. KF-355's white bodies hold, but only behind cards.
+- Fix direction: add the gutter and frame, and stretch the column bodies to the viewport bottom (or to the legend when it is on).
+
+### KF-359 — Default swimlane row loses its label cell and shifts one column left [HIGH]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-015). Evidence: .dev/evidence/r2-battery-20261016/board/s4b-grid.json, .dev/evidence/r2-battery-20261016/board/shots/s4-03-lane-two-unfolded.png
+- KanbanFlow: every card renders under its own column header.
+- ChipFlow: on a board with lanes "Default" and "Lane Two", the board template emits the corner `<th>` but skips the row-label `<th>` for the lane named "Default" (`templates/board.html` ~596 vs ~524), so that row starts under the corner cell: Backlog cards sit under the empty corner, Done cards sit under "In Review", and Done is empty for that row.
+- Fix direction: emit a label cell for every row whenever the corner cell exists, and never key layout on the lane's name.
+
+### KF-360 — Add due date dialog overwrites the due date of every task in the target column [HIGH]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-091). Evidence: .dev/evidence/r2-battery-20261016/modal/s03-edits.log.json, .dev/evidence/r2-battery-20261016/modal/shots/s03-edits-05-after-due.png
+- KanbanFlow: "Add due date" sets the due date of the open task; the column list is the due date's target column (KF-062, KF-270, GM-081).
+- ChipFlow: `DueDateDialog.applyToColumn` (`static/app.js` ~4497) PATCHes `due_at`/`due_repeat` onto every card in the selected column. Adding today 17:00 to #11 set it on all five In Progress tasks. Picking another column overwrites that column and skips the open task; an empty date plus Add clears the whole column.
+- Fix direction: PATCH only the open task, and store the target column on the task if it is kept (see KF-259 on the "(Done)" parenthetical).
+
+### KF-361 — Board header row is 37 px with the title and discs offset [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-010). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-010-header-left.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-010-header-right.png
+- KanbanFlow (09-30 capture): `#F2F2F2` row y 34-79 (46 px) with a `#C3C3C3` rule at 80. Title ink x 18-227 y 50-66, avatar disc x 243-272, invite "+" x 277-306. Right group: clock, funnel, pencil, Menu.
+- ChipFlow: row y 38-74 (37 px) with the rule at 75, title ink x 20-224 y 48-64, avatar disc x 239-268, invite "+" x 273-302. Diff 26907/92112 px. The missing clock icon is tracked under KF-239.
+- Fix direction: 46 px row with the title and discs at KanbanFlow's positions.
+
+### KF-362 — Column overdue indicator renders inside the header instead of KanbanFlow's strip [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-039, R2-040). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-039-overdue.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-040-ip-overdue-1012.png, .dev/evidence/r2-battery-20261016/pixel/measure/R2-039.txt, .dev/evidence/r2-battery-20261016/pixel/measure/I.txt
+- KanbanFlow: the column header gets a 3 px `#FF8080` bottom line (y 116-118), then a `#F3F3F3` strip (y 119-143) holds "1 overdue task" in bold `#8B0000` (69x8 at y 128-135), underlined by a 120 px `#FF8080` bar (x 520-639, y 144-146) on a `#D7D7D7` rule. The 10-12 capture shows the same strip under In Progress.
+- ChipFlow: "1 overdue task" in `#DC2626` (76x8 at y 121-128) inside the grey header, with no strip and no lines; at 10-12 it is centered in the header.
+- Fix direction: render the strip below the header with KanbanFlow's colours and lines.
+
+### KF-363 — Card spacing, one-line height and text metrics differ [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-060, R2-064, R2-069, R2-070). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-060-card-base.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-070-plain-card.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-069-card-collapsed.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-064-time-badge.png, .dev/evidence/r2-battery-20261016/pixel/measure/B2.txt
+- KanbanFlow (09-30 capture): cards 8 px apart, a one-line card 30 px tall (#8 y 418-447), title inset (+9,+10), "Write API documentation for v2 endpoints" 220 px wide; collapsed #1 451x48 with the icon row at +27 px; time text "0h / 4h" 30x8 and "2h 30m / 8h" 52x8 in grey.
+- ChipFlow: cards 4 px apart, one-line card 26 px (#8 y 374-399), inset (+8,+8), the same title 229 px wide (about 4% larger); collapsed #1 461x46 with the icon row at +25 px; time text 34x8 and 59x8 in a darker colour. Diff 37632/78000 px on the Backlog card region. Border shades are reopened under KF-245.
+- Fix direction: 8 px gap, KanbanFlow card padding, title and time font size and colour.
+
+### KF-364 — Inline subtasks always truncate to two and render smaller [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-068). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-068-subtasks.png
+- KanbanFlow: a card with 3 subtasks lists all 3, done ones checked and greyed; #11 with 4 (2 done) lists the 2 open ones plus "2 hidden (2 done)". Checkboxes 14 px at a 25 px pitch.
+- ChipFlow: always the first 2 plus "N hidden (M done)" (#6 and #1 show 2 plus "1 hidden (1 done)"), checkboxes about 11 px at a 17 px pitch.
+- Fix direction: KanbanFlow's truncation rule (all when the list is short, hide done ones first) and its row metrics.
+
+### KF-365 — Done column duplicates "Today", omits the empty "Today" header, and styles group headers lighter [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-054, R2-055; board, R2-056). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-055-done-groups-1012.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-054-done-today.png, .dev/evidence/r2-battery-20261016/pixel/measure/R2-054.txt, .dev/evidence/r2-battery-20261016/board/shots/s8c-03-done-dup-today.png, .dev/evidence/r2-battery-20261016/board/shots/s8c-04-done-no-today.png
+- KanbanFlow: one group per day, newest first, and an empty "Today" header always heads the column (10-12 capture: empty "Today" 35x12 above "Wednesday, 30 September" 161x12; General board capture likewise). Headers bold `#888888` ("Today" 35x12), rule `#D8D8D8`, first card 11 px below the rule.
+- ChipFlow: groups come from consecutive card positions, so a task completed today placed below older groups forms a second "Today" group; with nothing completed today there is no "Today" header (10-05 and 10-12 states). Headers are smaller and lighter ("Today" 30x10), rule `#D1D5DB`. KF-326 covered only the single-group case; KF-124 covers earlier header styling.
+- Fix direction: sort by completion date before grouping, always emit "Today", and use KanbanFlow's header style.
+- Severity: both batches rated MEDIUM; R2-054 alone was LOW.
+
+### KF-366 — Pomodoro take-break panel layout, colours and sections differ [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-112, R2-113, R2-114). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-112-113-114-panel.png, .dev/evidence/r2-battery-20261016/pixel/measure/G.txt
+- KanbanFlow (10-05 capture, pomodoro done, waiting for break): 260 px `#3E3E3E` panel (x 1472-1731, y 40-438), "Time until break" with a 108x42 `#49A849` Take break button, a `#515151` task row (y 164-193) with dot, bold name and "Change task", a TODAY log, and a `#2E2E2E` footer band (y 388-438) with four icon tabs (labels 236x10).
+- ChipFlow: 320 px `#1F2937` panel (x 1591-1910, y 43-320), large "00:00" digits, a 98x26 `#16A34A` button, a "Skip" link, no task row or "Change task" (KF-010), no footer band, labels 258x12.
+- Fix direction: KanbanFlow's panel width, colours and sections.
+
+### KF-367 — Board menu is a floating dropdown instead of KanbanFlow's full-height side panel [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-172, R2-173; modal, R2-174). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-172-menu-1012.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-173-menu.png, .dev/evidence/r2-battery-20261016/pixel/measure/H.txt, .dev/evidence/r2-battery-20261016/pixel/measure/F.txt, .dev/evidence/r2-battery-20261016/modal/crop-menu.png, .dev/evidence/r2-battery-20261016/modal/crop-menu-on.png, .dev/evidence/r2-battery-20261016/modal/shots/s15-menu-01-menu-pomo-off.png
+- KanbanFlow (09-30 and 10-12 captures): a full-height panel on the right (`#F7F7F7`, x 1669-1918 at 1919; 250 px), a "Menu" title band with close ×, five separated groups (Filter/Reports | Board layout/Settings/Members | Recycle bin | three toggles | Help & feedback), orange ON switches (`#F9C243`/`#F5A033`), and a green full-width "Get Premium" button.
+- ChipFlow: a 216-218 px white dropdown under the Menu button (y ~74-480), no title or ×, two separators, green ON switch (`#56B74F`), an extra "Save board as template" item between the toggles, and plain-text "Get Premium". "Filter" ink 29x10 vs KanbanFlow 33x12. KF-353 covered only the toggles and icons.
+- Fix direction: render the side panel with KanbanFlow's groups, switch colour and Get Premium button, and decide where "Save board as template" lives.
+
+### KF-368 — Delete board page does not use KanbanFlow's settings chrome [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-199). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-199-delete.png, .dev/evidence/r2-battery-20261016/pixel/measure/J.txt
+- KanbanFlow: global dark top bar, `#D3E8F2` page, a 600 px box (x 660-1259) with an `#E8E8E8` title band and centered "Delete board: <name>" (314x21), an `#F2DEDE` alert (y 131-242) with three paragraphs, Cancel on the left, Delete board `#D9534F` then Archive board `#2185D0` on the right, and a `#333333` site footer (y 970-999).
+- ChipFlow: a page-specific "ChipFlow - Delete board" bar, `#EEF0F3` page, a white box with a red left-aligned title (261x15), no alert box, Cancel / Archive `#2563EB` / Delete `#DC2626`, no footer.
+- Fix direction: build the page on the board-settings shell (after KF-357) with KanbanFlow's alert and button order. KF-304 tracks the broken Delete button on this page.
+
+### KF-369 — Swimlane menu does nothing on folded strips, and Move up/down skip Default and folded lanes [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-017). Evidence: .dev/evidence/r2-battery-20261016/board/s4-swimlanes.json
+- KanbanFlow: no reference (swimlanes are premium). Contract: ChipFlow's own lane menu offers Rename / Move up / Move down / Delete.
+- ChipFlow: on a folded strip the lane id comes from `closest('.swimlane-label')`, which is null, so Rename and Delete do nothing and an empty lane cannot be renamed or deleted from the board. `moveSwimlane` counts only labeled lanes, so "Move up" on a lane below Default silently does nothing. Delete on a non-empty lane shows a confirm that itself says the server will refuse, then toasts "Could not delete swimlane." (see KF-160).
+- Fix direction: read the id from `data-lane-menu-for`, use the full lane order, and do not offer Delete on a non-empty lane.
+
+### KF-370 — Filter "Unassigned" and named-user options show every card [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-023). Evidence: .dev/evidence/r2-battery-20261016/board/s5-filter.json
+- KanbanFlow: the User filter narrows the board (KF-134).
+- ChipFlow: 22 of 22 cards stay visible for "Unassigned" (17 expected) and for the named user (5 expected). `applyFilter` treats both as "show all" although tasks carry `member_ids`. "Timer users" works.
+- Fix direction: render member ids on cards and filter on them.
+
+### KF-371 — Column Task sorting, Column sum and Archiving are saved but have no effect [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-058). Evidence: .dev/evidence/r2-battery-20261016/board/s8b-cols.json
+- KanbanFlow: these column settings change the column (v1-e019, GM-045).
+- ChipFlow: the values persist, but nothing in `src/` or `static/app.js` reads `sorting`, `column_sum` or `group_by_date`. The Labels and Due dates display settings do take effect.
+- Fix direction: implement the three settings, or remove them from the dialog.
+
+### KF-372 — Built-in Pomodoro template seeds the plain 10-colour palette [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-028). Evidence: .dev/evidence/r2-battery-20261016/board/s3-boards.json
+- KanbanFlow (KF-331 capture): "1 Pomodoro (Default)", "2 Pomodori", "3 Pomodori", ">3 Pomodori" enabled, the other 6 colours disabled. The 09-30 batteries verified this on ChipFlow (`.dev/fidelity-status.md`), and the template's own description promises pomodori colours.
+- ChipFlow: a board created from the template gets Yellow through White, all 10 enabled with plain names (reproduced by the pixel and modal batches too). Columns and starter tasks still match GM-141 (KF-307, KF-308).
+- Fix direction: restore the four renamed colours in `pomodoro_template_snapshot` and disable the rest.
+
+### KF-373 — Dark mode makes card, column, modal and timer settings text unreadable [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-219, R2-220, R2-221). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/dark-mode-01-board.png, .dev/evidence/r2-battery-20261016/admin/shots/dark-mode-02-modal.png, .dev/evidence/r2-battery-20261016/admin/shots/dark-timer-settings-01-timer-settings.png
+- KanbanFlow: no dark-mode capture. Contract: KF-349 adopted WCAG AA for dark mode.
+- ChipFlow: on the board, card titles render rgb(229,231,235) on the pastel card faces (contrast 1.02-1.05), column names are dark on `#1f2937`, the board name is light on light grey, and count badges vanish: 36 of 69 text nodes fall below 3:1. In the task modal the title, subtasks and estimate are 1.0:1. In the timer settings modal select values are light grey on white. The timer popup is fine. This is separate from the accepted white-column-body gap (HANDOFF R4).
+- Fix direction: keep dark text on task-coloured surfaces, and give headers, the board bar, the modal and settings inputs AA-contrast dark styles.
+
+### KF-374 — API attachment uploads over ~1.5 MB fail with 413 despite the documented 10 MiB cap [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-211). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log
+- KanbanFlow: n/a. Contract: the "10 MiB cap" in `agent-guide.md` and `agents/skill.md`, and `Db::MAX_ATTACHMENT_BYTES`.
+- ChipFlow: no `DefaultBodyLimit` is set, so axum's 2 MiB default applies to the base64 JSON body. 1,500,000 raw bytes are accepted; 1,600,000 and 8,000,000 get 413 "Failed to buffer the request body".
+- Fix direction: raise the body limit on the attachment route to about 14 MiB (base64 of 10 MiB), or document the real cap.
+
+### KF-375 — Tab title and pill freeze while the timer popup is open [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-126). Evidence: .dev/evidence/r2-battery-20261016/modal/s08.out, .dev/evidence/r2-battery-20261016/modal/s09.out, .dev/evidence/r2-battery-20261016/modal/s10.out
+- KanbanFlow: the tab title counts down live (KF-020) and returns to normal after a stop (KF-232).
+- ChipFlow: with the popup open, the pill and title stopped at "00:53" while the pomodoro ran to 0:00 and still read "00:53 ChipFlow Golden Master" after the status went idle. After a discard with the popup open the title kept "00:56". Both correct themselves once the popup closes. KF-232 fixed the after-close case only.
+- Fix direction: tick the title and pill independently of popup visibility.
+
+### KF-376 — Card icon set and colour differ from KanbanFlow [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-062). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-062-iconrows.png, .dev/evidence/r2-battery-20261016/pixel/measure/R2-062.txt
+- KanbanFlow: grey `#808080` glyphs (lined page, grid calendar, checklist, dotted speech bubble, clock); the #2 description icon is 16x12; #11's icon row is 164x14.
+- ChipFlow: outline icons in `#4B5563`; the description icon is 12x15; #11's icon row is 169x14. KF-242 added the icons; their shapes were never matched.
+- Fix direction: KanbanFlow's glyph shapes and grey.
+
+### KF-377 — Card avatars show one initial while the header shows two [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-063). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-063-avatar.png
+- KanbanFlow: card avatars show the same two initials as the header ("CS").
+- ChipFlow: card chips take `chars().next()` (`src/routes.rs` ~842, MemberChip), so the same user is "AU" in the header and modal and "A" on cards. The disc centre also sits at (21,19) from the card edge vs KanbanFlow (19,19).
+- Fix direction: use `user_initials` for card chips.
+
+### KF-378 — Board-header and card avatars lack the timing play badge [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-011). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-011-header-avatar.png, .dev/evidence/r2-battery-20261016/pixel/measure/G.txt
+- KanbanFlow (10-05 capture, timing): the board-header "CS" avatar carries a small black play badge at (268,67), and timing card avatars carry one too.
+- ChipFlow: no badge; the pixel at (268,67) is `#F0F0F0`.
+- Fix direction: add the play badge to the header and card avatars of the user who is timing.
+
+### KF-379 — Top-bar "?" button does nothing [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-005). Evidence: .dev/evidence/r2-battery-20261016/board/shots/s1-03-help.png
+- KanbanFlow: "?" opens help (KF-031; destination never captured).
+- ChipFlow: `#help-btn` has no listener in `static/app.js`; the shortcuts dialog stays hidden. The board Menu's "Help & feedback" item does open it.
+- Fix direction: call `BoardChrome.openHelp()` from the button.
+
+### KF-380 — Expected 401/400 responses log console errors on /login and in manual time entry [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-006; admin, R2-208; modal, R2-137). Evidence: .dev/evidence/r2-battery-20261016/board/shots/login-fresh.png.log.json, .dev/evidence/r2-battery-20261016/admin/shots/setup-first-run.log.json, .dev/evidence/r2-battery-20261016/modal/s12-log.log.json
+- KanbanFlow: n/a. Contract: the verifier gate requires zero console errors (`.dev/VERIFIER_SPEC.md`).
+- ChipFlow: every `/login` load, with or without a cookie, logs two console errors because the timer bootstrap fetches `/api/timer/settings` and `/api/timer/status` before sign-in (both 401). The manual time entry's future-time check is a server 400 on `POST /api/time/manual`, which Chromium also logs; its wording and dialog state are correct.
+- Fix direction: skip the timer bootstrap on unauthenticated pages, and validate future times client-side before posting.
+
+### KF-381 — Filter Date lacks the month and year options [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-024). Evidence: .dev/evidence/r2-battery-20261016/board/s5-filter.json
+- KanbanFlow: offers "Due in October", "Due in 2026" and similar (KF-134).
+- ChipFlow: the date ranges are correct, but `addDateOptions` targets `#filter-date-options`, which disappeared when KF-175 changed the control to a select, so the month and year options never render.
+- Fix direction: append the options to `#f-date`.
+
+### KF-382 — Template delete error path throws a ReferenceError [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-029). Evidence: .dev/evidence/r2-battery-20261016/board/s3-boards.json
+- KanbanFlow: n/a. Contract: KF-112's styled delete with a visible error.
+- ChipFlow: deleting a template that was already removed returns 404 and throws `ReferenceError: showError is not defined`; the user sees nothing. In `templates/new_board.html` the second script calls a `showError` that exists only inside the first IIFE.
+- Fix direction: define or share the helper.
+
+### KF-383 — P with the task modal open opens the stale global reports menu [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-033). Evidence: .dev/evidence/r2-battery-20261016/board/s7-keys.json
+- KanbanFlow: P opens the modal's Reports menu (GM-093, GM-089), as T opens the modal's Timer menu (KF-298).
+- ChipFlow: P opens the placeholder `#reports-menu` (2 items). T, Y, E, V, ".", two-stage Esc, Ctrl/Meta+Enter and Delete work.
+- Fix direction: with the modal open, click `[data-tm-menu="tm-reports-menu"]`.
+
+### KF-384 — Edit-column Archiving default is keyed to the column name [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-048). Evidence: .dev/evidence/r2-battery-20261016/board/s8b-cols.json
+- KanbanFlow: Archiving is checked for the Done column (KF-315).
+- ChipFlow: the dialog checks whether the name contains "done": a Done column saved unchecked reopens checked, Done renamed "Finished" opens unchecked, and "Undone ideas" opens checked. This also breaks the AGENTS.md rule against keying behaviour to column names.
+- Fix direction: default from `data-is-done`, and only when no value is saved.
+
+### KF-385 — Column overflow scrolls the whole board instead of the column [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-053). Evidence: .dev/evidence/r2-battery-20261016/board/shots/s8d-02-overflow-scrolled.png
+- KanbanFlow: an overflowing column gets its own scrollbar (General board capture shows one on Done only).
+- ChipFlow: `main.board-wrap` scrolls all columns together.
+- Fix direction: give column bodies a bounded height with `overflow-y: auto` (pairs with KF-358's full-height bodies).
+
+### KF-386 — Card drag placeholder keeps the card's solid border [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-079). Evidence: .dev/evidence/r2-battery-20261016/board/s8d-cols.json, .dev/evidence/r2-battery-20261016/board/shots/s8d-05-card-middrag.png
+- KanbanFlow: a dashed placeholder (`2px dashed rgba(0,0,0,.2)`, per `.dev/fidelity-status.md`).
+- ChipFlow: mid-drag the placeholder shows the card's 1 px solid colour border; the dashed rule loses on specificity. The drop persists.
+- Fix direction: raise the placeholder rule's specificity.
+
+### KF-387 — Task grouping_date is stored but never used [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (board, R2-057). Evidence: .dev/evidence/r2-battery-20261016/board/s8d-cols.json
+- KanbanFlow: has an "Edit grouping date" action (v1-S2, KF-050); KF-140's live menu omits it, so it may appear only on Done-column cards (needs a capture). Contract: the task API accepts and documents `grouping_date`.
+- ChipFlow: there is no UI to edit it, and a value set through PATCH is stored but the Done group still comes from `completed_at`. The agent docs also say `null` clears it; only `""` does (KF-398).
+- Fix direction: group by `grouping_date` when set; add the menu action once a capture confirms where it lives.
+
+### KF-388 — Esc saves an in-progress title edit and closes the modal [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-107). Evidence: .dev/evidence/r2-battery-20261016/modal/s05-more.log.json
+- KanbanFlow: the first Esc discards in-progress edits and keeps the modal; the second closes it (GM-151).
+- ChipFlow: the name commits on change, so typing a new title and pressing Esc once saved "UNSAVED TITLE EDIT" (history shows RENAMED) and closed the modal. KF-299's two-stage Esc covers comment and subtask drafts only, and those work.
+- Fix direction: treat a changed title as a discardable draft until blur or Enter.
+
+### KF-389 — Manual time entry shows "—" for a zero duration [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-135). Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
+- KanbanFlow: "0h" (frame review §c, v3-02777).
+- ChipFlow: "—" when From equals To, and the same "—" in the edit dialog. The rest of the dialog matches.
+- Fix direction: render "0h".
+
+### KF-390 — Timer log day header and manual-entry wording differ [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (modal, R2-139). Evidence: .dev/evidence/r2-battery-20261016/modal/s12.out
+- KanbanFlow: day header "Friday, 10 July — 3h 20m — 8 Pomodoros" (day before month); manual rows "Manually added time" (frame review §c v3-02891).
+- ChipFlow: "Friday, October 16 — 4m — 9 Pomodoros"; manual rows "Manual entry". Status lines, dots and per-day "Add time entry" match.
+- Fix direction: day-first date and KanbanFlow's wording.
+
+### KF-391 — Statistics Highscores shows a "0 Best day" with no data [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-151). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/single-board-01-stats-empty.png
+- KanbanFlow: empty statistics show "No data to display" (KF-092).
+- ChipFlow: on an empty DB, Highscores shows "0 Best day — Friday, Oct 16" while the other tabs show the empty state.
+- Fix direction: return `best_day: null` when nothing was logged and show the empty state.
+
+### KF-392 — Time spent "Total:" line is invisible in light mode [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-152). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/rep-spent-01-summary.png
+- KanbanFlow: the report shows the total (GM-123; KF-292's verification listed the line as matching).
+- ChipFlow: `.spent-total{color:#f3f4f6}` (`static/style.css` ~3723) on the `#eef0f3` page, contrast 1.04, so "Total: 5h 7m" cannot be read.
+- Fix direction: use the body text colour in light mode and keep the light colour under `body.dark`.
+
+### KF-393 — Time spent Bookmarks is static text [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-155). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/rep-spent-05-bookmarks-click.png
+- KanbanFlow: Time spent has filter Bookmarks (KF-091, v1 S10).
+- ChipFlow: "Bookmarks (0)" is a div with no handler.
+- Fix direction: implement saving and recalling filter bookmarks, or remove the label.
+
+### KF-394 — Dialog Cancel, × and Close buttons do nothing on the Colors tab and the API tokens page [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-188, R2-191, R2-204). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/bs-colors.log.json, .dev/evidence/r2-battery-20261016/admin/shots/bs-colors-03-edit-after-close-attempts.png, .dev/evidence/r2-battery-20261016/admin/shots/us-tokens.log.json
+- KanbanFlow: the Edit colour dialog (KF-084) and the premium prompt (KF-085) close from their own buttons. Contract for the ChipFlow-only token page: KF-146 and the template's Cancel button.
+- ChipFlow: Colors tab Edit's Cancel and ×, and the premium dialog's Close, use `data-close-dlg`, which the page wires only for the Set default and Copy dialogs, while app.js handles only `data-close-dialog`. On `/settings` the generic `[data-close-dialog]` handler is not active, so the token Revoke confirm's Cancel does nothing. Escape (and backdrop clicks) still close all three.
+- Fix direction: use one attribute (`data-close-dialog`) and register its handler on every page.
+
+### KF-395 — Copy from board "pick a board" error is hidden under the overlay [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-190). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/bs-colors-06-copy-nopick.png
+- KanbanFlow: no capture of this state. Contract: KF-083's Copy from board action.
+- ChipFlow: with no board picked, the error is written into `#bc-error` on the page behind the overlay, so the click appears to do nothing. Copying with a board picked works.
+- Fix direction: show the error inside the dialog, or disable "Copy palette" until a board is picked.
+
+### KF-396 — Whitespace-only or over-long board name returns a bare HTTP 500 page [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-193). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/bs-general-03-blank.png
+- KanbanFlow: no capture.
+- ChipFlow: a spaces-only name passes the browser's `required` check; it, or any name over 100 characters, makes `POST /b/{id}/settings` return 500 with the plain text "board name must be 1-100 characters".
+- Fix direction: return 400 and re-render the General tab with the message.
+
+### KF-397 — CHIPFLOW_API_TOKEN cannot bootstrap the API before /setup [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-210). Evidence: .dev/evidence/r2-battery-20261016/admin/server-headless.log
+- KanbanFlow: n/a. Contract: `agent-guide.md:19` and `deploy/nixos/README.md:38` promise headless bootstrap "without touching the UI".
+- ChipFlow: the auth middleware checks `user_count()==0` first and sends every request, token-authenticated `/api/*` calls included, to `/setup` with a 303. After setup the env token works and still cannot mint tokens (403).
+- Fix direction: let the env token through before setup (or add an API setup endpoint), or correct the docs to say `/setup` comes first.
+
+### KF-398 — Agent guide and skill describe API behaviour that does not exist [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-211). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log, .dev/evidence/r2-battery-20261016/admin/api-battery2.log, .dev/evidence/r2-battery-20261016/admin/seed-log.out
+- KanbanFlow: n/a. Contract: AGENTS.md requires `agent-guide.md`, `agents/skill.md` and `agents.json` to stay accurate.
+- ChipFlow: the docs are wrong in 6 places: stopped pomodori do not count toward the task total (`pomodori_completed` stays 0, matching KF-200); no "✓ <date>" stamp appears when a task moves to Done; `GET /api/tasks/{id}` has no `attachments` or `download_url`; `grouping_date: null` is ignored (only `""` clears); comments, attachments, time entries, `completed_at` and `due_at` are RFC3339 strings, not Unix seconds; the attachment cap is ~1.5 MB, not 10 MiB (KF-374). The discovery files themselves are public and their links resolve.
+- Fix direction: correct both docs, or change the API to match (null clears, attachments listed).
+
+### KF-399 — OpenAPI omits three /api routes [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-212). Evidence: .dev/evidence/r2-battery-20261016/admin/route-ops.txt, .dev/evidence/r2-battery-20261016/admin/openapi-ops.txt
+- KanbanFlow: n/a. Contract: `agent-guide.md` calls `/api/v1/openapi.json` the contract for every endpoint.
+- ChipFlow: the spec has 80 operations against 106 in the router; GET `/api/tasks/{id}/card`, GET `/api/tasks/{id}/modal` and GET `/api/timer/settings` have no `#[utoipa::path]`. HTML pages are covered inconsistently (board settings pages are in the spec, report pages and `/setup` are not).
+- Fix direction: annotate the three routes and decide whether HTML pages belong in the spec.
+
+### KF-400 — Task API stores unparseable due_at strings [LOW]
+- Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-215). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log
+- KanbanFlow: n/a. Contract: KF-348's fix direction (reject what the renderer cannot parse); KF-348 fixed only bare local datetimes.
+- ChipFlow: POST and PATCH accept "next tuesday", "garbage" and "2026-13-45" (201/200) and store them verbatim; the card then shows no due date. The modal batch saw the same for "2026-10-25 01:30" (ambiguous at the UK DST change) and "2027-03-28 01:30" (nonexistent) via `normalize_due_input` (`src/routes.rs` ~2236), and those dues still appear on the calendar while vanishing from the card, modal and iCal feed.
+- Fix direction: reject unparseable or nonexistent local `due_at` values with 400.

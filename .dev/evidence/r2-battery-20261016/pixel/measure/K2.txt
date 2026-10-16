@@ -1,0 +1,23 @@
+KF H1 ink:
+box x 759-1005 y 85-105 (247x21) centroid 878.99,94.17 mass 276391
+CF H1 ink (General board):
+box x 759-1005 y 51-71 (247x21) centroid 878.99,60.17 mass 276391
+offset-compensated diffs (CF shifted +34px):
+page bg + container shadow, left gutter x0-502 y34-999:
+diff 133 / 485898 px region 0,34,503,966
+right gutter x1403-1904 y34-999 (scrollbar excluded):
+diff 133 / 484932 px region 1403,34,502,966
+header band x503-1402 y74-114 (contains H1 + View board text):
+diff 53 / 36900 px region 503,74,900,41
+header band left (View board) x503-742 y74-114:
+diff 53 / 9840 px region 503,74,240,41
+H1 area x743-1402 y74-114:
+diff 0 / 27060 px region 743,74,660,41
+nav x503-742 y115-320 (General..Advanced):
+diff 0 / 49440 px region 503,115,240,206
+nav dimmed + remaining x503-742 y321-999:
+diff 7227 / 162960 px region 503,321,240,679
+content x743-1402 y115-999:
+diff 258142 / 584100 px region 743,115,660,885
+absolute frame, top bar y0-33:
+diff 64770 / 64770 px region 0,0,1905,34

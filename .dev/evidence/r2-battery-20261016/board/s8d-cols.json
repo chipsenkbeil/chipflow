@@ -1,0 +1,138 @@
+{
+  "grouping": {
+    "task": "Overflow 30",
+    "completed": "2026-10-16T15:18:01.446034+00:00",
+    "stored": null,
+    "labels": [
+      "Today",
+      "Yesterday",
+      "Tuesday, 13 October"
+    ],
+    "cardAttr": "",
+    "menuItems": [
+      "Start timer",
+      "Move\n▸",
+      "Color\n▸",
+      "Assign members",
+      "Copy here",
+      "Task URL",
+      "Delete"
+    ]
+  },
+  "overflow": {
+    "docScrollH": 1000,
+    "innerH": 1000,
+    "listH": 1237,
+    "scrollers": [
+      {
+        "tag": "MAIN",
+        "cls": "board-wrap",
+        "sh": 1300,
+        "ch": 924
+      }
+    ],
+    "cards": 38,
+    "headerTop": 86,
+    "afterScroll": {
+      "scrollY": 0,
+      "headerTop": -290,
+      "topbarTop": 0
+    }
+  },
+  "colDrag": {
+    "before": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ],
+    "down": "TIMEOUT manual move",
+    "mid": {
+      "classes": [
+        "Backlog:",
+        "To Do:column-drag-ghost",
+        "In Progress:",
+        "In Review:",
+        "Done:",
+        "Undone ideas:"
+      ],
+      "ghostVisibility": [
+        "hidden"
+      ],
+      "placeholder": []
+    },
+    "afterManual": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ],
+    "dragTo": "ERR dragTo: TimeoutError: locator.dragTo: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.columnHeader').nth(1)\u001b[22",
+    "afterDragTo": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ],
+    "domHeaders": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ],
+    "afterReload": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ],
+    "cellAlign": [
+      [
+        "Backlog",
+        "To Do",
+        "In Progress",
+        "In Review",
+        "Done",
+        "Undone ideas"
+      ],
+      [
+        "(label)",
+        "Backlog",
+        "To Do",
+        "In Progress",
+        "In Review",
+        "Done",
+        "Undone ideas"
+      ]
+    ]
+  },
+  "cardDrag": {
+    "move": "ok",
+    "mid": [
+      {
+        "name": "Add keyboard shortcuts to task editor",
+        "cls": "sortable-chosen sortable-placeholder",
+        "border": "1px solid rgb(255, 133, 255)"
+      }
+    ],
+    "persistedCol": "In Review"
+  },
+  "log": {
+    "name": "s8d",
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "badResponses": [],
+    "dialogs": []
+  }
+}

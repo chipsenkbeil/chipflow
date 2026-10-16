@@ -1,0 +1,196 @@
+{
+  "name": "bs-colors",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "playwright": "1.63.0",
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:3270/api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/0417cec0-38f2-42d2-beaa-7c0a9a242540",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/0417cec0-38f2-42d2-beaa-7c0a9a242540",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/4cd5a2eb-d1c6-4213-a31e-4733a022ba1e",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/7fea2f82-2a19-40e7-88b9-5745d974ef20",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/4cd5a2eb-d1c6-4213-a31e-4733a022ba1e",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:3270/api/boards/52b5f56d-8ed3-4b6a-b543-5d78b7904ee5/colors/7fea2f82-2a19-40e7-88b9-5745d974ef20",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "httpErrors": [],
+  "dialogs": [],
+  "notes": [
+    {
+      "intro": "The colors are commonly used to indicate the type or priority of a task. Rename them to better represent their meaning. Show more…"
+    },
+    {
+      "actions": [
+        "Add custom color",
+        "Set default color",
+        "Copy from board"
+      ]
+    },
+    {
+      "enabled": [
+        "⋮⋮ Yellow Yellow (Default) Edit Disable",
+        "⋮⋮ Green Green Edit Disable",
+        "⋮⋮ Blue Blue Edit Disable",
+        "⋮⋮ Red Red Edit Disable",
+        "⋮⋮ Orange Orange Edit Disable",
+        "⋮⋮ Purple Purple Edit Disable",
+        "⋮⋮ Magenta Magenta Edit Disable",
+        "⋮⋮ Cyan Cyan Edit Disable"
+      ]
+    },
+    {
+      "disabled": [
+        "Brown Brown Edit Enable",
+        "White White Edit Enable"
+      ]
+    },
+    {
+      "upsell": "Looking for more or different colors for your tasks?\nUpgrade to the premium version to get access to this feature."
+    },
+    {
+      "sortable_loaded": "function"
+    },
+    {
+      "show_more_visible": true
+    },
+    {
+      "show_more_link": "Show less"
+    },
+    {
+      "show_less_hidden": true
+    },
+    {
+      "edit_open": true
+    },
+    {
+      "edit_prefill": "Yellow"
+    },
+    {
+      "edit_maxlength": "50"
+    },
+    {
+      "edit_cancel_closes": false
+    },
+    {
+      "edit_x_closes": false
+    },
+    {
+      "edit_escape_closes": true
+    },
+    {
+      "after_rename_row": "⋮⋮\nGreen\nBug fix\nEdit Disable"
+    },
+    {
+      "rename_persisted": 1
+    },
+    {
+      "default_dialog_items": [
+        "Yellow",
+        "Bug fix",
+        "Blue",
+        "Red",
+        "Orange",
+        "Purple",
+        "Magenta",
+        "Cyan"
+      ]
+    },
+    {
+      "default_tag_row": "⋮⋮\nYellow\nYellow (Default)\nEdit Disable"
+    },
+    {
+      "premium_open": true
+    },
+    {
+      "premium_text": "Premium feature\n×\n\nLooking for more or different colors for your tasks? Upgrade to the premium version to get access to this feature.\n\nClose"
+    },
+    {
+      "premium_close_closes": false
+    },
+    {
+      "premium_escape_closes": true
+    },
+    {
+      "premium_backdrop_closes": true
+    },
+    {
+      "copy_rows": [
+        "General",
+        "API Pomodoro board",
+        "Pomodoro"
+      ]
+    },
+    {
+      "copy_nopick_error_text": "Pick a board to copy the palette from."
+    },
+    {
+      "copy_nopick_error_visible_above_overlay": "covered by dlg-overlay"
+    },
+    {
+      "disabled_after": [
+        "Brown",
+        "Cyan",
+        "Orange",
+        "White"
+      ]
+    },
+    {
+      "enabled_after_reenable": [
+        "Yellow",
+        "Bug fix (Default)",
+        "Blue",
+        "Red",
+        "Orange",
+        "Purple",
+        "Magenta",
+        "Cyan"
+      ]
+    },
+    {
+      "order_after_drag_dom": [
+        "Yellow",
+        "Bug fix (Default)",
+        "Blue",
+        "Red",
+        "Orange",
+        "Purple",
+        "Magenta",
+        "Cyan"
+      ]
+    },
+    {
+      "order_after_drag_reload": [
+        "Yellow",
+        "Bug fix (Default)",
+        "Blue",
+        "Red",
+        "Orange",
+        "Purple",
+        "Magenta",
+        "Cyan"
+      ]
+    }
+  ],
+  "browser": "153.0.8010.12"
+}

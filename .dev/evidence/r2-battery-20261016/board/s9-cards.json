@@ -1,0 +1,173 @@
+{
+  "tooltips": {
+    "description": "Has description. Click to expand or collapse.",
+    "subtasks": "Has subtasks. Click to expand or collapse.",
+    "time": "Time spent / Time estimate",
+    "duedates": "Has due dates. Click to expand or collapse.",
+    "comments": "Has comments. Click to view comments."
+  },
+  "iconToggle": {
+    "before": [
+      "duedates:shown"
+    ],
+    "afterDueClick": [
+      "duedates:hidden"
+    ],
+    "modalOpened": false,
+    "afterReload": [
+      "duedates:hidden"
+    ],
+    "commentsOpensModal": true
+  },
+  "ctx": [
+    {
+      "text": "Start timer",
+      "arrow": false,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    },
+    {
+      "text": "Move",
+      "arrow": true,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    },
+    {
+      "text": "Color",
+      "arrow": true,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    },
+    {
+      "text": "Assign members",
+      "arrow": false,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    },
+    {
+      "text": "Copy here",
+      "arrow": false,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    },
+    {
+      "text": "Task URL",
+      "arrow": false,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    },
+    {
+      "text": "Delete",
+      "arrow": false,
+      "icon": true,
+      "color": "rgb(31, 41, 55)"
+    }
+  ],
+  "colorSub": [
+    {
+      "text": "Yellow",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Green",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Blue",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Red",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Orange",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Purple",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Magenta",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    },
+    {
+      "text": "Cyan",
+      "bg": "rgba(0, 0, 0, 0)",
+      "swatch": null,
+      "swatchBg": null
+    }
+  ],
+  "mainMenuVisibleWithColorSub": false,
+  "moveSubMiddle": [
+    "Move advanced"
+  ],
+  "moveSubLast": [
+    "Move advanced"
+  ],
+  "moveSubDoneNotLast": {
+    "order": [
+      "To-do",
+      "Do today",
+      "In progress",
+      "Done",
+      "BACKLOG"
+    ],
+    "items": [
+      "Move advanced"
+    ]
+  },
+  "colorSubPomo": [
+    "Yellow",
+    "Green",
+    "Blue",
+    "Red",
+    "Orange",
+    "Purple",
+    "Magenta",
+    "Cyan",
+    "Brown",
+    "White"
+  ],
+  "recolor": {
+    "before": {
+      "cls": "task-card taskColor-purple taskBorderColor-purple taskColorVars-purple",
+      "title": "Purple"
+    },
+    "after": {
+      "cls": "task-card taskColorVars-purple taskColor-purple taskBorderColor-purple",
+      "title": "Purple"
+    },
+    "api": "purple"
+  },
+  "moveRight": {
+    "from": "In Progress"
+  },
+  "error": "TimeoutError: locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#card-ctx-submenu button').filter({ hasText: 'Move right' })\u001b[22m\n",
+  "errMenus": [
+    "card-ctx-submenu:Move advanced"
+  ],
+  "log": {
+    "name": "s9",
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "badResponses": [],
+    "dialogs": []
+  }
+}

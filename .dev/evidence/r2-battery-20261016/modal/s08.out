@@ -1,0 +1,107 @@
+log-11-before [{"kind":"pomodoro","badge":"P","title":"Stopped with reason 'R2 cleanup'","min":0,"dur":"52s","int":true,"reason":"R2 cleanup","range":"3:59 PM – 3:59 PM","day":"2026-10-16"},{"kind":"manual","badge":"M","title":"Manually added","min":150,"dur":"150m","int":false,"reason":null,"range":"9:00 AM – 11:30 AM","day":"2026-10-15"}]
+after-start {"modalOpen":true,"popupOpen":false,"status":{"active":true,"phase":"pomodoro","mode":"pomodoro","mode_title":"Pomodoro","task_id":"d2b3a595-38c7-4b28-8588-0c3907141071","task_name":"Build payment webhook handler","task_color":"#eddbff","task_url":"/api/tasks/d2b3a595-38c7-4b28-8588-0c3907141071","started_at":1792162820,"duration_secs":60,"remaining_seconds":59,"total_seconds":60,"pomodoro_count":1}}
+ticks [{"pill":"00:58 ▾","title":"00:58 ChipFlow Golden Master — ChipFlow"},{"pill":"00:57 ▾","title":"00:57 ChipFlow Golden Master — ChipFlow"},{"pill":"00:56 ▾","title":"00:56 ChipFlow Golden Master — ChipFlow"}]
+pill-running {"text":"00:55 ▾","visible":true,"bg":"rgb(72, 72, 72)","iconColor":"rgb(255, 255, 255)","timeColor":"rgb(255, 255, 255)"}
+card-11-running {"time":"2h 30m / 1h 30m A","live":"2h 30m + 0m","outline":"dashed rgb(250, 162, 0)"}
+popup-running Pomodoro
+×
+Time until break
+POMODORO
+00:55
+Build payment webhook handler
+Stop
+Change task
+TODAY 0M
+Build payment webhook handler
+— pending
+Build payment webhook handler R2 cleanup
+3:59 PM – 3:59 PM
+×
+⏱
+Stopwatch
++
+Add time
+☰
+Log
+⚙
+Settings
+today-running {"heading":"TODAY 0M","headingRaw":"TODAY 0m","entries":[{"t":"Build payment webhook handler — pending","dot":"rgb(74, 222, 128)"},{"t":"Build payment webhook handler R2 cleanup 3:59 PM – 3:59 PM ×","dot":"rgb(74, 222, 128)"}]}
+pill-hidden-while-open true
+popup-with-other-modal {"link":"Change task","popupVisible":false,"popupZ":"200","overlayZ":"100","topAtPopup":"modal-overlay"}
+timer-ctx {"hidden":false,"items":[{"t":"Comment","disabled":false},{"t":"Label","disabled":false},{"t":"Edit","disabled":false},{"t":"Delete","disabled":false}]}
+waiting-ms 52913
+popup-finished Pomodoro
+×
+Time until break
+00:00
+Take break
+Skip
+TODAY 1M
+Build payment webhook handler
+4:01 PM – 4:02 PM
+×
+Build payment webhook handler R2 cleanup
+3:59 PM – 3:59 PM
+×
+⏱
+Stopwatch
++
+Add time
+☰
+Log
+⚙
+Settings
+status-finished {"active":false,"phase":"idle","mode":null,"mode_title":null,"task_id":null,"task_name":null,"task_color":null,"task_url":null,"started_at":null,"duration_secs":null,"remaining_seconds":null,"total_seconds":null,"pomodoro_count":2}
+pill-finished {"text":"00:53 ▾","visible":false,"bg":"rgb(72, 72, 72)","iconColor":"rgb(255, 255, 255)","timeColor":"rgb(255, 255, 255)"}
+title-finished 00:53 ChipFlow Golden Master — ChipFlow
+log-11-after-complete [{"kind":"pomodoro","badge":"P","title":"Stopped with reason 'completed'","min":1,"dur":"1m","int":false,"reason":"completed","range":"4:01 PM – 4:02 PM","day":"2026-10-16"},{"kind":"pomodoro","badge":"P","title":"Stopped with reason 'R2 cleanup'","min":0,"dur":"52s","int":true,"reason":"R2 cleanup","range":"3:59 PM – 3:59 PM","day":"2026-10-16"}]
+today-after-complete {"heading":"TODAY 1M","headingRaw":"TODAY 1m","entries":[{"t":"Build payment webhook handler 4:01 PM – 4:02 PM ×","dot":"rgb(74, 222, 128)"},{"t":"Build payment webhook handler R2 cleanup 3:59 PM – 3:59 PM ×","dot":"rgb(74, 222, 128)"}]}
+break-started {"popup":null,"status":{"active":true,"phase":"long_break","mode":"long_break","mode_title":"Long break","task_id":null,"task_name":null,"task_color":null,"task_url":null,"started_at":1792162882,"duration_secs":60,"remaining_seconds":58,"total_seconds":60,"pomodoro_count":2},"pill":{"text":"00:59 ▾","visible":true,"bg":"rgb(72, 72, 72)","iconColor":"rgb(255, 255, 255)","timeColor":"rgb(255, 255, 255)"}}
+popup-break-finished Pomodoro
+×
+Time until break
+00:00
+Back to work
+Skip
+TODAY 1M
+Build payment webhook handler
+4:01 PM – 4:02 PM
+×
+Build payment webhook handler R2 cleanup
+3:59 PM – 3:59 PM
+×
+⏱
+Stopwatch
++
+Add time
+☰
+Log
+⚙
+Settings
+status-break-finished {"active":false,"phase":"idle","mode":null,"mode_title":null,"task_id":null,"task_name":null,"task_color":null,"task_url":null,"started_at":null,"duration_secs":null,"remaining_seconds":null,"total_seconds":null,"pomodoro_count":2}
+back-to-work {"status":{"active":true,"phase":"pomodoro","mode":"pomodoro","mode_title":"Pomodoro","task_id":null,"task_name":null,"task_color":null,"task_url":null,"started_at":1792162945,"duration_secs":60,"remaining_seconds":58,"total_seconds":60,"pomodoro_count":2},"popup":null}
+popup-finished-2 Pomodoro
+×
+Time until break
+00:00
+Take break
+Skip
+TODAY 1M
+Build payment webhook handler
+4:01 PM – 4:02 PM
+×
+Build payment webhook handler R2 cleanup
+3:59 PM – 3:59 PM
+×
+⏱
+Stopwatch
++
+Add time
+☰
+Log
+⚙
+Settings
+second-break {"status":{"active":true,"phase":"long_break","mode":"long_break","mode_title":"Long break","task_id":null,"task_name":null,"task_color":null,"task_url":null,"started_at":1792163009,"duration_secs":60,"remaining_seconds":58,"total_seconds":60,"pomodoro_count":2},"popup":null}
+log-11-final [{"kind":"pomodoro","badge":"P","title":"Stopped with reason 'completed'","min":1,"dur":"1m","int":false,"reason":"completed","range":"4:01 PM – 4:02 PM","day":"2026-10-16"},{"kind":"pomodoro","badge":"P","title":"Stopped with reason 'R2 cleanup'","min":0,"dur":"52s","int":true,"reason":"R2 cleanup","range":"3:59 PM – 3:59 PM","day":"2026-10-16"},{"kind":"manual","badge":"M","title":"Manually added","min":150,"dur":"150m","int":false,"reason":null,"range":"9:00 AM – 11:30 AM","day":"2026-10-15"}]
+title-after {"title":"00:56 ChipFlow Golden Master — ChipFlow","base":"ChipFlow Golden Master — ChipFlow"}
+== s08-timer: ok=true consoleErrors=0 pageErrors=0 failed=0 http>=400=0

@@ -1,0 +1,251 @@
+{
+  "strip": {
+    "order": [
+      "To-do",
+      "Do today",
+      "In progress",
+      "Done",
+      "BACKLOG"
+    ],
+    "isLast": true,
+    "box": [
+      1851,
+      22
+    ],
+    "vw": 1905,
+    "title": "BACKLOG / Click to expand",
+    "name": "BACKLOG",
+    "nameTransform": "uppercase",
+    "writing": "vertical-rl",
+    "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+    "badge": "1",
+    "badgeColor": "rgb(31, 41, 55)",
+    "badgeTitle": "Task count: 1 / Click to expand",
+    "bodyW": 22,
+    "bodyBg": "rgb(255, 255, 255)",
+    "cardsVisible": 0
+  },
+  "editIP": {
+    "title": "Edit column",
+    "name": "In Progress",
+    "description": "Work underway — max 3",
+    "descPh": "Add description",
+    "wip": "3",
+    "wipPh": "Add limit",
+    "sorting": {
+      "value": "none",
+      "text": "None",
+      "options": [
+        "None",
+        "Name",
+        "Date created"
+      ]
+    },
+    "columnSum": {
+      "value": "none",
+      "text": "None",
+      "options": [
+        "None",
+        "Show sum"
+      ]
+    },
+    "archiving": false,
+    "archivingLabel": "Archiving Group tasks by the date they were added to the column",
+    "collapsed": false,
+    "note": "Archiving is ONLY recommended for columns that represent an end state for tasks, like the Done column. Loads the 20 most recent tasks from the start.",
+    "props": [
+      "Description=Hide",
+      "Labels=Hide",
+      "Subtasks=Hide",
+      "Due dates=Show active due in 7 days",
+      "Created date=Hide",
+      "Added to column=Hide"
+    ],
+    "legend": "Task properties to display on board",
+    "saveBtn": "Update column",
+    "saveBg": "rgb(22, 163, 74)",
+    "buttons": [
+      "Cancel",
+      "Update column"
+    ]
+  },
+  "editIPReopen": {
+    "title": "Edit column",
+    "name": "In Progress",
+    "description": "Work underway — max 3",
+    "descPh": "Add description",
+    "wip": "3",
+    "wipPh": "Add limit",
+    "sorting": {
+      "value": "name",
+      "text": "Name",
+      "options": [
+        "None",
+        "Name",
+        "Date created"
+      ]
+    },
+    "columnSum": {
+      "value": "sum",
+      "text": "Show sum",
+      "options": [
+        "None",
+        "Show sum"
+      ]
+    },
+    "archiving": true,
+    "archivingLabel": "Archiving Group tasks by the date they were added to the column",
+    "collapsed": false,
+    "note": "Archiving is ONLY recommended for columns that represent an end state for tasks, like the Done column. Loads the 20 most recent tasks from the start.",
+    "props": [
+      "Description=Hide",
+      "Labels=Show",
+      "Subtasks=Hide",
+      "Due dates=Hide",
+      "Created date=Hide",
+      "Added to column=Hide"
+    ],
+    "legend": "Task properties to display on board",
+    "saveBtn": "Update column",
+    "saveBg": "rgb(22, 163, 74)",
+    "buttons": [
+      "Cancel",
+      "Update column"
+    ]
+  },
+  "effects": {
+    "order": [
+      "Build payment webhook handler",
+      "Add export to CSV feature",
+      "Fix memory leak in image cache",
+      "Implement push notifications",
+      "Update dependencies to latest LTS"
+    ],
+    "sortedByName": false,
+    "headerText": "In Progress 5 / 3 +",
+    "labelChips": 11,
+    "labelChipTexts": [
+      "card-labels:backend\nfeature",
+      "card-label:backend",
+      "card-label:feature",
+      "card-labels:feature",
+      "card-label:feature",
+      "card-labels:bug"
+    ],
+    "dueLines": 0
+  },
+  "editDone": {
+    "archiving": true,
+    "afterUncheckSaveReopen": true,
+    "storedConfig": "{\"sorting\":\"none\",\"column_sum\":false,\"group_by_date\":false,\"prop_description\":\"hide\",\"prop_labels\":\"hide\",\"prop_subtasks\":\"hide\",\"prop_due_dates\":\"active_7d\",\"prop_created\":\"hide\",\"prop_added\":\"hide\"}",
+    "renamedFinished": false,
+    "undoneIdeasColumn": true,
+    "groupLabelsAfterRename": [
+      "Completed"
+    ],
+    "isDoneAfterRename": true
+  },
+  "addCol": {
+    "visible": true,
+    "text": "Add column Name Position At the end At the beginning Cancel Add",
+    "options": [
+      "At the end",
+      "At the beginning"
+    ],
+    "selected": "end",
+    "afterBeginning": [
+      "Inserted first ✨",
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ],
+    "emptyName": {
+      "stillOpen": true,
+      "toast": "Column name is required."
+    }
+  },
+  "delEmpty": {
+    "text": "Delete column Are you sure you want to delete this column? Cancel Delete",
+    "hasMoveCheck": 0,
+    "after": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "In Review",
+      "Done",
+      "Undone ideas"
+    ]
+  },
+  "delFull": {
+    "text": "Delete column Are you sure you want to delete this column? Move the tasks to the column Cancel Delete",
+    "targetsHidden": true,
+    "withoutMove": {
+      "toast": "Choose a column to move the tasks to.",
+      "dialogStillOpen": true
+    },
+    "targets": [
+      "Backlog",
+      "To Do",
+      "In Progress",
+      "Done",
+      "Undone ideas"
+    ],
+    "after": {
+      "columns": [
+        "Backlog",
+        "To Do",
+        "In Progress",
+        "In Review",
+        "Done",
+        "Undone ideas"
+      ],
+      "reviewTasksNowIn": [
+        [
+          "Add two-factor authentication",
+          "In Review"
+        ],
+        [
+          "Rewrite user profile page",
+          "In Review"
+        ],
+        [
+          "Improve dashboard load time",
+          "In Review"
+        ],
+        [
+          "Fix date formatting in reports",
+          "In Review"
+        ]
+      ],
+      "toast": "Could not delete column."
+    }
+  },
+  "log": {
+    "name": "s8b",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    ],
+    "pageErrors": [],
+    "failedRequests": [
+      "PATCH http://127.0.0.1:3250/api/columns/a091cbf2-554e-4823-beb8-bb05c46f8b30 net::ERR_ABORTED",
+      "PATCH http://127.0.0.1:3250/api/columns/03ea9f44-a987-4139-bad2-818d1df1f0d0 net::ERR_ABORTED",
+      "POST http://127.0.0.1:3250/api/columns/2c060add-0f0f-4c68-9753-ff2e6ac647e4/move net::ERR_ABORTED",
+      "DELETE http://127.0.0.1:3250/api/columns/2c060add-0f0f-4c68-9753-ff2e6ac647e4 net::ERR_ABORTED"
+    ],
+    "badResponses": [
+      "400 POST http://127.0.0.1:3250/api/tasks/2eecee2f-860f-41df-b9cb-6bb7e0a429a5/move",
+      "400 POST http://127.0.0.1:3250/api/tasks/65728fe6-80d8-4e9b-b46c-82d82f3fee4f/move",
+      "400 POST http://127.0.0.1:3250/api/tasks/4c5fe66b-ff2e-414f-8c30-df412697b610/move",
+      "400 POST http://127.0.0.1:3250/api/tasks/539c0ee5-6187-4082-9547-624a69cd7fb9/move",
+      "400 DELETE http://127.0.0.1:3250/api/columns/419d6855-b7fc-4f55-9d03-79d3a4ccfc71"
+    ],
+    "dialogs": []
+  }
+}
