@@ -2092,6 +2092,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-169.md`.
 
 ### KF-296 â Color filter says "2 Pomodori", KanbanFlow says "2 Pomodoros" [LOW | OPEN | Filter panel]
+- Status: OPEN — reopened 2026-10-16: KanbanFlow spells these labels "Pomodori", not "Pomodoros". Read live on the owner's KanbanFlow General board (the Pomodoro starter): Settings > Colors shows "1 Pomodoro (Default)", "2 Pomodori", "3 Pomodori", ">3 Pomodori", and the filter panel Color select lists "1 Pomodoro | 2 Pomodori | 3 Pomodori | >3 Pomodori"; the KF-331 capture agrees. This defect's premise ("KanbanFlow says 2 Pomodoros") came from GM-125, whose evidence is lost, so the shipped rename and backfill to "Pomodoros" are wrong, and databases that ran the backfill now mix spellings with boards made from the corrected Pomodoro template (KF-372). Fix direction: restore "Pomodori" (one-time backfill of exactly the strings this fix wrote) everywhere the labels appear. Evidence: .dev/evidence/kf296-reopen-20261016/
 - Status: RELEASED — Round-10 deploy c559e90c (Pomodoros plural labels + one-time backfill) — 2026-10-07T07:45Z
 - Status: VERIFIED — verified by dale-vm 2026-10-07T07:33Z; worktree ~/workspace/wt-KF-296; commit 46efaab; root-cause confirmed + migration tested + L0 green
 - Status: BUILT — built by dale-vm 2026-10-07T07:29Z; worktree ~/workspace/wt-KF-296; commit 46efaab
