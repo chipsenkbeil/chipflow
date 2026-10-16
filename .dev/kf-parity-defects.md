@@ -3225,3 +3225,225 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow: a task in Done shows under its completion date group.
 - ChipFlow: a task POSTed straight into the Done column has `completed_at: null` and groups under "Completed" rather than "Today".
 - Fix direction: set `completed_at` when a task is created in an is_done column.
+
+### KF-420 — Cookie-authenticated writes are accepted from other origins on the same site [HIGH]
+- Status: OPEN — filed 2026-10-16 by the agentctl device-pairing verifier (verify-i2b); fix built on branch fix/csrf-origin (3106dbd), in blind verification; the owner signed off on deploying it after verification.
+- KanbanFlow: n/a (security).
+- ChipFlow: the session cookie is `SameSite=Lax` with no CSRF token or Origin check. Production shares the site chip.network with other services, so a page on any `*.chip.network` host can auto-submit a form POST that carries the cookie (verified: a form from 127.0.0.1:3999 changed settings and approved a device pairing).
+- Fix direction: refuse cookie-authenticated state-changing requests the browser marks cross-origin (Sec-Fetch-Site, else Origin vs the server's own origin); Bearer clients unaffected.
+
+### KF-421 — Task moves write back stale neighbour rows and lose concurrent writes [HIGH]
+- Status: OPEN — filed 2026-10-16 by the agentctl claims verifier (verify-i2a); fix built on branch fix/csrf-origin (a20d03d), in blind verification.
+- KanbanFlow: n/a (data integrity).
+- ChipFlow: moves and reorders read the neighbouring tasks before the redb write transaction and write those copies back; a write committed in between is lost (44 of 200 successful PATCHes lost on production code).
+- Fix direction: do every read a move depends on inside the write transaction; audit other renumbering functions.
+
+### KF-422 — Column PATCH saves part of a request it rejects [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by verify-i2a; fix built on branch fix/csrf-origin (1e59286), in blind verification.
+- KanbanFlow: n/a.
+- ChipFlow: `PATCH /api/columns/{id}` with a valid name and an invalid wip_limit returns 400 but renames the column; an invalid config_json still flips is_done.
+- Fix direction: validate the whole request, then write once.
+
+### KF-423 — A subtask update or delete that returns 404 still writes [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-i2a; fix built on branch fix/csrf-origin (7969f65), in blind verification.
+- KanbanFlow: n/a.
+- ChipFlow: editing or deleting an unknown subtask returns 404 but commits a write to the task.
+- Fix direction: a 404 commits nothing.
+
+### KF-424 — Break panel differs from KanbanFlow [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the timer verifier (verify-e2) from the local golden set (timer/27); fix in progress on branch fix/timer-goldens.
+- KanbanFlow: during a break the panel keeps the title "Pomodoro", the label reads "Break time", a green "▶ Start" button skips to the next pomodoro, and the task row keeps its ×.
+- ChipFlow: "Short break"/"Long break", "Time left", a Stop button, no ×.
+- Fix direction: match the golden.
+
+### KF-425 — The panel leaves the finished-break state instead of waiting at "Break time 00:00" [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/29); fix in progress on branch fix/timer-goldens.
+- KanbanFlow: after a break ends the panel stays on "Break time 00:00" with Start.
+- ChipFlow: it returns to "Time until break 25:00".
+- Fix direction: match the golden.
+
+### KF-426 — Header timer chip during a break lacks the green play icon [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/28); fix in progress on branch fix/timer-goldens.
+- KanbanFlow: the header chip shows a green ▶ during a break.
+- ChipFlow: not shown.
+- Fix direction: match the golden.
+
+### KF-427 — Waiting state does not blink [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/26); fix in progress on branch fix/timer-goldens.
+- KanbanFlow: while a finished pomodoro waits at 00:00, the tab title and the clock alternate "00:00" and "--------".
+- ChipFlow: a steady "00:00".
+- Fix direction: blink as KanbanFlow does.
+
+### KF-428 — Timer log day header and stop-reason quotes differ [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/20); fix in progress on branch fix/timer-goldens.
+- KanbanFlow: the header reads "Today 30s" (total beside the date, no em-dash, no count); reasons are quoted "Email".
+- ChipFlow: "… — 0 Pomodoros", counts that include stopped pomodori, and ‘Email’.
+- Fix direction: match the golden.
+
+### KF-429 — Task border colours differ from KanbanFlow's theme values [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e2; fix in progress on branch fix/timer-goldens.
+- KanbanFlow: yellow taskBorderColor is #F5CC00 (theme variables in the local golden set).
+- ChipFlow: #EECD45; other border colours unchecked.
+- Fix direction: take every taskBorderColor from KanbanFlow's theme table.
+
+### KF-430 — The server trusts a client's early "completed" flag on timer stop [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by verify-e2; fix in progress on branch fix/timer-goldens.
+- KanbanFlow: n/a (integrity).
+- ChipFlow: `POST /api/timer/stop {"completed":true}` after 2 minutes logs a completed pomodoro and counts toward the long-break cycle.
+- Fix direction: decide completion from the server's elapsed time.
+
+### KF-431 — Due-format tests depend on the host time zone [LOW]
+- Status: OPEN — filed 2026-10-16 by several verifiers; fix in progress on branch fix/tz-tests.
+- KanbanFlow: n/a (test suite).
+- ChipFlow: `format_due_card_weekday_near_absolute_far` and `format_due_modal_relative_and_done_marker` fail on any non-UTC host; `format_due_honors_seven_day_window` fails under Pacific/Chatham.
+- Fix direction: make the tests zone-independent without changing product behavior.
+
+### KF-432 — No confirmation when a due date is in the past [LOW]
+- Status: OPEN — filed 2026-10-16 by the due-date verifier (verify-d4), golden modal/26.
+- KanbanFlow: "The selected due date has already passed. Do you still want to use it?" with Cancel and a red OK.
+- ChipFlow: saves silently.
+- Fix direction: add the confirm.
+
+### KF-433 — A due target column can point at a deleted or foreign column [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-d4.
+- KanbanFlow: n/a.
+- ChipFlow: after the target column is deleted, or the task moves to another board, `due_target_column_id` keeps the old id; re-sending it gives 400.
+- Fix direction: clear or remap the target when its column goes away or the task changes board.
+
+### KF-434 — Templates drop due target columns and the board's due date time [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-d4.
+- KanbanFlow: n/a until compared.
+- ChipFlow: saving a board as a template and applying it loses `due_target_column_id` and `due_time`.
+- Fix direction: include both in the template snapshot.
+
+### KF-435 — History text for a target-only due change is misleading [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-d4.
+- KanbanFlow: n/a.
+- ChipFlow: changing only the target column logs "Set the due date to …".
+- Fix direction: describe the target change.
+
+### KF-436 — Due dialog buttons differ from KanbanFlow in size, weight and colour [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-d4.
+- KanbanFlow: 125x30 buttons at weight 700, green #49a849.
+- ChipFlow: 71x32 and 76x32 at weight 400, #16a34a.
+- Fix direction: match the golden modal states.
+
+### KF-437 — "Invalid date or time" alert is larger than KanbanFlow's and does not dim the dialog [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-d4 (golden modal/25).
+- KanbanFlow: 290x124 alert over a dimmed modal.
+- ChipFlow: 420x127, no dimming.
+- Fix direction: match the golden.
+
+### KF-438 — The login page polls timer APIs and logs 401 errors [LOW]
+- Status: OPEN — filed 2026-10-16 by the hotfix builder (builder-x).
+- KanbanFlow: n/a.
+- ChipFlow: app.js requests `/api/timer/settings` and `/api/timer/status` on /login, producing 401 console errors.
+- Fix direction: skip timer polling when signed out.
+
+### KF-439 — Task delete reloads the page before its response arrives [LOW]
+- Status: OPEN — filed 2026-10-16 by builder-x.
+- KanbanFlow: n/a.
+- ChipFlow: `closeModal` reloads before the DELETE response body is read, so the request shows as aborted (net::ERR_ABORTED) although the server answered 200.
+- Fix direction: reload after the response.
+
+### KF-440 — Filtering leaves a collapsed column's overdue line and over-WIP colour unchanged [LOW]
+- Status: OPEN — filed 2026-10-16 by the board-visual verifiers (verify-b, verify-b2).
+- KanbanFlow: counts and indicators follow the filter.
+- ChipFlow: with a filter that drops a collapsed column's count under its WIP limit, the count stays darkred and the overdue line stays (driven by the server's unfiltered counts).
+- Fix direction: recompute strip indicators from the filtered cards.
+
+### KF-441 — Dropping a card on a collapsed strip reorders its source column; the strip is not keyboard-reachable [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-b.
+- KanbanFlow: n/a until compared.
+- ChipFlow: the drop is refused but the card moves within its source column; the strip has no tabindex.
+- Fix direction: cancel the drop cleanly; make the strip focusable and expandable from the keyboard.
+
+### KF-442 — The legend leaves a gap at narrow widths after horizontal scroll [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-b.
+- KanbanFlow: n/a until compared.
+- ChipFlow: at 1100 px, after scrolling right, the legend stays viewport-wide and scrolls with the content, leaving a 192 px gap.
+- Fix direction: size the legend to the board content.
+
+### KF-443 — Two adjacent collapsed strips sit 1 px right of KanbanFlow [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-b2.
+- KanbanFlow: x 625-651 and 653-679.
+- ChipFlow: x 626-652 and 654-680 (fractional column widths); a single strip matches.
+- Fix direction: round column widths as KanbanFlow does.
+
+### KF-444 — The frame bottom sits 1 px low on tall boards scrolled to the bottom [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-b4.
+- KanbanFlow: frame bottom at y 988 with a 9 px gutter.
+- ChipFlow: y 989 (8 px gutter) on tall boards scrolled to the bottom, from a fractional header top.
+- Fix direction: avoid the fractional offset.
+
+### KF-445 — The lane-label column has no header rule under the sticky corner [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-b4.
+- KanbanFlow: n/a (swimlanes are premium; no capture).
+- ChipFlow: scrolled lane labels slide under the corner cell with no divider.
+- Fix direction: draw the header rule across the corner cell.
+
+### KF-446 — Board Menu switches use green for "on" instead of KanbanFlow's yellow and orange [LOW]
+- Status: OPEN — filed 2026-10-16 by the dark-mode builder (stream G).
+- KanbanFlow: on-state track #f9c243, knob #f5a033 (local golden set).
+- ChipFlow: #56b74f.
+- Fix direction: match the golden.
+
+### KF-447 — Board settings pages lack KanbanFlow's #333333 footer [LOW]
+- Status: OPEN — filed 2026-10-16 by stream G (the delete-board page got it in KF-368).
+- KanbanFlow: every settings page ends with a 30 px #333333 footer.
+- ChipFlow: only the delete-board page has it.
+- Fix direction: add the footer to every settings page.
+
+### KF-448 — Clearing a due date with whitespace keeps its repeat setting [LOW]
+- Status: OPEN — filed 2026-10-16 by the KF-398 docs verifier (verify-d2).
+- KanbanFlow: n/a.
+- ChipFlow: `due_at` sent as whitespace clears the due but leaves `due_repeat`.
+- Fix direction: clear the repeat with the due, as the dialog's Delete does.
+
+### KF-449 — The OpenAPI document shows Rust syntax to API readers [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-d2.
+- KanbanFlow: n/a.
+- ChipFlow: UpdateTaskInput's description shows `Some(None)`.
+- Fix direction: plain-language descriptions.
+
+### KF-450 — The first Start after a remote delete clears the task and starts nothing [LOW]
+- Status: OPEN — filed 2026-10-16 by the timer verifier (verify-e3).
+- KanbanFlow: behaviour unknown.
+- ChipFlow: when the selected task was deleted elsewhere, the first Start silently drops it with no feedback; a second Start runs a task-less pomodoro.
+- Fix direction: say what happened, or start immediately.
+
+### KF-451 — A timer left running across days logs all of the elapsed time [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e3.
+- KanbanFlow: behaviour unknown.
+- ChipFlow: a pomodoro started on the 22nd and stopped on the 24th logs 48 h on the card.
+- Fix direction: cap or split sessions per KanbanFlow's behaviour once checked.
+
+### KF-452 — "Why did you stop?" menu is wider than the panel and the panel does not return after a reason [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e (refs 06 and 07).
+- KanbanFlow: the menu is panel-width (260 px) and the panel shows again after a reason is picked.
+- ChipFlow: 300 px wide; the panel stays closed.
+- Fix direction: match the references.
+
+### KF-453 — Two tabs double-stop at break end, and the selected task does not sync across tabs [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e.
+- KanbanFlow: n/a until compared.
+- ChipFlow: one tab gets a 404 on `/api/timer/stop` (a console error); tab 2 never sees tab 1's new selection.
+- Fix direction: treat an already-stopped session as success; share the selection between tabs.
+
+### KF-454 — agents/skill.md omits the time-entry edit route and task-less entries [LOW]
+- Status: OPEN — filed 2026-10-16 by verify-e.
+- KanbanFlow: n/a (agent docs).
+- ChipFlow: the skill file doesn't mention `PUT /api/time/entries/{id}` or that entries may have no task.
+- Fix direction: document both.
+
+### KF-455 — POST /api/boards may skip the 100-character board name limit [LOW]
+- Status: OPEN — filed 2026-10-16 from a stream C builder note; not re-checked after KF-396 shipped.
+- KanbanFlow: n/a.
+- ChipFlow: the builder saw `POST /api/boards` accept names over 100 characters while the settings form refuses them.
+- Fix direction: check on current main; apply the same validation on every board-name path.
+
+### KF-456 — nextest intermittently flags passing tests as "leaky" [LOW]
+- Status: OPEN — filed 2026-10-16 from several builder and verifier runs.
+- KanbanFlow: n/a (test suite).
+- ChipFlow: pure tests (`auth::tests::expiry_rules`, `session_cookie_secure_flag`, `starter_board_comes_from_builtin_template`) are occasionally marked LEAK under load; they pass on rerun.
+- Fix direction: find what outlives the test (threads, files, child processes) or adjust nextest's leak timeout.
