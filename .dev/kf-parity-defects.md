@@ -3087,3 +3087,33 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow: n/a (data integrity; an unchanged due date keeps its done state).
 - ChipFlow: the PATCH handler resets `due_done` when `due_at != existing.due_at` as strings (`src/routes.rs` ~2097), so a stored `…T08:00:00Z` re-sent by the dialog as `…T08:00:00.000Z` counts as a change and clears the done flag.
 - Fix direction: compare the parsed instants, not the strings.
+
+### KF-403 — New tasks are inserted at the top of the column; KanbanFlow's default is the bottom [MEDIUM]
+- Status: OPEN — filed 2026-10-16 from a live KanbanFlow reference and the R2 board battery. Evidence: .dev/evidence/kf-reference-20261016/board/08-settings-task-settings.jpg, .dev/evidence/r2-battery-20261016/report-board.md (observation "Quick-add placement")
+- KanbanFlow: board settings > Task settings > "Position of new tasks: Bottom of column" (the default, with an Edit link to change it).
+- ChipFlow: the column "+" quick-add inserts the new card at the top of the column, and there is no "Position of new tasks" setting.
+- Fix direction: add new tasks at the bottom by default and add the board setting (Task settings tab) to choose top or bottom.
+
+### KF-404 — Date-only due dates default to 11:59 PM; KanbanFlow's default due time is 5:00 PM [MEDIUM]
+- Status: OPEN — filed 2026-10-16 from a live KanbanFlow reference and the R2 modal battery. Evidence: .dev/evidence/kf-reference-20261016/board/08-settings-task-settings.jpg, .dev/evidence/r2-battery-20261016/report-modal.md (date-only dues "render 11:59 PM")
+- KanbanFlow: board settings > Task settings > "Due date time: 5:00 PM" is the default time for a due date entered without a time; the golden board's dues all read 5:00 PM.
+- ChipFlow: a due date without a time is stored as 23:59:59 local and renders "11:59 PM"; there is no "Due date time" setting.
+- Fix direction: apply the board's default due time (5:00 PM unless changed) to date-only dues, and add the setting to the Task settings tab.
+
+### KF-405 — Column context menu has an extra "Delete" item [LOW]
+- Status: OPEN — filed 2026-10-16 from a live KanbanFlow reference (resolves the R2-046 reference conflict). Evidence: .dev/evidence/kf-reference-20261016/board/02-column-context-menu.jpg, .dev/evidence/kf-reference-20261016/board/03-edit-column-dialog.jpg, .dev/evidence/r2-battery-20261016/report-board.md (R2-046)
+- KanbanFlow: right-clicking a column header shows exactly Edit, Collapse, Show details; the Edit column dialog has no delete either (columns are removed in the board layout editor).
+- ChipFlow: the column menu shows Edit / Collapse / Show details / Delete.
+- Fix direction: drop the Delete item from the column context menu; keep column deletion in the layout editor.
+
+### KF-406 — The main swimlane is identified by the name "Default" [MEDIUM]
+- Status: OPEN — filed 2026-10-16 by the KF-359 verifier. Evidence: .dev/evidence/kf304-334-359-verify-20261016/verify-a-report.md (KF-359 caveat)
+- KanbanFlow: n/a (swimlanes are a premium feature); ChipFlow's own rule (AGENTS.md): never bolt behavior to seeded column or swimlane names.
+- ChipFlow: board rendering decides which lane is the unlabelled main lane by `lane.name == "Default"` (`MAIN_SWIMLANE_NAME`), so a user lane named "Default" renders unlabelled with no lane menu, a renamed main lane gains a label, and a lone renamed lane still shows the swimlane column.
+- Fix direction: store a main-lane flag on the auto-created swimlane (serde default, no migration) and key the layout on it.
+
+### KF-407 — Deleting the only active board is allowed when an archived board exists [LOW]
+- Status: OPEN — filed 2026-10-16 by the KF-304 verifier. Evidence: .dev/evidence/kf304-334-359-verify-20261016/verify-a-report.md (possible new defect 2)
+- KanbanFlow: n/a (data integrity).
+- ChipFlow: the last-board guard counts archived boards, so with one active and one archived board the active one can be deleted, after which `/` redirects into the archived board.
+- Fix direction: count only active boards in the guard (or unarchive one before allowing the delete).
