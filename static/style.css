@@ -4630,7 +4630,7 @@ button.tm-label-chip { cursor: pointer; }
   flex: none;
   width: 12px;
   height: 18px;
-  margin-right: 5px;
+  margin-right: 4px;
   position: relative;
   top: -1px;
 }
