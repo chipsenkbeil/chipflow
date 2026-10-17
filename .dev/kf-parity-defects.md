@@ -3863,3 +3863,123 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow: "1h 25m" style is used in TODAY totals.
 - ChipFlow: a 9000 s entry reads "150m" in the log and "+ 85m" on a card.
 - Acceptance: a 9000 s entry reads "2h 30m" in the log and the card's live part reads "+ 1h 25m" for 85 minutes (or KanbanFlow's captured format).
+
+### KF-507 — The server stamps a newer schema version before it binds its port [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36a.
+- KanbanFlow: n/a.
+- ChipFlow: on start the database is upgraded and stamped before the listener binds; if binding fails (port in use), the file is left at the new version and the previous binary then refuses it.
+- Acceptance: starting the binary on a busy port with a version-1 file exits non-zero and leaves the file stamped 1 (byte-identical); a Rust or shell test covers it.
+
+### KF-508 — Setting a due target column on a task without a due date is silently ignored [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36a.
+- KanbanFlow: n/a (API).
+- ChipFlow: PATCH `{due_target_column_id}` on a task with no `due_at` returns 200 and stores nothing.
+- Acceptance: the PATCH returns 400 naming the field, or agent-guide.md and skill.md state that it is ignored.
+
+### KF-509 — Changing a custom field's kind is silently ignored [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36a.
+- KanbanFlow: n/a (API).
+- ChipFlow: `PATCH /api/fields/{id} {"kind":"text"}` returns 200 and changes nothing, though the docs call kind fixed.
+- Acceptance: the PATCH returns 400 naming `kind` (and likewise `key` and `owner`), or the docs say these are ignored.
+
+### KF-510 — skill.md omits due_target_column_id and words claim expiry differently from the guide [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36a.
+- KanbanFlow: n/a (docs).
+- ChipFlow: the skill's TaskDetail key list lacks `due_target_column_id`, and it says claim_expired is logged by "the first claim call" where agent-guide.md says claim, heartbeat or release.
+- Acceptance: `rg due_target_column_id agents/skill.md` finds the key in the TaskDetail list, and the claim_expired sentence matches agent-guide.md's.
+
+### KF-511 — An empty archiving column shows an empty "Today" header [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36b.
+- KanbanFlow (golden timer/27): an empty Done column shows no group header.
+- ChipFlow: every archiving column with 0 tasks renders an empty "Today" label.
+- Acceptance: an archiving column with 0 tasks has no `.done-group-label`; with one task done today it shows "Today".
+
+### KF-512 — The timer log overlay and header colours differ from KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36b.
+- KanbanFlow (golden timer/20): overlay rgba(0,0,0,0.3); header band #f4f4f4.
+- ChipFlow: overlay rgba(17,24,39,.55); transparent header.
+- Acceptance: `.timer-log-overlay` background computes to rgba(0,0,0,0.3) and `.timer-log-head` to #f4f4f4 at 1440x612.
+
+### KF-513 — Clicking "Reports" in the board Menu after hovering closes the submenu [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36b.
+- KanbanFlow: n/a for this sequence.
+- ChipFlow: hover opens the Reports submenu, and the click that follows toggles it closed.
+- Acceptance: hovering `[data-bm=reports]` and then clicking it leaves `#reports-submenu` visible.
+
+### KF-514 — A long column name ends flush against the sum badge [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36b.
+- KanbanFlow: no sum badge capture.
+- ChipFlow: the name's ellipsis ends exactly at the badge's left edge (gap 0 px).
+- Acceptance: at 1440x612 the gap between `.columnHeader-name` and `.columnHeader-countBadge` is at least 4 px for a 60-character name.
+
+### KF-515 — Long board names widen the board selects on the timer log, statistics and new-board pages [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36b; same on earlier builds.
+- KanbanFlow: n/a.
+- ChipFlow: a 100-character board name pushes `/timer/log`, `/timer/statistics` and `/boards/new` past the viewport.
+- Acceptance: with a 100-character board name, document scrollWidth equals the viewport width on those three pages at 1440.
+
+### KF-516 — Stopping a stopwatch asks "Why did you stop?" [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-36b; the golden INVENTORY notes KanbanFlow has no stop-reason menu for the stopwatch.
+- KanbanFlow: the stopwatch stops without a reason menu.
+- ChipFlow: the reason menu appears.
+- Acceptance: stopping a running stopwatch from the panel ends it with no reason menu, and the entry is logged.
+
+### KF-517 — Deleting a task reports a failed request in the browser [LOW]
+- Status: OPEN — filed 2026-10-17 from several verifiers; same on earlier builds.
+- KanbanFlow: n/a.
+- ChipFlow: the page reloads before the DELETE response is read, so the browser logs `net::ERR_ABORTED` although the server returned 200 (also on lane delete and lane move).
+- Acceptance: deleting a task from the card menu, deleting a lane and moving a lane raise no `requestfailed` event in Playwright.
+
+### KF-518 — Two KF-458 race tests rarely fail on the old code [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-s4 (test quality).
+- KanbanFlow: n/a (tests).
+- ChipFlow: on the pre-fix code, `update_color_should_leave_one_default_under_concurrent_changes` failed 1 of 15 runs and `copy_colors_should_copy_a_consistent_source` 0 of 15, so they do not prove the fix.
+- Acceptance: on the pre-fix code each of the 7 tests in tests/db_check_then_act.rs fails in at least 14 of 15 runs, and passes 15 of 15 on the current code.
+
+### KF-519 — Stopping an orphaned break reports minutes but logs nothing [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-s4.
+- KanbanFlow: n/a.
+- ChipFlow: with a running short break on a deleted task, `POST /api/timer/stop` returns `{"discarded":false,"minutes":6}` but no entry is logged.
+- Acceptance: that stop either logs a task-less break entry or returns `discarded:true`, and the response matches the log.
+
+### KF-520 — The new-board name field has no length limit in the page [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-s4.
+- KanbanFlow: n/a.
+- ChipFlow: the input has no `maxlength`, and a 101-character name shows only "Could not create the board."
+- Acceptance: at /boards/new the input has `maxlength="100"`, or the error text contains "1-100 characters".
+
+### KF-521 — Templates resolve a due target column by name [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-x3.
+- KanbanFlow: n/a.
+- ChipFlow: with two columns of the same name, a template's due target lands on the last one.
+- Acceptance: a template of a task whose target is the first of two same-named columns applies with the target on the first; a Rust test covers it.
+
+### KF-522 — Two near-simultaneous timer starts can pair one start's timer with the other's session id [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-x4 (code reading; not reproduced).
+- KanbanFlow: n/a.
+- ChipFlow: `timer_start` stores the timer and then begins the in-memory session in a separate step.
+- Acceptance: a Rust test fires two concurrent starts 100 times and status `session_id` and `started_at` always come from the same request.
+
+### KF-523 — A whitespace-only board_id filter returns 404 [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-x4.
+- KanbanFlow: n/a (API).
+- ChipFlow: `GET /api/tasks?board_id=%20` returns 404 while an empty value means no filter.
+- Acceptance: `GET /api/tasks?board_id=%20` returns 200 with all tasks, or the docs state the 404.
+
+### KF-524 — The task modal's title and due chip are laid out differently from KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-w2.
+- KanbanFlow (goldens modal/23 and modal/27): a long title wraps to three lines; the "Due date" label and chip sit at x 524.
+- ChipFlow: the title is a single truncated line and the due chip sits at x 550.
+- Acceptance: for the golden's modal/27 task at 1440x612, the title wraps like the golden and the due chip box starts at x 524 (±2).
+
+### KF-525 — A card's live timer caps at "+ 12h" [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-w2; same on earlier builds.
+- KanbanFlow: unknown.
+- ChipFlow: after 25 h of elapsed time the card shows "+ 12h" while the pill shows 25:00:37.
+- Acceptance: the card's live part matches the logged cap (KF-451: one hour past the duration for a pomodoro, 12 h for a stopwatch) and the docs state it; or it shows the full elapsed time.
+
+### KF-526 — The timer log opens on "This month" instead of KanbanFlow's "This + Last week" [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-w2.
+- KanbanFlow (golden timer/20): the period select defaults to "This + Last week".
+- ChipFlow: defaults to "This month".
+- Acceptance: opening the timer log selects "This + Last week" and fetches that range.
