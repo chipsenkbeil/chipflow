@@ -2270,6 +2270,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-138.md`; `/tmp/gm-verify-v5/cand-delete-board-1920.png` (scratch; not archived).
 
 ### KF-306 — Column delete confirm lacks the "Move the tasks to the column" option and verbatim text [DEPLOYED | VERIFIED | Other dialogs]
+- Status: CLOSED 2026-10-17 — already met on production 9548374 and unchanged in batch-37 d2a466a: the acceptance check passed on both builds (evidence .dev/evidence/batch-37-20261017/verify-w1-report.md, section "Claimed passing on the baseline").
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-049): deleting a non-empty column with "Move the tasks to the column" fails. `deleteColumn` POSTs the task moves without the required `position` (400 x4), the DELETE then returns 400, "Could not delete column." shows and the tasks stay put. Deleting an empty column works. Fix direction: send an end-of-column position and stop the chain when a move fails. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/board/s8b-cols.json
 - Status: RELEASED 2026-10-09T03:16Z — deployed build a2f9b16c6879e6e22d41f31dd6d32634707b2cf6 (green-box chipflow.service, /api/v1/version confirmed on 127.0.0.1:3000 and public tunnel; served app.js contains verified fix). VERIFIED fix aa7ddf9 (not the rejected fleet branch whose checkbox was non-functional): column-delete dialog with move-tasks checkbox + target dropdown, moves via POST /api/tasks/:id/move. CORRECTION: the 2026-10-05 Round-6 DEPLOYED marker was false — fix content absent from build a073a65d and production until this release.
 - Status: DEPLOYED — released 2026-10-05T20:55Z in Round-6 (build a073a65dc865f0600ccd3feefa3c05cee144f85d); verified PASS by independent verifier (L0 green).
@@ -3190,12 +3191,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: drop the Delete item from the column context menu; keep column deletion in the layout editor.
 
 ### KF-406 — The main swimlane is identified by the name "Default" [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-16 by the KF-359 verifier. Evidence: .dev/evidence/kf304-334-359-verify-20261016/verify-a-report.md (KF-359 caveat)
 - KanbanFlow: n/a (swimlanes are a premium feature); ChipFlow's own rule (AGENTS.md): never bolt behavior to seeded column or swimlane names.
 - ChipFlow: board rendering decides which lane is the unlabelled main lane by `lane.name == "Default"` (`MAIN_SWIMLANE_NAME`), so a user lane named "Default" renders unlabelled with no lane menu, a renamed main lane gains a label, and a lone renamed lane still shows the swimlane column.
 - Fix direction: store a main-lane flag on the auto-created swimlane (serde default, no migration) and key the layout on it.
 
 ### KF-407 — Deleting the only active board is allowed when an archived board exists [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-16 by the KF-304 verifier. Evidence: .dev/evidence/kf304-334-359-verify-20261016/verify-a-report.md (possible new defect 2)
 - KanbanFlow: n/a (data integrity).
 - ChipFlow: the last-board guard counts archived boards, so with one active and one archived board the active one can be deleted, after which `/` redirects into the archived board.
@@ -3223,6 +3226,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: same as KF-409; keep the stored instant on an unchanged save.
 
 ### KF-411 — A long column name runs under the column's green add button [LOW]
+- Status: CLOSED 2026-10-17 — already met on production 9548374 and unchanged in batch-37 d2a466a: the acceptance check passed on both builds (evidence .dev/evidence/batch-37-20261017/verify-w1-report.md, section "Claimed passing on the baseline").
 - Status: OPEN — filed 2026-10-17 by the batch-33 verifier (verify-c3); present on the baseline too. Evidence: .dev/evidence/batch-33-20261017/verify-c3-report.md (observation 3)
 - KanbanFlow: the column title is truncated before the header controls.
 - ChipFlow: the title's ellipsis runs underneath the "+" add button.
@@ -3271,12 +3275,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: refuse an empty time with KanbanFlow's message.
 
 ### KF-418 — Unpadded grouping_date values stored before the strict rule are ignored without notice [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 by the stream C verifier (verify-c2).
 - KanbanFlow: n/a.
 - ChipFlow: before batch-33 any string was stored as `grouping_date`; values like "2026-1-5" already in a database are now ignored for Done grouping, are not migrated, and the API still returns them.
 - Fix direction: normalize valid unpadded dates on read or clear invalid ones, and report what was changed.
 
 ### KF-419 — A task created directly in the Done column has no completion time [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 by the stream C verifier (verify-c2).
 - KanbanFlow: a task in Done shows under its completion date group.
 - ChipFlow: a task POSTed straight into the Done column has `completed_at: null` and groups under "Completed" rather than "Today".
@@ -3374,18 +3380,21 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add the confirm.
 
 ### KF-433 — A due target column can point at a deleted or foreign column [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-16 by verify-d4.
 - KanbanFlow: n/a.
 - ChipFlow: after the target column is deleted, or the task moves to another board, `due_target_column_id` keeps the old id; re-sending it gives 400.
 - Fix direction: clear or remap the target when its column goes away or the task changes board.
 
 ### KF-434 — Templates drop due target columns and the board's due date time [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-16 by verify-d4.
 - KanbanFlow: n/a until compared.
 - ChipFlow: saving a board as a template and applying it loses `due_target_column_id` and `due_time`.
 - Fix direction: include both in the template snapshot.
 
 ### KF-435 — History text for a target-only due change is misleading [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-16 by verify-d4.
 - KanbanFlow: n/a.
 - ChipFlow: changing only the target column logs "Set the due date to …".
@@ -3419,12 +3428,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: reload after the response.
 
 ### KF-440 — Filtering leaves a collapsed column's overdue line and over-WIP colour unchanged [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-16 by the board-visual verifiers (verify-b, verify-b2).
 - KanbanFlow: counts and indicators follow the filter.
 - ChipFlow: with a filter that drops a collapsed column's count under its WIP limit, the count stays darkred and the overdue line stays (driven by the server's unfiltered counts).
 - Fix direction: recompute strip indicators from the filtered cards.
 
 ### KF-441 — Dropping a card on a collapsed strip reorders its source column; the strip is not keyboard-reachable [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-16 by verify-b.
 - KanbanFlow: n/a until compared.
 - ChipFlow: the drop is refused but the card moves within its source column; the strip has no tabindex.
@@ -3438,18 +3449,21 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: size the legend to the board content.
 
 ### KF-443 — Two adjacent collapsed strips sit 1 px right of KanbanFlow [LOW]
+- Status: CLOSED 2026-10-17 — already met on production 9548374 and unchanged in batch-37 d2a466a: the acceptance check passed on both builds (evidence .dev/evidence/batch-37-20261017/verify-w1-report.md, section "Claimed passing on the baseline").
 - Status: OPEN — filed 2026-10-16 by verify-b2.
 - KanbanFlow: x 625-651 and 653-679.
 - ChipFlow: x 626-652 and 654-680 (fractional column widths); a single strip matches.
 - Fix direction: round column widths as KanbanFlow does.
 
 ### KF-444 — The frame bottom sits 1 px low on tall boards scrolled to the bottom [LOW]
+- Status: CLOSED 2026-10-17 — already met on production 9548374 and unchanged in batch-37 d2a466a: the acceptance check passed on both builds (evidence .dev/evidence/batch-37-20261017/verify-w1-report.md, section "Claimed passing on the baseline").
 - Status: OPEN — filed 2026-10-16 by verify-b4.
 - KanbanFlow: frame bottom at y 988 with a 9 px gutter.
 - ChipFlow: y 989 (8 px gutter) on tall boards scrolled to the bottom, from a fractional header top.
 - Fix direction: avoid the fractional offset.
 
 ### KF-445 — The lane-label column has no header rule under the sticky corner [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-16 by verify-b4.
 - KanbanFlow: n/a (swimlanes are premium; no capture).
 - ChipFlow: scrolled lane labels slide under the corner cell with no divider.
@@ -3470,12 +3484,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: add the footer to every settings page.
 
 ### KF-448 — Clearing a due date with whitespace keeps its repeat setting [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-16 by the KF-398 docs verifier (verify-d2).
 - KanbanFlow: n/a.
 - ChipFlow: `due_at` sent as whitespace clears the due but leaves `due_repeat`.
 - Fix direction: clear the repeat with the due, as the dialog's Delete does.
 
 ### KF-449 — The OpenAPI document shows Rust syntax to API readers [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-16 by verify-d2.
 - KanbanFlow: n/a.
 - ChipFlow: UpdateTaskInput's description shows `Some(None)`.
@@ -3510,18 +3526,21 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: treat an already-stopped session as success; share the selection between tabs.
 
 ### KF-454 — agents/skill.md omits the time-entry edit route and task-less entries [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-16 by verify-e.
 - KanbanFlow: n/a (agent docs).
 - ChipFlow: the skill file doesn't mention `PUT /api/time/entries/{id}` or that entries may have no task.
 - Fix direction: document both.
 
 ### KF-455 — POST /api/boards may skip the 100-character board name limit [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-16 from a stream C builder note; not re-checked after KF-396 shipped.
 - KanbanFlow: n/a.
 - ChipFlow: the builder saw `POST /api/boards` accept names over 100 characters while the settings form refuses them.
 - Fix direction: check on current main; apply the same validation on every board-name path.
 
 ### KF-456 — nextest intermittently flags passing tests as "leaky" [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) (stream Y).
 - Status: OPEN — filed 2026-10-16 from several builder and verifier runs.
 - KanbanFlow: n/a (test suite).
 - ChipFlow: pure tests (`auth::tests::expiry_rules`, `session_cookie_secure_flag`, `starter_board_comes_from_builtin_template`) are occasionally marked LEAK under load; they pass on rerun.
@@ -3536,6 +3555,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: on the golden-master board (5 columns, legend on) column width equals the KanbanFlow responsive dump at 1920, 1440, 1280, 1120 (220 px, no scroll), 1024 (220 px, board region scrolls 96 px) and 640 (layout 700 px); the document never scrolls; after scrolling the board fully right the top bar, board header and legend stay at x=0 with full width.
 
 ### KF-458 — Several database writes check, then act in separate transactions [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S). The fix holds (15/15 race-test runs; HTTP races 0 vs 40 of 40 on the old code); test strength is tracked separately in KF-518.
 - Status: OPEN — filed 2026-10-17 from the KF-421 hotfix verification (verify-x).
 - KanbanFlow: n/a.
 - ChipFlow: `delete_color`, `update_color` (default flag), `create_task` (max position), `create_entry` (task check), `copy_colors` (source read), `ensure_default_swimlane` and `apply_template` read state outside the write transaction that acts on it, so concurrent requests can interleave (duplicate positions, two defaults, a colour copied mid-change).
@@ -3543,6 +3563,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a Rust test per listed function runs the conflicting operations concurrently (at least 100 rounds) and finds no duplicate positions, exactly one default colour, and no partial copy; each test fails on the old code.
 
 ### KF-459 — A cross-board move keeps the source board's colour id [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from the KF-421 hotfix verification (verify-x).
 - KanbanFlow: a moved task takes a colour that exists on the target board.
 - ChipFlow: the task keeps a colour id that belongs to the source board, so the target board renders it with no matching colour.
@@ -3550,6 +3571,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: after moving a task to another board, GET /api/tasks/{id} returns a color_id that belongs to the target board (same standard colour, or the target default); a Rust test covers it.
 
 ### KF-460 — A manual time entry is matched to a task by name across boards [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from the KF-421 hotfix verification (verify-x).
 - KanbanFlow: a time entry belongs to the task it was added on.
 - ChipFlow: manual time entry resolution matches by task name, so two tasks with the same name on different boards can receive each other's time.
@@ -3597,6 +3619,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: while a break waits at 00:00, choosing Stopwatch and pressing Start starts a stopwatch (GET /api/timer/status mode "stopwatch"); no unused break-activity select is rendered.
 
 ### KF-466 — The timer docs omit the 2 s completion grace [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from verify-e5.
 - KanbanFlow: n/a.
 - ChipFlow: the agent docs say a pomodoro completes when it "reaches the duration", but the server accepts 2 s short (1498 of 1500 s). `TimerStopResult.completed` says "true when the session reached its duration", which is wrong for a stopwatch, where it echoes the client's flag.
@@ -3604,6 +3627,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: agent-guide.md, agents/skill.md and the OpenAPI docs for TimerStopInput.completed / TimerStopResult.completed state the 2 s grace and that a stopwatch echoes the client's flag.
 
 ### KF-467 — Stopping an orphaned timer reports minutes but logs nothing [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from verify-x2.
 - KanbanFlow: n/a.
 - ChipFlow: with a timer left on a deleted task by an older database, `POST /api/timer/stop` returns 200 with `{"discarded":false,"minutes":6}`, but no entry is logged because the task is gone.
@@ -3611,6 +3635,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: POST /api/timer/stop on a timer whose task was deleted returns discarded:true (or logs a task-less entry) and the response matches what was logged; a Rust test covers it.
 
 ### KF-468 — Two first calendar-feed requests at once hand out a dead link [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from verify-x2.
 - KanbanFlow: n/a.
 - ChipFlow: concurrent first `POST /api/boards/{id}/calendar-feed` requests each create a token and the last one wins; the others' links return 404 (12 concurrent requests gave 8 tokens).
@@ -3618,6 +3643,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: 12 concurrent first POSTs to /api/boards/{id}/calendar-feed all return the same path, and that .ics returns 200; a Rust test covers it.
 
 ### KF-469 — The OpenAPI summary for GET /api/boards/{id}/colors still says it backfills [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from verify-x2.
 - KanbanFlow: n/a.
 - ChipFlow: the summary says "Backfills the standard palette on boards that predate colors", but the backfill now runs at startup and the GET is read-only. The GET calendar-feed summary also refers to "the POST below".
@@ -3625,6 +3651,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: the OpenAPI summary for GET /api/boards/{id}/colors no longer mentions backfilling, and the calendar-feed GET summary does not refer to "the POST below".
 
 ### KF-470 — Release builds warn about an unused ServeDir import [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from several verifiers.
 - KanbanFlow: n/a.
 - ChipFlow: `tower_http::services::ServeDir` at `src/routes.rs:26` is used only in debug builds, so every release build prints an unused-import warning.
@@ -3632,6 +3659,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: cargo build --release prints no warnings.
 
 ### KF-471 — The crash-repair test assumes it does not run as root [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from verify-35.
 - KanbanFlow: n/a (test suite).
 - ChipFlow: `failed_crash_repair_is_reported_as_such` relies on a read-only file refusing writes; root ignores that, so the test fails when `cargo test` runs as root (it passes as a normal user, as in the Nix sandbox).
@@ -3639,6 +3667,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: cargo test passes as root inside the Linux rust:1.98.0 container (the test skips or uses another way to make the file unrepairable).
 
 ### KF-472 — Shutdown edge cases: SIGTERM during startup, and no force-quit [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-s4-report.md (stream S).
 - Status: OPEN — filed 2026-10-17 from verify-s3.
 - KanbanFlow: n/a.
 - ChipFlow: a SIGTERM that arrives before the signal handler is installed is not handled gracefully, and a second Ctrl-C cannot cut the 10 s drain short.
@@ -3654,6 +3683,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: on the delete-board page a 100-character name with no spaces gives document scrollWidth equal to the viewport width at 1905, 1100 and 640.
 
 ### KF-474 — The dark lane-icon hover is slightly dimmer than KanbanFlow's [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-g2; unconfirmed (no KanbanFlow capture of this state).
 - KanbanFlow: hover background white at 0.08 (theme psv `boardLayout-iconHoverBgColor`), about #585858.
 - ChipFlow: the hover sits under the button's 0.7 opacity, giving #545454.
@@ -3669,6 +3699,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: at 1440x612 help dialog subject rows are 38 px, search 590x38 with no blue focus ring; a drag that starts in search and ends on the backdrop leaves the dialog open; a click on the backdrop closes it.
 
 ### KF-476 — Filter panel leftovers: wrapped bookmark button, stale assignee state [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-h and verify-h2.
 - KanbanFlow: n/a for these states.
 - ChipFlow: the "Bookmark filter" button wraps onto two lines; a remembered filter saved with `user:"me"` leaves the user select blank while the funnel shows active; after "Assign members" from a card's right-click menu, the card stays visible under the Unassigned filter (and its avatar is stale) until reload.
@@ -3676,6 +3707,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: the "Bookmark filter" button is one line; a remembered filter with user "me" shows the current user selected; after right-click "Assign members" the card leaves the Unassigned filter without a reload.
 
 ### KF-477 — Done group headers have no year [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: unknown for other years.
 - ChipFlow: grouping dates a year apart both read "… 16 October", which future-dated groups (KF-365) make easier to reach.
@@ -3683,6 +3715,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a Done group for a grouping date in another year reads "… 16 October 2025" (or KanbanFlow's format if captured); current-year groups are unchanged.
 
 ### KF-478 — The card's inline subtask summary drifts from the server's [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: n/a.
 - ChipFlow: after toggling subtasks on a card, folding can hide an open subtask and read "3 hidden (2 done)", while a reload shows "2 hidden (2 done)". `.card-sub-more` has role=button and tabindex=0 but no keyboard handler.
@@ -3690,6 +3723,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: after any sequence of subtask toggles on a card, the folded label equals the label after a reload; Enter and Space on the label toggle it.
 
 ### KF-479 — Deleting the last empty column leaves a board with no columns [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: unknown.
 - ChipFlow: the layout view lets the last column be deleted when it is empty; the board then has no columns and is recoverable only from the layout view.
@@ -3697,6 +3731,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: deleting the last remaining column from the layout view is refused with a message and the column stays (or matches captured KanbanFlow behaviour).
 
 ### KF-480 — The golden-master seed hides inline subtasks [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) (stream Y).
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: golden 02 shows inline subtasks on the In Progress card.
 - ChipFlow: the seed script leaves the column card property for subtasks at its default (hidden), so seeded boards don't match the golden.
@@ -3704,6 +3739,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a board seeded by the golden-master seed script shows the inline subtasks on the In Progress card as golden board/02 does.
 
 ### KF-481 — Quick-add dialog actions are unverified against KanbanFlow [LOW]
+- Status: OPEN — partially fixed in batch-37 d2a466a: the quick-add Members button opens an inline popover and the three save shortcuts work as KanbanFlow's labels say (evidence .dev/evidence/batch-37-20261017/verify-w2-report.md and .dev/evidence/batch-37-20261017/verify-37c-report.md). Labels, Description and More are not captured from KanbanFlow yet; finishing needs a new capture.
 - Status: OPEN — filed 2026-10-17 from verify-f (KF-302 judgement).
 - KanbanFlow: the goldens show only the Members, Labels, Description and More buttons, not what they do.
 - ChipFlow: each saves the task and opens its details; plain Enter in the name field saves and closes.
@@ -3711,6 +3747,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: the quick-add Members, Labels, Description and More buttons and plain Enter behave as in a KanbanFlow capture of the same clicks on the test board.
 
 ### KF-482 — The card avatar ring is a lightened mix, not the card border colour [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-f.
 - KanbanFlow: the avatar ring uses the card's border colour (#59d600 on green).
 - ChipFlow: a lightened mix (rgb 121,224,48 on green).
@@ -3718,6 +3755,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a green card's avatar ring colour is #59d600 (the card border colour), and likewise for each standard colour.
 
 ### KF-483 — The board title colour is #1F2937 instead of #333 [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-f.
 - KanbanFlow: #333.
 - ChipFlow: #1F2937.
@@ -3733,132 +3771,154 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: user CPU time of routes::tests::login_cookie_secure_only_over_https in a debug build is under 0.5 s, and the release binary is byte-identical to a build without the change.
 
 ### KF-485 — Timer panel Start/Stop buttons are larger than KanbanFlow's [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from verify-352.
 - KanbanFlow (goldens timer/14 and timer/22): Start 106x44, Stop 104x44.
 - ChipFlow: both 112x46; the Stop centre sits 2.5 px left of KanbanFlow's.
 - Acceptance: at 1440x612 the idle Start button is 106x44 and the running Stop button 104x44 at the golden's centre (±0.5 px).
 
 ### KF-486 — The overdue strip box overlaps the column's warning line by one row [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-352.
 - KanbanFlow (golden board/02): the strip starts just below the 3 px warning line.
 - ChipFlow: the strip box starts on the warning line's last row (text and bar positions already match).
 - Acceptance: at 1440x612 the overdue strip's top equals the warning line's bottom (no shared pixel row).
 
 ### KF-487 — The collapsed strip's rotated name box is 4 px taller than KanbanFlow's [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-352.
 - KanbanFlow (golden columns/08): name box 20x118.
 - ChipFlow: 20x122.
 - Acceptance: at 1440x612 the collapsed strip's name box is 20x118.
 
 ### KF-488 — Stopping a pomodoro a few seconds in shows no reason menu [LOW]
+- Status: CLOSED 2026-10-17 — behaves as specified on production: a stop under 20 s discards with a toast and no reason menu, ≥20 s shows the menu and logs (evidence .dev/evidence/batch-37-20261017/verify-w2-report.md, KF-488); docs state the 20 s rule.
 - Status: OPEN — filed 2026-10-17 from verify-352; same on the previous production build.
 - KanbanFlow: unknown for very short sessions (sessions under 20 s are discarded).
 - ChipFlow: a stop a few seconds after start shows no "Why did you stop?" menu.
 - Acceptance: a stop at ≥20 s elapsed shows the reason menu; a stop under 20 s discards the session and the docs say so.
 
 ### KF-489 — GET /api/tasks?board_id= returns a task from another board [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from verify-352.
 - KanbanFlow: n/a (API).
 - ChipFlow: the board_id filter on the task list can return a task whose board_id differs.
 - Acceptance: for every task in `GET /api/tasks?board_id=X`, `board_id == X`; a Rust test covers a two-board fixture.
 
 ### KF-490 — Two palette mappings exist for standard colours [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from integrator-352 (code smell).
 - KanbanFlow: n/a.
 - ChipFlow: `get_color` overrides stored hexes from the palette and `palette_hexes` does the same at render time.
 - Acceptance: one function maps a standard colour to its hexes, and every caller uses it (rg finds a single mapping table).
 
 ### KF-491 — The board settings box is shorter than KanbanFlow's [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from verify-u.
 - KanbanFlow (golden settings/02): the General tab's box is 441 px tall at 1440x612.
 - ChipFlow: 416 px (Layout tab 443.6).
 - Acceptance: at 1440x612 the General tab's settings box height is 441 (±1).
 
 ### KF-492 — The last active board can still be archived [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from builder-s2 (KF-407 covered delete only).
 - KanbanFlow: unknown.
 - ChipFlow: archiving the only unarchived board succeeds, leaving no active board.
 - Acceptance: archiving the last unarchived board returns 400 with a message on both the page and the API; a Rust test covers it.
 
 ### KF-493 — update_task validates the colour outside its write transaction [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from builder-s2.
 - KanbanFlow: n/a.
 - ChipFlow: a colour deleted between validation and write can be stored on a task.
 - Acceptance: a Rust test races colour delete against task colour update for 100 rounds and never stores a deleted colour id.
 
 ### KF-494 — GET /api/tasks/{id} omits color_id and completed_at [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from builder-s2.
 - KanbanFlow: n/a.
 - ChipFlow: the task detail view lacks fields that export-data carries.
 - Acceptance: `GET /api/tasks/{id}` includes `color_id` and `completed_at`; OpenAPI and agent-guide.md document them.
 
 ### KF-495 — Editing a task-less time entry cannot keep it task-less [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from builder-s2.
 - KanbanFlow: n/a.
 - ChipFlow: PUT /api/time/entries/{id} on a task-less entry forces a task.
 - Acceptance: PUT on a task-less entry with no task keeps task_id empty and returns 200; a Rust test covers it.
 
 ### KF-496 — Timer log time ranges use an en dash [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from builder-t and verify-t.
 - KanbanFlow (golden timer/20): "5:43 PM - 5:43 PM".
 - ChipFlow: "5:43 PM – 5:43 PM".
 - Acceptance: every `.log-when` text matches `^\d+:\d\d [AP]M - \d+:\d\d [AP]M$`.
 
 ### KF-497 — The timer log toolbar differs from KanbanFlow's [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from verify-t.
 - KanbanFlow (golden timer/20): a 180x30 "Period" select at dialog-left+135 and four 30x30 icon buttons; Entry type at x 710.
 - ChipFlow: a Period label with < and > buttons and five small glyph icons; Entry type at x 733.
 - Acceptance: at 1440x612 the period select is 180x30 at dialog-left+135, the icon buttons are 30x30 and match the golden's four, and Entry type starts at x 710 (±1, after the dialog offset).
 
 ### KF-498 — Task-less sessions are missing from the timer log and break statistics [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from verify-t.
 - KanbanFlow: unknown for task-less breaks.
 - ChipFlow: a task-less 5-minute short break never appears in /api/timer/log, and break time with an activity but no task is not counted in statistics break_activities.
 - Acceptance: a task-less short break with activity_id raises break_activities[].minutes by 5 and appears in /api/timer/log (or the docs state why not, matching KanbanFlow).
 
 ### KF-499 — A stale timer stop can hit a session started in the same second [LOW]
+- Status: OPEN — partially fixed in batch-37 d2a466a: timers carry an in-memory session_id and rapid starts no longer run ahead of the clock (evidence .dev/evidence/batch-37-20261017/verify-x4-report.md), but a started_at-only stop of a same-second session, the web UI's stop path and ids repeating after a restart remain (.dev/evidence/batch-37-20261017/verify-37a-report.md); fixed on fix/server-z1 for the next release.
 - Status: OPEN — filed 2026-10-17 from verify-t (code reading).
 - KanbanFlow: n/a.
 - ChipFlow: `started_at` has 1 s granularity, so a stale stop naming session A stops session B if B started in the same second.
 - Acceptance: start A, then B in the same second; `POST /api/timer/stop {started_at: A}` returns already_stopped:true and B keeps running; a Rust test covers it.
 
 ### KF-500 — The filter panel sits lower and narrower than KanbanFlow's [LOW]
+- Status: CLOSED 2026-10-17 — already met on production 9548374 and unchanged in batch-37 d2a466a: the acceptance check passed on both builds (evidence .dev/evidence/batch-37-20261017/verify-w1-report.md, section "Claimed passing on the baseline").
 - Status: OPEN — filed 2026-10-17 from verify-v.
 - KanbanFlow (golden board/11): 1190,34,250x578 at 1440x612.
 - ChipFlow (production a980a7c): 1195,80,245x532.
 - Acceptance: at 1440x612 `#filter-panel` is 1190,34,250x578 (±1).
 
 ### KF-501 — After deleting the timed task, the open board keeps counting until the next poll [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from verify-351; same on earlier builds.
 - KanbanFlow: n/a.
 - ChipFlow: the pill, tab title and panel keep the deleted task's countdown for up to 15 s.
 - Acceptance: within 1 s of deleting the timed task in the same tab, the pill shows idle and the panel shows "No task selected".
 
 ### KF-502 — The origin check accepts a malformed ":80" origin [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI), .dev/evidence/batch-37-20261017/verify-x3-report.md and .dev/evidence/batch-37-20261017/verify-x4-report.md (stream X).
 - Status: OPEN — filed 2026-10-17 from verify-351 (not exploitable; browsers never send it).
 - KanbanFlow: n/a.
 - ChipFlow: `normalize_origin` strips a ":80" suffix from any origin, so `http://127.0.0.1:3386:80` is accepted.
 - Acceptance: a write with `Origin: http://127.0.0.1:3386:80` gets 403; a Rust test covers it.
 
 ### KF-503 — On an all-collapsed board the 28 px strips stretch [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w1-report.md (stream W1).
 - Status: OPEN — filed 2026-10-17 from verify-r; same on earlier builds.
 - KanbanFlow (responsive css-mechanism): the table uses `width: auto` when every column is collapsed.
 - ChipFlow: each strip stretches to 284 px at 1440.
 - Acceptance: on a board whose columns are all collapsed, every strip is 28 px wide at 1440 and 1920.
 
 ### KF-504 — Escape closes the first open overlay in page order, not the top one [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from builder-u.
 - KanbanFlow: Escape closes the topmost dialog.
 - ChipFlow: with two overlays open, Escape can close the one underneath.
 - Acceptance: with the due dialog open and its alert on top, Escape closes the alert only; with the task modal and a dialog on top, Escape closes the dialog only.
 
 ### KF-505 — The due dialog is a centred 420 px dialog, not KanbanFlow's popover [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from builder-u.
 - KanbanFlow (golden modal/26 area): a 280 px popover anchored to the due field.
 - ChipFlow: a 420 px centred dialog.
 - Acceptance: at 1440x612 the due dialog is 280 px wide and anchored to the due chip as in the golden (position ±2 px).
 
 ### KF-506 — Durations over an hour show as minutes in the timer log and on cards [LOW]
+- Status: RELEASED 2026-10-17 — batch-37, production d2a466a (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T193902Z-before-d2a466a.redb). Blind verification: .dev/evidence/batch-37-20261017/verify-37a-report.md (server/data) and .dev/evidence/batch-37-20261017/verify-37b-report.md (UI) and .dev/evidence/batch-37-20261017/verify-w2-report.md (stream W2).
 - Status: OPEN — filed 2026-10-17 from builder-t; KanbanFlow's format for long sessions not yet captured.
 - KanbanFlow: "1h 25m" style is used in TODAY totals.
 - ChipFlow: a 9000 s entry reads "150m" in the log and "+ 85m" on a card.
