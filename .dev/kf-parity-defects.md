@@ -4253,3 +4253,23 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow: task modal Add > Due date (golden modal/23) opens a 280x441 popover at x 1080, y 58 at 1440x612 with Date/Time, calendar, Target column and Repeat. Subtask ⋮ > Add due date (golden modal/22) opens the 280x350 Date/Time-only popover at modal-left+297, top 104.
 - ChipFlow (batch-39, KF-528): the task Add > Due date path opens the 280x350 subtask layout without Target column or Repeat.
 - Acceptance: `run.mjs --only modal-23-task-due-date` passes, including popBox 1080,58,280x441 and the Target column and Repeat controls present; and the subtask ⋮ > Add due date popover measures 280x350 at modal-left+297, top 104 (±2) with no Target column or Repeat.
+
+### KF-558 — Edit due date calendar day cells are rounded with gaps [LOW]
+- Status: OPEN — filed 2026-10-18 from verify-39 (observation 1, shots/edit-cmp.png in its scratch evidence).
+- KanbanFlow (golden dark/modal/23, modal/23): the day grid is a seamless #f5f5f5 block with square cells and #666 day numbers.
+- ChipFlow (batch-39): cells are rounded with 2 px white gaps and dark text.
+- Acceptance: at 1440x612 on the task Edit due popover, `.duedate-dlg .mt-cal-day` computes border-radius 0, adjacent day cells have a 0 px gap, and day number colour is #666 (rgb(102, 102, 102)).
+
+### KF-559 — The Change task link width depends on the platform's system-ui face [LOW]
+- Status: OPEN — filed 2026-10-18 from verify-39 (observation 2). KF-529 and KF-554 match the golden widths with `font-family: system-ui`, which is the macOS face on the capture machine and a different face elsewhere.
+- Acceptance: `#tp-change-task` and `.kf-general-actions .kf-btn-large` use a font stack whose first available face is the same on macOS and Linux (e.g. a bundled or named face), and the parity harness entries timer-25-pomodoro-running and settings-02-general still pass; or a decision recorded here that macOS is the reference platform.
+
+### KF-560 — graceful_shutdown second-signal test took 9.83 s once under heavy load [MEDIUM]
+- Status: OPEN — filed 2026-10-18 from verify-39 (observation 3). `tests/graceful_shutdown.rs::second_signal_drops_open_requests_at_once` asserted < 1 s and took 9.83 s once at load average 15-25; 20 isolated reruns passed on both 7dc7b79 and 8ec4d30. Not dismissed as flaky: a real second-signal race is not ruled out.
+- Acceptance: the root cause is identified and written here (with a fix if it is a product race), and 50 consecutive runs of `TZ=UTC cargo test --test graceful_shutdown` while a CPU load generator keeps the load average above 15 all pass.
+
+### KF-561 — Task modal subtitle starts 4 px left of KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-18 from verify-39 (observation 4).
+- KanbanFlow (golden modal/01): the "In Progress · Created" subtitle text starts at x 446.
+- ChipFlow (8ec4d30 and batch-39): x 442.
+- Acceptance: at 1440x612 on the payment task modal of the golden-board seed, the subtitle's leftmost dark pixel is at x 446 (±2), and the title position checked by KF-532 is unchanged.
