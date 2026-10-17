@@ -3089,6 +3089,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: let the env token through before setup (or add an API setup endpoint), or correct the docs to say `/setup` comes first.
 
 ### KF-398 — Agent guide and skill describe API behaviour that does not exist [LOW]
+- Status: RELEASED 2026-10-17 — batch-35, production 9476359 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T002529Z-before-9476359.redb; production DB stamped schema version 1). Blind verification: .dev/evidence/batch-35-20261017/verify-35-report.md (integrated release candidate), .dev/evidence/batch-35-20261017/verify-d2-report.md.
 - Status: OPEN — 2026-10-17: most doc corrections shipped in batch-33 (1c0c67a), but verify-c3 found the docs promised a 400 for non-four-digit years, signs and odd separators the binary accepted. The rest is fixed and verified on branch fix/due-followup (7dc6944 behavior, f5be0fe docs; verify-d1 and verify-d2 PASS), pending release.
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-211). Evidence: .dev/evidence/r2-battery-20261016/admin/api-battery.log, .dev/evidence/r2-battery-20261016/admin/api-battery2.log, .dev/evidence/r2-battery-20261016/admin/seed-log.out
 - KanbanFlow: n/a. Contract: AGENTS.md requires `agent-guide.md`, `agents/skill.md` and `agents.json` to stay accurate.
@@ -3159,12 +3160,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: validate the whole request before any write, then apply every write in one redb write transaction, for every task-mutating route.
 
 ### KF-409 — Saving the due dialog unchanged drops the seconds and clears Done [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35, production 9476359 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T002529Z-before-9476359.redb; production DB stamped schema version 1). Blind verification: .dev/evidence/batch-35-20261017/verify-35-report.md (integrated release candidate), .dev/evidence/batch-35-20261017/verify-d1-report.md.
 - Status: OPEN — filed 2026-10-17 by the batch-33 verifier (verify-c3); fix verified on branch fix/due-followup (000c5ff), pending release. Evidence: .dev/evidence/batch-33-20261017/verify-c3-report.md (observation 1)
 - KanbanFlow: re-saving an unchanged due date keeps it.
 - ChipFlow: on a due of `2026-10-20T10:00:59Z` marked done, opening the due dialog and pressing Add unchanged saves `T10:00:00.000Z` and clears due_done.
 - Fix direction: when neither field changed, send the stored due string back unchanged.
 
 ### KF-410 — Saving the due dialog unchanged moves the second occurrence of a repeated hour [LOW]
+- Status: RELEASED 2026-10-17 — batch-35, production 9476359 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T002529Z-before-9476359.redb; production DB stamped schema version 1). Blind verification: .dev/evidence/batch-35-20261017/verify-35-report.md (integrated release candidate), .dev/evidence/batch-35-20261017/verify-d1-report.md.
 - Status: OPEN — filed 2026-10-17 by the batch-33 verifier (verify-c3); fix verified on branch fix/due-followup (000c5ff), pending release. Evidence: .dev/evidence/batch-33-20261017/verify-c3-report.md (observation 2)
 - KanbanFlow: n/a (exact instant should be kept).
 - ChipFlow: in Europe/London, a due of `2026-10-25T01:30:00+00:00` (the second 01:30) re-saved unchanged becomes `00:30Z`, one hour earlier, and due_done clears.
@@ -3191,12 +3194,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: default to 15 for settings not yet saved; keep values a user has saved.
 
 ### KF-414 — Safari cannot read due dates written with a lowercase z [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35, production 9476359 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T002529Z-before-9476359.redb; production DB stamped schema version 1). Blind verification: .dev/evidence/batch-35-20261017/verify-35-report.md (integrated release candidate), .dev/evidence/batch-35-20261017/verify-d3-report.md.
 - Status: OPEN — filed 2026-10-17 by the KF-398 docs verifier (verify-d2); fix verified on branch fix/due-safari (9cfcd03), pending release.
 - KanbanFlow: n/a (cross-browser correctness).
 - ChipFlow: the server stores RFC3339 due values as sent, including a lowercase `t`/`z` or a space separator, which the docs allow. JavaScriptCore returns Invalid Date for a lowercase `z`, so in Safari such dues vanish from the calendar, the date filter, the due dialog prefill and the due report, and an unchanged save in the dialog erases the due date.
 - Fix direction: parse every due value in the client through one helper that normalizes the documented forms.
 
 ### KF-415 — The server never shuts down cleanly, so redb needs crash repair after every restart [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35, production 9476359 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T002529Z-before-9476359.redb; production DB stamped schema version 1). Blind verification: .dev/evidence/batch-35-20261017/verify-35-report.md (integrated release candidate), .dev/evidence/batch-35-20261017/verify-s3-report.md (graceful shutdown with 10 s drain).
 - Status: OPEN — filed 2026-10-17 by the schema-version builder and verifier; fix in progress on branch feat/schema-version (f4b7f95).
 - KanbanFlow: n/a (operations).
 - ChipFlow: `main` has no graceful shutdown, so `systemctl stop` or restart leaves the redb file needing repair on the next open.
@@ -3293,6 +3298,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: decide completion from the server's elapsed time.
 
 ### KF-431 — Due-format tests depend on the host time zone [LOW]
+- Status: RELEASED 2026-10-17 — batch-35, production 9476359 (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T002529Z-before-9476359.redb; production DB stamped schema version 1). Blind verification: .dev/evidence/batch-35-20261017/verify-35-report.md (integrated release candidate); suite passes in UTC, Chicago, Chatham, env -i and a no-zoneinfo Linux sandbox.
 - Status: OPEN — filed 2026-10-16 by several verifiers; fix in progress on branch fix/tz-tests.
 - KanbanFlow: n/a (test suite).
 - ChipFlow: `format_due_card_weekday_near_absolute_far` and `format_due_modal_relative_and_done_marker` fail on any non-UTC host; `format_due_honors_seven_day_window` fails under Pacific/Chatham.
