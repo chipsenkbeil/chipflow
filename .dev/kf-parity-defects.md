@@ -3694,3 +3694,135 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - ChipFlow: `hash_password` and `verify_password` use `Argon2::default()`, and debug builds compile argon2 unoptimised. One login test (`routes::tests::login_cookie_secure_only_over_https`) costs about 3 CPU-s while a pure test costs 0.00 s. The `chipflow-<hash>` unit-test binary costs about 27 CPU-s per run on main and about 150 CPU-s per run on the agentctl branch (more login tests). Its runs used about 1040 CPU-s across the sample window, close to a fifth of all cargo CPU.
 - Fix direction: build argon2 (and blake2) optimised in the dev profile (`[profile.dev.package.argon2] opt-level = 3`), or use cheap Argon2 parameters under `cfg(test)`. Keep the production parameters unchanged.
 - Acceptance: user CPU time of routes::tests::login_cookie_secure_only_over_https in a debug build is under 0.5 s, and the release binary is byte-identical to a build without the change.
+
+### KF-485 — Timer panel Start/Stop buttons are larger than KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-352.
+- KanbanFlow (goldens timer/14 and timer/22): Start 106x44, Stop 104x44.
+- ChipFlow: both 112x46; the Stop centre sits 2.5 px left of KanbanFlow's.
+- Acceptance: at 1440x612 the idle Start button is 106x44 and the running Stop button 104x44 at the golden's centre (±0.5 px).
+
+### KF-486 — The overdue strip box overlaps the column's warning line by one row [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-352.
+- KanbanFlow (golden board/02): the strip starts just below the 3 px warning line.
+- ChipFlow: the strip box starts on the warning line's last row (text and bar positions already match).
+- Acceptance: at 1440x612 the overdue strip's top equals the warning line's bottom (no shared pixel row).
+
+### KF-487 — The collapsed strip's rotated name box is 4 px taller than KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-352.
+- KanbanFlow (golden columns/08): name box 20x118.
+- ChipFlow: 20x122.
+- Acceptance: at 1440x612 the collapsed strip's name box is 20x118.
+
+### KF-488 — Stopping a pomodoro a few seconds in shows no reason menu [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-352; same on the previous production build.
+- KanbanFlow: unknown for very short sessions (sessions under 20 s are discarded).
+- ChipFlow: a stop a few seconds after start shows no "Why did you stop?" menu.
+- Acceptance: a stop at ≥20 s elapsed shows the reason menu; a stop under 20 s discards the session and the docs say so.
+
+### KF-489 — GET /api/tasks?board_id= returns a task from another board [MEDIUM]
+- Status: OPEN — filed 2026-10-17 from verify-352.
+- KanbanFlow: n/a (API).
+- ChipFlow: the board_id filter on the task list can return a task whose board_id differs.
+- Acceptance: for every task in `GET /api/tasks?board_id=X`, `board_id == X`; a Rust test covers a two-board fixture.
+
+### KF-490 — Two palette mappings exist for standard colours [LOW]
+- Status: OPEN — filed 2026-10-17 from integrator-352 (code smell).
+- KanbanFlow: n/a.
+- ChipFlow: `get_color` overrides stored hexes from the palette and `palette_hexes` does the same at render time.
+- Acceptance: one function maps a standard colour to its hexes, and every caller uses it (rg finds a single mapping table).
+
+### KF-491 — The board settings box is shorter than KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-u.
+- KanbanFlow (golden settings/02): the General tab's box is 441 px tall at 1440x612.
+- ChipFlow: 416 px (Layout tab 443.6).
+- Acceptance: at 1440x612 the General tab's settings box height is 441 (±1).
+
+### KF-492 — The last active board can still be archived [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-s2 (KF-407 covered delete only).
+- KanbanFlow: unknown.
+- ChipFlow: archiving the only unarchived board succeeds, leaving no active board.
+- Acceptance: archiving the last unarchived board returns 400 with a message on both the page and the API; a Rust test covers it.
+
+### KF-493 — update_task validates the colour outside its write transaction [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-s2.
+- KanbanFlow: n/a.
+- ChipFlow: a colour deleted between validation and write can be stored on a task.
+- Acceptance: a Rust test races colour delete against task colour update for 100 rounds and never stores a deleted colour id.
+
+### KF-494 — GET /api/tasks/{id} omits color_id and completed_at [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-s2.
+- KanbanFlow: n/a.
+- ChipFlow: the task detail view lacks fields that export-data carries.
+- Acceptance: `GET /api/tasks/{id}` includes `color_id` and `completed_at`; OpenAPI and agent-guide.md document them.
+
+### KF-495 — Editing a task-less time entry cannot keep it task-less [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-s2.
+- KanbanFlow: n/a.
+- ChipFlow: PUT /api/time/entries/{id} on a task-less entry forces a task.
+- Acceptance: PUT on a task-less entry with no task keeps task_id empty and returns 200; a Rust test covers it.
+
+### KF-496 — Timer log time ranges use an en dash [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-t and verify-t.
+- KanbanFlow (golden timer/20): "5:43 PM - 5:43 PM".
+- ChipFlow: "5:43 PM – 5:43 PM".
+- Acceptance: every `.log-when` text matches `^\d+:\d\d [AP]M - \d+:\d\d [AP]M$`.
+
+### KF-497 — The timer log toolbar differs from KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-t.
+- KanbanFlow (golden timer/20): a 180x30 "Period" select at dialog-left+135 and four 30x30 icon buttons; Entry type at x 710.
+- ChipFlow: a Period label with < and > buttons and five small glyph icons; Entry type at x 733.
+- Acceptance: at 1440x612 the period select is 180x30 at dialog-left+135, the icon buttons are 30x30 and match the golden's four, and Entry type starts at x 710 (±1, after the dialog offset).
+
+### KF-498 — Task-less sessions are missing from the timer log and break statistics [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-t.
+- KanbanFlow: unknown for task-less breaks.
+- ChipFlow: a task-less 5-minute short break never appears in /api/timer/log, and break time with an activity but no task is not counted in statistics break_activities.
+- Acceptance: a task-less short break with activity_id raises break_activities[].minutes by 5 and appears in /api/timer/log (or the docs state why not, matching KanbanFlow).
+
+### KF-499 — A stale timer stop can hit a session started in the same second [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-t (code reading).
+- KanbanFlow: n/a.
+- ChipFlow: `started_at` has 1 s granularity, so a stale stop naming session A stops session B if B started in the same second.
+- Acceptance: start A, then B in the same second; `POST /api/timer/stop {started_at: A}` returns already_stopped:true and B keeps running; a Rust test covers it.
+
+### KF-500 — The filter panel sits lower and narrower than KanbanFlow's [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-v.
+- KanbanFlow (golden board/11): 1190,34,250x578 at 1440x612.
+- ChipFlow (production a980a7c): 1195,80,245x532.
+- Acceptance: at 1440x612 `#filter-panel` is 1190,34,250x578 (±1).
+
+### KF-501 — After deleting the timed task, the open board keeps counting until the next poll [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-351; same on earlier builds.
+- KanbanFlow: n/a.
+- ChipFlow: the pill, tab title and panel keep the deleted task's countdown for up to 15 s.
+- Acceptance: within 1 s of deleting the timed task in the same tab, the pill shows idle and the panel shows "No task selected".
+
+### KF-502 — The origin check accepts a malformed ":80" origin [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-351 (not exploitable; browsers never send it).
+- KanbanFlow: n/a.
+- ChipFlow: `normalize_origin` strips a ":80" suffix from any origin, so `http://127.0.0.1:3386:80` is accepted.
+- Acceptance: a write with `Origin: http://127.0.0.1:3386:80` gets 403; a Rust test covers it.
+
+### KF-503 — On an all-collapsed board the 28 px strips stretch [LOW]
+- Status: OPEN — filed 2026-10-17 from verify-r; same on earlier builds.
+- KanbanFlow (responsive css-mechanism): the table uses `width: auto` when every column is collapsed.
+- ChipFlow: each strip stretches to 284 px at 1440.
+- Acceptance: on a board whose columns are all collapsed, every strip is 28 px wide at 1440 and 1920.
+
+### KF-504 — Escape closes the first open overlay in page order, not the top one [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-u.
+- KanbanFlow: Escape closes the topmost dialog.
+- ChipFlow: with two overlays open, Escape can close the one underneath.
+- Acceptance: with the due dialog open and its alert on top, Escape closes the alert only; with the task modal and a dialog on top, Escape closes the dialog only.
+
+### KF-505 — The due dialog is a centred 420 px dialog, not KanbanFlow's popover [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-u.
+- KanbanFlow (golden modal/26 area): a 280 px popover anchored to the due field.
+- ChipFlow: a 420 px centred dialog.
+- Acceptance: at 1440x612 the due dialog is 280 px wide and anchored to the due chip as in the golden (position ±2 px).
+
+### KF-506 — Durations over an hour show as minutes in the timer log and on cards [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-t; KanbanFlow's format for long sessions not yet captured.
+- KanbanFlow: "1h 25m" style is used in TODAY totals.
+- ChipFlow: a 9000 s entry reads "150m" in the log and "+ 85m" on a card.
+- Acceptance: a 9000 s entry reads "2h 30m" in the log and the card's live part reads "+ 1h 25m" for 85 minutes (or KanbanFlow's captured format).
