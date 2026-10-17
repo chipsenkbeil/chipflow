@@ -4261,6 +4261,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: at 1440x612 on the task Edit due popover, `.duedate-dlg .mt-cal-day` computes border-radius 0, adjacent day cells have a 0 px gap, and day number colour is #666 (rgb(102, 102, 102)).
 
 ### KF-559 — The Change task link width depends on the platform's system-ui face [LOW]
+- Status: CLOSED — decision (autopilot, 2026-10-18, listed for owner review): macOS is the reference platform. The KanbanFlow goldens were captured in Chrome on macOS, the owner uses ChipFlow on macOS, and the parity harness runs there; system-ui matches the captured widths on that platform. Reopen if ChipFlow must match pixel widths on Linux or Windows browsers.
 - Status: OPEN — filed 2026-10-18 from verify-39 (observation 2). KF-529 and KF-554 match the golden widths with `font-family: system-ui`, which is the macOS face on the capture machine and a different face elsewhere.
 - Acceptance: `#tp-change-task` and `.kf-general-actions .kf-btn-large` use a font stack whose first available face is the same on macOS and Linux (e.g. a bundled or named face), and the parity harness entries timer-25-pomodoro-running and settings-02-general still pass; or a decision recorded here that macOS is the reference platform.
 
