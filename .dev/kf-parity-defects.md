@@ -4074,6 +4074,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: at 1440x612 `.duedate-dlg` computes box-shadow `rgba(0, 0, 0, 0.18) 0px 2px 9px 4px`, `.dlg-title` background #f4f4f4, calendar day cells #f5f5f5, and `#dd-repeat` is 15x15.
 
 ### KF-528 — The "Add due date" popover has the Edit layout and size [LOW]
+- Status: INVALID — superseded by KF-557 (2026-10-17). Golden modal/22 is the subtask ⋮ > Add due date popover (INVENTORY: "Subtask ⋮ > Add due date"); the task Add > Due date popover is golden modal/23, which keeps Target column and Repeat (INVENTORY: "Task due date adds Target column + Repeat"). The batch-39 change for KF-528 moved the task popover to the subtask geometry.
 - Status: OPEN — filed 2026-10-17 from verify-37b.
 - KanbanFlow (golden modal/22): adding a due date opens a 280x350 popover at modal-left+297, top 104, with Date/Time, the calendar and Add only.
 - ChipFlow: 280x440 at the Edit position, including Target column and Repeat.
@@ -4246,3 +4247,9 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow (golden dark board/02): cells have a 1 px #222 bottom and left border; the subtask checkbox radius is 2 px.
 - ChipFlow: no bottom border, transparent left border, 3 px checkbox radius.
 - Acceptance: `run.mjs --only board-dark-02` passes.
+
+### KF-557 — The task "Add due date" popover uses the subtask popover's layout [LOW]
+- Status: OPEN — filed 2026-10-17 from builder-h2's harness report (modal-23 popBox) and the golden INVENTORY.
+- KanbanFlow: task modal Add > Due date (golden modal/23) opens a 280x441 popover at x 1080, y 58 at 1440x612 with Date/Time, calendar, Target column and Repeat. Subtask ⋮ > Add due date (golden modal/22) opens the 280x350 Date/Time-only popover at modal-left+297, top 104.
+- ChipFlow (batch-39, KF-528): the task Add > Due date path opens the 280x350 subtask layout without Target column or Repeat.
+- Acceptance: `run.mjs --only modal-23-task-due-date` passes, including popBox 1080,58,280x441 and the Target column and Repeat controls present; and the subtask ⋮ > Add due date popover measures 280x350 at modal-left+297, top 104 (±2) with no Target column or Repeat.
