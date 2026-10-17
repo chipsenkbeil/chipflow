@@ -464,6 +464,7 @@
 - ChipFlow: one combined list; enable/disable is a per-row "Enabled in picker" checkbox (templates/board_colors.html:14–61).
 
 ### KF-082 — Reorder colors by drag handles, not ▲▼ buttons
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-192); first status line for this section, which the admin battery found recorded as fixed. Disable and Enable work, but drag reorder does nothing before or after reload: `Sortable.get(tbody)` is undefined because the inline script runs before the deferred `Sortable.min.js` loads (`templates/base.html:9`). Fix direction: initialize the sortable after load, or move it into app.js. Severity MEDIUM. Evidence: .dev/evidence/r2-battery-20261016/admin/shots/colors-followup.log.json
 - Surface: settings · Category: divergent · Severity: medium
 - KanbanFlow: ⋮⋮ drag handles on each enabled-color row reorder the palette (a8 screenshot).
@@ -657,6 +658,7 @@
 - Not a duplicate: KF-080 covers the missing settings shell/nav; the per-tab title behavior is a detail it doesn't capture.
 
 ### KF-111 — Premium-gated settings nav items (Custom fields, Custom roles) render dimmed in KanbanFlow [LOW | divergent | Settings]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-185); first status line for this section. The settings nav now exists, but in the KF-331 reference KanbanFlow dims four items (Custom fields, Custom roles, API & Webhooks, Add task from email; grey ink 108/105/135/157 px wide) with no badges, while ChipFlow adds "Premium" pills to the first two (ink 168/165 px) and renders the last two at full `#444444`. Fix direction: drop the pills and dim all four, or record the deliberate difference for the two ChipFlow implements. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-185-dimmed-nav.png
 - KanbanFlow reference: a8 screenshot's left nav shows "Custom fields" and "Custom roles" grayed out (premium-gated); other nav items render at full weight.
 - ChipFlow behavior: No Board settings nav exists at all.
@@ -2104,6 +2106,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Evidence: `.dev/evidence/kf-drafts/kf-draft-v5-GM-169.md`.
 
 ### KF-296 â Color filter says "2 Pomodori", KanbanFlow says "2 Pomodoros" [LOW | OPEN | Filter panel]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — reopened 2026-10-16: KanbanFlow spells these labels "Pomodori", not "Pomodoros". Read live on the owner's KanbanFlow General board (the Pomodoro starter): Settings > Colors shows "1 Pomodoro (Default)", "2 Pomodori", "3 Pomodori", ">3 Pomodori", and the filter panel Color select lists "1 Pomodoro | 2 Pomodori | 3 Pomodori | >3 Pomodori"; the KF-331 capture agrees. This defect's premise ("KanbanFlow says 2 Pomodoros") came from GM-125, whose evidence is lost, so the shipped rename and backfill to "Pomodoros" are wrong, and databases that ran the backfill now mix spellings with boards made from the corrected Pomodoro template (KF-372). Fix direction: restore "Pomodori" (one-time backfill of exactly the strings this fix wrote) everywhere the labels appear. Evidence: .dev/evidence/kf296-reopen-20261016/
 - Status: RELEASED — Round-10 deploy c559e90c (Pomodoros plural labels + one-time backfill) — 2026-10-07T07:45Z
 - Status: VERIFIED — verified by dale-vm 2026-10-07T07:33Z; worktree ~/workspace/wt-KF-296; commit 46efaab; root-cause confirmed + migration tested + L0 green
@@ -2764,6 +2767,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: either reject non-RFC3339 datetimes at the API boundary or make the renderer tolerate bare local datetimes.
 
 ### KF-349 — Report pages have no dark-mode variants (low-contrast text on dark body) [LOW | OPEN | Reports]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — reopened 2026-10-16 by the R2 readiness battery (R2-222): `body.dark` is never set on any report page. `BoardChrome.init` returns before `restorePrefs()` when the page has no `.board-wrap`, so the dark CSS this release shipped never applies on `/timer/statistics`, `/timer/log` or any board report page. Fix direction: restore the dark preference on every page. Severity LOW. Evidence: .dev/evidence/r2-battery-20261016/admin/shots/dark-mode.log.json
 - Status: RELEASED 2026-10-12T04:25Z — built, independently verified, and deployed to production 5244f3c: report pages dark-mode variants: body.dark-scoped CSS covering the full report surface (measured WCAG AA). Supersedes older status lines below.
 - Status: OPEN — filed 2026-10-11 by Dale from the batch-20 verifier's residual note.
@@ -2819,6 +2823,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: set column body background to #ffffff and column header to #ebebeb. Verify no other surface depended on the grey.
 
 ### KF-356 — Board settings Colors tab content differs from KanbanFlow inside the settings container [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-186): Colors tab content diff 258142/584100 px against the KF-331 reference after shift compensation. Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-186-colors-content.png
 - Status: OPEN — filed 2026-10-16 by the KF-331 verifier (ruling on builder call 2: content inside the container is outside KF-331's chrome scope). Evidence: .dev/evidence/kf331-verify-pass1-20261016.md
 - KanbanFlow (`.dev/evidence/kf331-kanbanflow-settings-colors-recovered-20261016.png`): "Enabled colors" heading sits on one line with the "Add custom color", "Set default color" and "Copy from board" buttons; colors render as a table with a `#f5f5f5` header row (Color / Name / Actions), `#dddddd` row rules and Edit / Disable as bordered buttons; intro box face `#d9edf7`, border `#bce8f1`.
@@ -2826,6 +2831,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: rebuild the Colors tab content as KanbanFlow's table layout and info-box palette, measured against the reference above at a 1905 px layout viewport.
 
 ### KF-357 — Board settings page lacks the global dark top bar [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — confirmed 2026-10-16 by the R2 readiness battery (R2-183, R2-184): KanbanFlow's `#333333` bar spans y 0-33, ChipFlow has none (diff 64770/64770 px). Shifted 34 px down, the settings shell is otherwise pixel-exact (nav diff 0/49440, H1 0/27060); the one other difference is the "View board" chevron, about 1 px lower (11x16 box, max delta 85). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-183-184-shell.png, .dev/evidence/r2-battery-20261016/pixel/crops/R2-183-chevron.png, .dev/evidence/r2-battery-20261016/pixel/measure/K2.txt
 - Status: OPEN — filed 2026-10-16 by the KF-331 verifier (ruling on builder call 3: not a KF-331 regression, the page never had the bar). Evidence: .dev/evidence/kf331-verify-pass1-20261016.md
 - KanbanFlow (`.dev/evidence/kf331-kanbanflow-settings-colors-recovered-20261016.png`): the 34 px dark top bar (Boards button, centered logo, notification / help / avatar on the right) sits above the board settings page, and the settings container starts 40 px below it (y 74).
@@ -2898,6 +2904,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: render the side panel with KanbanFlow's groups, switch colour and Get Premium button, and decide where "Save board as template" lives.
 
 ### KF-368 — Delete board page does not use KanbanFlow's settings chrome [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (pixel, R2-199). Evidence: .dev/evidence/r2-battery-20261016/pixel/crops/R2-199-delete.png, .dev/evidence/r2-battery-20261016/pixel/measure/J.txt
 - KanbanFlow: global dark top bar, `#D3E8F2` page, a 600 px box (x 660-1259) with an `#E8E8E8` title band and centered "Delete board: <name>" (314x21), an `#F2DEDE` alert (y 131-242) with three paragraphs, Cancel on the left, Delete board `#D9534F` then Archive board `#2185D0` on the right, and a `#333333` site footer (y 970-999).
 - ChipFlow: a page-specific "ChipFlow - Delete board" bar, `#EEF0F3` page, a white box with a red left-aligned title (261x15), no alert box, Cancel / Archive `#2563EB` / Delete `#DC2626`, no footer.
@@ -2929,6 +2936,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: restore the four renamed colours in `pomodoro_template_snapshot` and disable the rest.
 
 ### KF-373 — Dark mode makes card, column, modal and timer settings text unreadable [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-219, R2-220, R2-221). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/dark-mode-01-board.png, .dev/evidence/r2-battery-20261016/admin/shots/dark-mode-02-modal.png, .dev/evidence/r2-battery-20261016/admin/shots/dark-timer-settings-01-timer-settings.png
 - KanbanFlow: no dark-mode capture. Contract: KF-349 adopted WCAG AA for dark mode.
 - ChipFlow: on the board, card titles render rgb(229,231,235) on the pastel card faces (contrast 1.02-1.05), column names are dark on `#1f2937`, the board name is light on light grey, and count badges vanish: 36 of 69 text nodes fall below 3:1. In the task modal the title, subtasks and estimate are 1.0:1. In the timer settings modal select values are light grey on white. The timer popup is fine. This is separate from the accepted white-column-body gap (HANDOFF R4).
@@ -3063,12 +3071,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: implement saving and recalling filter bookmarks, or remove the label.
 
 ### KF-394 — Dialog Cancel, × and Close buttons do nothing on the Colors tab and the API tokens page [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-188, R2-191, R2-204). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/bs-colors.log.json, .dev/evidence/r2-battery-20261016/admin/shots/bs-colors-03-edit-after-close-attempts.png, .dev/evidence/r2-battery-20261016/admin/shots/us-tokens.log.json
 - KanbanFlow: the Edit colour dialog (KF-084) and the premium prompt (KF-085) close from their own buttons. Contract for the ChipFlow-only token page: KF-146 and the template's Cancel button.
 - ChipFlow: Colors tab Edit's Cancel and ×, and the premium dialog's Close, use `data-close-dlg`, which the page wires only for the Set default and Copy dialogs, while app.js handles only `data-close-dialog`. On `/settings` the generic `[data-close-dialog]` handler is not active, so the token Revoke confirm's Cancel does nothing. Escape (and backdrop clicks) still close all three.
 - Fix direction: use one attribute (`data-close-dialog`) and register its handler on every page.
 
 ### KF-395 — Copy from board "pick a board" error is hidden under the overlay [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-g-report.md and .dev/evidence/batch-351-20261017/verify-g2-report.md (stream G).
 - Status: OPEN — filed 2026-10-16 by the R2 readiness battery (admin, R2-190). Evidence: .dev/evidence/r2-battery-20261016/admin/shots/bs-colors-06-copy-nopick.png
 - KanbanFlow: no capture of this state. Contract: KF-083's Copy from board action.
 - ChipFlow: with no board picked, the error is written into `#bc-error` on the page behind the overlay, so the click appears to do nothing. Copying with a board picked works.
@@ -3232,66 +3242,77 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Fix direction: set `completed_at` when a task is created in an is_done column.
 
 ### KF-420 — Cookie-authenticated writes are accepted from other origins on the same site [HIGH]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-x-report.md and .dev/evidence/batch-351-20261017/verify-x2-report.md (hotfix).
 - Status: OPEN — filed 2026-10-16 by the agentctl device-pairing verifier (verify-i2b); fix built on branch fix/csrf-origin (3106dbd), in blind verification; the owner signed off on deploying it after verification.
 - KanbanFlow: n/a (security).
 - ChipFlow: the session cookie is `SameSite=Lax` with no CSRF token or Origin check. Production shares the site chip.network with other services, so a page on any `*.chip.network` host can auto-submit a form POST that carries the cookie (verified: a form from 127.0.0.1:3999 changed settings and approved a device pairing).
 - Fix direction: refuse cookie-authenticated state-changing requests the browser marks cross-origin (Sec-Fetch-Site, else Origin vs the server's own origin); Bearer clients unaffected.
 
 ### KF-421 — Task moves write back stale neighbour rows and lose concurrent writes [HIGH]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-x-report.md and .dev/evidence/batch-351-20261017/verify-x2-report.md (hotfix).
 - Status: OPEN — filed 2026-10-16 by the agentctl claims verifier (verify-i2a); fix built on branch fix/csrf-origin (a20d03d), in blind verification.
 - KanbanFlow: n/a (data integrity).
 - ChipFlow: moves and reorders read the neighbouring tasks before the redb write transaction and write those copies back; a write committed in between is lost (44 of 200 successful PATCHes lost on production code).
 - Fix direction: do every read a move depends on inside the write transaction; audit other renumbering functions.
 
 ### KF-422 — Column PATCH saves part of a request it rejects [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-x-report.md and .dev/evidence/batch-351-20261017/verify-x2-report.md (hotfix).
 - Status: OPEN — filed 2026-10-16 by verify-i2a; fix built on branch fix/csrf-origin (1e59286), in blind verification.
 - KanbanFlow: n/a.
 - ChipFlow: `PATCH /api/columns/{id}` with a valid name and an invalid wip_limit returns 400 but renames the column; an invalid config_json still flips is_done.
 - Fix direction: validate the whole request, then write once.
 
 ### KF-423 — A subtask update or delete that returns 404 still writes [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-x-report.md and .dev/evidence/batch-351-20261017/verify-x2-report.md (hotfix).
 - Status: OPEN — filed 2026-10-16 by verify-i2a; fix built on branch fix/csrf-origin (7969f65), in blind verification.
 - KanbanFlow: n/a.
 - ChipFlow: editing or deleting an unknown subtask returns 404 but commits a write to the task.
 - Fix direction: a 404 commits nothing.
 
 ### KF-424 — Break panel differs from KanbanFlow [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by the timer verifier (verify-e2) from the local golden set (timer/27); fix in progress on branch fix/timer-goldens.
 - KanbanFlow: during a break the panel keeps the title "Pomodoro", the label reads "Break time", a green "▶ Start" button skips to the next pomodoro, and the task row keeps its ×.
 - ChipFlow: "Short break"/"Long break", "Time left", a Stop button, no ×.
 - Fix direction: match the golden.
 
 ### KF-425 — The panel leaves the finished-break state instead of waiting at "Break time 00:00" [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/29); fix in progress on branch fix/timer-goldens.
 - KanbanFlow: after a break ends the panel stays on "Break time 00:00" with Start.
 - ChipFlow: it returns to "Time until break 25:00".
 - Fix direction: match the golden.
 
 ### KF-426 — Header timer chip during a break lacks the green play icon [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/28); fix in progress on branch fix/timer-goldens.
 - KanbanFlow: the header chip shows a green ▶ during a break.
 - ChipFlow: not shown.
 - Fix direction: match the golden.
 
 ### KF-427 — Waiting state does not blink [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/26); fix in progress on branch fix/timer-goldens.
 - KanbanFlow: while a finished pomodoro waits at 00:00, the tab title and the clock alternate "00:00" and "--------".
 - ChipFlow: a steady "00:00".
 - Fix direction: blink as KanbanFlow does.
 
 ### KF-428 — Timer log day header and stop-reason quotes differ [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by verify-e2 (golden timer/20); fix in progress on branch fix/timer-goldens.
 - KanbanFlow: the header reads "Today 30s" (total beside the date, no em-dash, no count); reasons are quoted "Email".
 - ChipFlow: "… — 0 Pomodoros", counts that include stopped pomodori, and ‘Email’.
 - Fix direction: match the golden.
 
 ### KF-429 — Task border colours differ from KanbanFlow's theme values [LOW]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by verify-e2; fix in progress on branch fix/timer-goldens.
 - KanbanFlow: yellow taskBorderColor is #F5CC00 (theme variables in the local golden set).
 - ChipFlow: #EECD45; other border colours unchecked.
 - Fix direction: take every taskBorderColor from KanbanFlow's theme table.
 
 ### KF-430 — The server trusts a client's early "completed" flag on timer stop [MEDIUM]
+- Status: RELEASED 2026-10-17 — batch-35.1, production 657ec5e (homelab pin; green-box :3000 and public /api/v1/version report it; served app.js/style.css sha256 match the tree; DB copied before deploy to /var/lib/chipflow-backups/chipflow-20261017T022056Z-before-657ec5e.redb). Blind verification: .dev/evidence/batch-351-20261017/verify-351-report.md (integrated release candidate, incl. full UI sweep in light and dark), .dev/evidence/batch-351-20261017/verify-e4-report.md and .dev/evidence/batch-351-20261017/verify-e5-report.md (timer goldens).
 - Status: OPEN — filed 2026-10-16 by verify-e2; fix in progress on branch fix/timer-goldens.
 - KanbanFlow: n/a (integrity).
 - ChipFlow: `POST /api/timer/stop {"completed":true}` after 2 minutes logs a completed pomodoro and counts toward the long-break cycle.
