@@ -7,7 +7,8 @@ overwrite this file — append only.
 ## Hard rules (from Chip, 2026-09-28)
 
 - Rust single standalone binary. Pure-Rust redb storage (no SQL, no C
-  dependencies, no migrations, no Docker requirement).
+  dependencies, no Docker requirement) with an additive schema guarded
+  by `SCHEMA_VERSION` (see AGENTS.md).
 - The existing redb database layer stays; extend it, don't redesign it.
 - Internal implementation may differ from KanbanFlow. The user-facing
   experience — navigation, visuals, layout, controls, interactions — must
