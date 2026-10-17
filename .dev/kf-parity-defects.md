@@ -3998,6 +3998,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: stopping a running stopwatch from the panel ends it with no reason menu, and the entry is logged.
 
 ### KF-517 — Deleting a task reports a failed request in the browser [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — partially fixed in batch-38 8ec4d30: task delete (card menu, modal, timer menu), lane move and lane delete from the lane menu now read the response before reloading (0 aborted requests). The layout-view drag reorder of columns and lanes still reloads first (static/app.js Sortable onEnd), and so may Add-column placement and Copy here (.dev/evidence/batch-38-20261017/verify-38a-report.md, .dev/evidence/batch-38-20261017/verify-38b-report.md).
 - Status: OPEN — filed 2026-10-17 from several verifiers; same on earlier builds.
 - KanbanFlow: n/a.
@@ -4068,12 +4069,14 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: opening the timer log selects "This + Last week" and fetches that range.
 
 ### KF-527 — The Edit due date popover's styling differs from KanbanFlow's [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-37b (geometry already matches).
 - KanbanFlow (golden dark/modal/23): shadow rgba(0,0,0,0.18) 0 2px 9px 4px, header band #f4f4f4, calendar day cells #f5f5f5, Repeat checkbox 15x15.
 - ChipFlow: shadow rgba(0,0,0,0.5) 0 16px 48px, no header fill, no day-cell fill, checkbox 17.6 px.
 - Acceptance: at 1440x612 `.duedate-dlg` computes box-shadow `rgba(0, 0, 0, 0.18) 0px 2px 9px 4px`, `.dlg-title` background #f4f4f4, calendar day cells #f5f5f5, and `#dd-repeat` is 15x15.
 
 ### KF-528 — The "Add due date" popover has the Edit layout and size [LOW]
+- Status: INVALID — its change shipped in batch-39 (7f7a63f); KF-557 replaces it for the task path in batch-40.
 - Status: INVALID — superseded by KF-557 (2026-10-17). Golden modal/22 is the subtask ⋮ > Add due date popover (INVENTORY: "Subtask ⋮ > Add due date"); the task Add > Due date popover is golden modal/23, which keeps Target column and Repeat (INVENTORY: "Task due date adds Target column + Repeat"). The batch-39 change for KF-528 moved the task popover to the subtask geometry.
 - Status: OPEN — filed 2026-10-17 from verify-37b.
 - KanbanFlow (golden modal/22): adding a due date opens a 280x350 popover at modal-left+297, top 104, with Date/Time, the calendar and Add only.
@@ -4081,60 +4084,70 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: from the task modal's Add menu → Due date, the popover is 280x350 at modal-left+297, top 104 (±2) and shows no Target column or Repeat controls (or a KanbanFlow capture shows otherwise).
 
 ### KF-529 — The timer panel's "Change task" link is narrower than KanbanFlow's [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-37b.
 - KanbanFlow (golden timer/22): "Change task" 77x16 at x 1083 (font 13.33 px).
 - ChipFlow: 73x16 at x 1085.5 (13 px).
 - Acceptance: at 1440x612 `#tp-change-task` is 77x16 at x 1083 (±1).
 
 ### KF-530 — The overdue strip's text box starts one row above KanbanFlow's [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-37b (low confidence; text and bar pixels match).
 - KanbanFlow (golden board/02): overdueInd box at y 119, 27 px tall.
 - ChipFlow: `.columnOverdue-text` at y 118.
 - Acceptance: at 1440x612 `.columnOverdue-text` top equals the warning line's bottom (119).
 
 ### KF-531 — The standalone timer log page opens on "Last 30 days" [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38b (KF-526 changed only the board's dialog).
 - KanbanFlow (golden timer/20): the period defaults to "This + Last week".
 - ChipFlow: `/timer/log` defaults to "Last 30 days".
 - Acceptance: opening `/timer/log` selects "This + Last week" and fetches that range.
 
 ### KF-532 — The task modal's head sits higher than KanbanFlow's [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38b and builder-z2.
 - KanbanFlow (goldens modal/01 and modal/27, modal top y 25): title first-line centre y 69, subtitle y 95, close × centre y 45, no separator line under the head.
 - ChipFlow: title first line y 54, subtitle ~14 px higher, × centre y 51.6, and a separator line under the head.
 - Acceptance: at 1440x612 for the modal/27 task, the title's first-line centre is y 69 (±2), the subtitle y 95 (±2), the × centre y 45 (±2), and no border is drawn under the head.
 
 ### KF-533 — The task modal's property grid rows are farther apart than KanbanFlow's [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38b.
 - KanbanFlow (golden modal/01): row pitch 58 px; Time spent label at x 819; a "+" add button beside the labels cell.
 - ChipFlow: row pitch 66 px; Time spent at x 806.6; no "+" button.
 - Acceptance: for the golden's payment task at 1440x612, row-2 label y minus row-1 label y is 58 (±2), the Time spent label x is 819 (±2), and the "+" button is present where the golden shows it.
 
 ### KF-534 — Stopwatch entries are logged as interrupted [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38b.
 - KanbanFlow: a stopwatch has no interruption concept.
 - ChipFlow: a stopwatch stopped from the panel logs `interrupted:true` with a null reason.
 - Acceptance: a stopwatch entry logged through `POST /api/timer/stop` has `interrupted:false`; a Rust test covers it.
 
 ### KF-535 — The browser logs a 404 for a stale timer stop [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38b; same on earlier builds.
 - KanbanFlow: n/a.
 - ChipFlow: a stop for an already-ended session from a tab that has no session id returns 404 and shows as a console error.
 - Acceptance: every stop the web UI sends carries session_id or started_at, and a stale stop returns 200 `already_stopped:true` with no console error.
 
 ### KF-536 — Applying an old template can create a repeat without a due date [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38a.
 - KanbanFlow: n/a.
 - ChipFlow: `apply_template` copies `due_repeat` without checking `due_at`, so a snapshot saved before KF-448 creates an orphan repeat until the next restart (production has none).
 - Acceptance: applying a snapshot task with `due_repeat` set and `due_at` null yields a task with `due_repeat` null; a Rust test covers it.
 
 ### KF-537 — The new-board name limit counts UTF-16 units in the page [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38a.
 - KanbanFlow: n/a.
 - ChipFlow: `maxlength="100"` counts UTF-16 units, so a 60-emoji name that the server accepts (it counts characters) cannot be typed at /boards/new.
 - Acceptance: a 60-emoji name creates a board from /boards/new; a 101-character ASCII name is still refused with "Board name must be 1-100 characters."
 
 ### KF-538 — The schema docs still describe version 2 as unreleased [LOW]
+- Status: RELEASED — batch-39, main 7f7a63f, live on green-box 2026-10-18 (verify-39 PASS; evidence .dev/evidence/batch-39-20261018/).
 - Status: OPEN — filed 2026-10-17 from verify-38a (v2 shipped in 9548374).
 - KanbanFlow: n/a (docs).
 - ChipFlow: src/db.rs says "Until version 2 ships… replaces the last SCHEMA_FINGERPRINTS entry" and "stays editable until version 2 ships", inviting an edit to a released fingerprint.
