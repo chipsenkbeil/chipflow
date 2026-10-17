@@ -3480,165 +3480,193 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow: column width = (viewport − 20) / N, min 220 px, no max. Below 220·expanded + 28·collapsed (+130 with swimlanes) + 20, columns fix at 220 px and only the board region scrolls. The top bar, board header and legend never scroll; the legend spans the viewport in 8 equal items. Reference: the local responsive golden set (README there).
 - ChipFlow: columns stop at a 254 px minimum, the Done column goes off screen with page scroll, and scrolling right moves the legend with the board, leaving a gap at its right.
 - Fix direction: share width as KanbanFlow does, scroll only the board region below the breakpoint, and pin the legend outside the scroll area.
+- Acceptance: on the golden-master board (5 columns, legend on) column width equals the KanbanFlow responsive dump at 1920, 1440, 1280, 1120 (220 px, no scroll), 1024 (220 px, board region scrolls 96 px) and 640 (layout 700 px); the document never scrolls; after scrolling the board fully right the top bar, board header and legend stay at x=0 with full width.
 
 ### KF-458 — Several database writes check, then act in separate transactions [MEDIUM]
 - Status: OPEN — filed 2026-10-17 from the KF-421 hotfix verification (verify-x).
 - KanbanFlow: n/a.
 - ChipFlow: `delete_color`, `update_color` (default flag), `create_task` (max position), `create_entry` (task check), `copy_colors` (source read), `ensure_default_swimlane` and `apply_template` read state outside the write transaction that acts on it, so concurrent requests can interleave (duplicate positions, two defaults, a colour copied mid-change).
 - Fix direction: read inside the same write transaction, as KF-421 did for task moves.
+- Acceptance: a Rust test per listed function runs the conflicting operations concurrently (at least 100 rounds) and finds no duplicate positions, exactly one default colour, and no partial copy; each test fails on the old code.
 
 ### KF-459 — A cross-board move keeps the source board's colour id [LOW]
 - Status: OPEN — filed 2026-10-17 from the KF-421 hotfix verification (verify-x).
 - KanbanFlow: a moved task takes a colour that exists on the target board.
 - ChipFlow: the task keeps a colour id that belongs to the source board, so the target board renders it with no matching colour.
 - Fix direction: map the colour to the target board's colour of the same standard colour, or its default.
+- Acceptance: after moving a task to another board, GET /api/tasks/{id} returns a color_id that belongs to the target board (same standard colour, or the target default); a Rust test covers it.
 
 ### KF-460 — A manual time entry is matched to a task by name across boards [MEDIUM]
 - Status: OPEN — filed 2026-10-17 from the KF-421 hotfix verification (verify-x).
 - KanbanFlow: a time entry belongs to the task it was added on.
 - ChipFlow: manual time entry resolution matches by task name, so two tasks with the same name on different boards can receive each other's time.
 - Fix direction: carry and match the task id.
+- Acceptance: with two same-named tasks on different boards, a manual time entry added on task A appears only in A's time log; a Rust test covers it.
 
 ### KF-461 — The timer log modal is styled differently from KanbanFlow's [MEDIUM]
 - Status: OPEN — filed 2026-10-17 from the timer-golden verifications (verify-e4, verify-e5).
 - KanbanFlow (golden timer/20): a 660 px modal with white rows, dashed separators, italic 11 px #ff0000 status text, and a row dot in the task's colour.
 - ChipFlow: a 1080 px modal; rows render as dark navy cards (#1f2937, from an unscoped `.log-entry` rule) even in light mode, with a "P" badge, 13 px non-italic #f87171 status, and a status-coloured dot (#f59e0b) instead of the task colour (#f5cc00 for yellow).
 - Fix direction: scope the log-entry styles and match golden 20's geometry and colours.
+- Acceptance: at 1440x612 the timer log modal is 660 px wide; rows have a white background and dashed separators; status text is italic 11 px #ff0000; a yellow task's row dot is #f5cc00 (golden timer/20 styles); no element in the modal has a dark background in light mode.
 
 ### KF-462 — The timer chip is restyled in dark mode [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-e5.
 - KanbanFlow (dark golden 22): the chip keeps #484848 in dark mode.
 - ChipFlow: `body.dark .timer-pill` renders the idle and break chip #1f2937 with #e5e7eb digits.
 - Fix direction: leave the chip's colours unthemed, as KanbanFlow does.
+- Acceptance: with body.dark the idle and break timer chip background is #484848 and its digits #ffffff (dark golden timer/22).
 
 ### KF-463 — The timer chip is smaller than KanbanFlow's [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-e5.
 - KanbanFlow (golden timer/28): the chip is 145x34 with 20 px bold digits, and its icon starts about 17 px in.
 - ChipFlow: 96x32 with 13.6 px digits, the icon inset 11 px.
 - Fix direction: size the chip to the golden (with KF-233/239, which move the chip into the board header).
+- Acceptance: the timer chip box is 145x34 with 20 px bold digits and its icon starts 17 px in, within 1 px of golden timer/28.
 
 ### KF-464 — Break entries are badged "Manually added" [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-e4 and verify-e5.
 - KanbanFlow: break sessions are not shown as manual time.
 - ChipFlow: short-break log entries, and breaks started with a task through the API, carry the badge tooltip "Manually added".
 - Fix direction: give break entries their own badge or none.
+- Acceptance: a completed short break's timer log entry has no "Manually added" badge; a real manual entry still has it.
 
 ### KF-465 — While a break waits at 00:00, a stopwatch cannot be started from the panel [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-e4.
 - KanbanFlow: unknown; breaks wait at "Break time 00:00" until Start (KF-425).
 - ChipFlow: the footer Stopwatch switches its label, but the break panel stays and Start always begins a pomodoro. The break-activity select still renders, but nothing submits it any more.
 - Fix direction: capture KanbanFlow's behaviour; let the Stopwatch tab leave the break; remove or wire the break-activity select.
+- Acceptance: while a break waits at 00:00, choosing Stopwatch and pressing Start starts a stopwatch (GET /api/timer/status mode "stopwatch"); no unused break-activity select is rendered.
 
 ### KF-466 — The timer docs omit the 2 s completion grace [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-e5.
 - KanbanFlow: n/a.
 - ChipFlow: the agent docs say a pomodoro completes when it "reaches the duration", but the server accepts 2 s short (1498 of 1500 s). `TimerStopResult.completed` says "true when the session reached its duration", which is wrong for a stopwatch, where it echoes the client's flag.
 - Fix direction: state the grace and the stopwatch case.
+- Acceptance: agent-guide.md, agents/skill.md and the OpenAPI docs for TimerStopInput.completed / TimerStopResult.completed state the 2 s grace and that a stopwatch echoes the client's flag.
 
 ### KF-467 — Stopping an orphaned timer reports minutes but logs nothing [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-x2.
 - KanbanFlow: n/a.
 - ChipFlow: with a timer left on a deleted task by an older database, `POST /api/timer/stop` returns 200 with `{"discarded":false,"minutes":6}`, but no entry is logged because the task is gone.
 - Fix direction: report it as discarded, or log it task-less.
+- Acceptance: POST /api/timer/stop on a timer whose task was deleted returns discarded:true (or logs a task-less entry) and the response matches what was logged; a Rust test covers it.
 
 ### KF-468 — Two first calendar-feed requests at once hand out a dead link [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-x2.
 - KanbanFlow: n/a.
 - ChipFlow: concurrent first `POST /api/boards/{id}/calendar-feed` requests each create a token and the last one wins; the others' links return 404 (12 concurrent requests gave 8 tokens).
 - Fix direction: set the token only if absent, inside one transaction.
+- Acceptance: 12 concurrent first POSTs to /api/boards/{id}/calendar-feed all return the same path, and that .ics returns 200; a Rust test covers it.
 
 ### KF-469 — The OpenAPI summary for GET /api/boards/{id}/colors still says it backfills [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-x2.
 - KanbanFlow: n/a.
 - ChipFlow: the summary says "Backfills the standard palette on boards that predate colors", but the backfill now runs at startup and the GET is read-only. The GET calendar-feed summary also refers to "the POST below".
 - Fix direction: update both `#[utoipa::path]` summaries.
+- Acceptance: the OpenAPI summary for GET /api/boards/{id}/colors no longer mentions backfilling, and the calendar-feed GET summary does not refer to "the POST below".
 
 ### KF-470 — Release builds warn about an unused ServeDir import [LOW]
 - Status: OPEN — filed 2026-10-17 from several verifiers.
 - KanbanFlow: n/a.
 - ChipFlow: `tower_http::services::ServeDir` at `src/routes.rs:26` is used only in debug builds, so every release build prints an unused-import warning.
 - Fix direction: gate the import with `#[cfg(debug_assertions)]`.
+- Acceptance: cargo build --release prints no warnings.
 
 ### KF-471 — The crash-repair test assumes it does not run as root [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-35.
 - KanbanFlow: n/a (test suite).
 - ChipFlow: `failed_crash_repair_is_reported_as_such` relies on a read-only file refusing writes; root ignores that, so the test fails when `cargo test` runs as root (it passes as a normal user, as in the Nix sandbox).
 - Fix direction: skip when the effective uid is 0, or make the file unrepairable another way.
+- Acceptance: cargo test passes as root inside the Linux rust:1.98.0 container (the test skips or uses another way to make the file unrepairable).
 
 ### KF-472 — Shutdown edge cases: SIGTERM during startup, and no force-quit [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-s3.
 - KanbanFlow: n/a.
 - ChipFlow: a SIGTERM that arrives before the signal handler is installed is not handled gracefully, and a second Ctrl-C cannot cut the 10 s drain short.
 - Fix direction: install the handler before opening the database; exit at once on a second signal.
+- Acceptance: a SIGTERM sent 50 ms after launch exits 0 with the database closed cleanly; a second SIGINT during a stalled drain exits within 1 s.
 
 ### KF-473 — The delete-board page overflows with a long board name that has no spaces [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-g2.
 - KanbanFlow: n/a (long names wrap).
 - ChipFlow: the title wraps (KF-368), but the board name in bold inside the alert paragraph does not, so the page scrolls sideways (production overflows too).
 - Fix direction: let the alert text wrap anywhere.
+- Acceptance: on the delete-board page a 100-character name with no spaces gives document scrollWidth equal to the viewport width at 1905, 1100 and 640.
 
 ### KF-474 — The dark lane-icon hover is slightly dimmer than KanbanFlow's [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-g2; unconfirmed (no KanbanFlow capture of this state).
 - KanbanFlow: hover background white at 0.08 (theme psv `boardLayout-iconHoverBgColor`), about #585858.
 - ChipFlow: the hover sits under the button's 0.7 opacity, giving #545454.
 - Fix direction: capture the state, then apply the hover outside the opacity.
+- Acceptance: with body.dark the hovered lane-menu icon background measures #585858 (white at 0.08 over #4a4a4a, outside the button's opacity), or a KanbanFlow capture shows otherwise.
 
 ### KF-475 — Help dialog details differ from KanbanFlow's [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-h2.
 - KanbanFlow (golden account/09): subject rows 38 px, larger chevron and close, search 590x38, a "Restore task" topic.
 - ChipFlow: rows 34 px, a smaller and thinner chevron and ×, search 600x36 with a blue focus ring, no "Restore task" topic, and a drag-select that starts in search and ends on the backdrop closes the dialog.
 - Fix direction: match the golden; close only on a click that starts and ends on the backdrop.
+- Acceptance: at 1440x612 help dialog subject rows are 38 px, search 590x38 with no blue focus ring; a drag that starts in search and ends on the backdrop leaves the dialog open; a click on the backdrop closes it.
 
 ### KF-476 — Filter panel leftovers: wrapped bookmark button, stale assignee state [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-h and verify-h2.
 - KanbanFlow: n/a for these states.
 - ChipFlow: the "Bookmark filter" button wraps onto two lines; a remembered filter saved with `user:"me"` leaves the user select blank while the funnel shows active; after "Assign members" from a card's right-click menu, the card stays visible under the Unassigned filter (and its avatar is stale) until reload.
 - Fix direction: size the button; map old user values; refresh the card's member data after assigning.
+- Acceptance: the "Bookmark filter" button is one line; a remembered filter with user "me" shows the current user selected; after right-click "Assign members" the card leaves the Unassigned filter without a reload.
 
 ### KF-477 — Done group headers have no year [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: unknown for other years.
 - ChipFlow: grouping dates a year apart both read "… 16 October", which future-dated groups (KF-365) make easier to reach.
 - Fix direction: add the year when it is not the current year (check KanbanFlow).
+- Acceptance: a Done group for a grouping date in another year reads "… 16 October 2025" (or KanbanFlow's format if captured); current-year groups are unchanged.
 
 ### KF-478 — The card's inline subtask summary drifts from the server's [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: n/a.
 - ChipFlow: after toggling subtasks on a card, folding can hide an open subtask and read "3 hidden (2 done)", while a reload shows "2 hidden (2 done)". `.card-sub-more` has role=button and tabindex=0 but no keyboard handler.
 - Fix direction: recompute the summary from the current rows; handle Enter and Space.
+- Acceptance: after any sequence of subtask toggles on a card, the folded label equals the label after a reload; Enter and Space on the label toggle it.
 
 ### KF-479 — Deleting the last empty column leaves a board with no columns [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: unknown.
 - ChipFlow: the layout view lets the last column be deleted when it is empty; the board then has no columns and is recoverable only from the layout view.
 - Fix direction: refuse deleting the last column, or check KanbanFlow.
+- Acceptance: deleting the last remaining column from the layout view is refused with a message and the column stays (or matches captured KanbanFlow behaviour).
 
 ### KF-480 — The golden-master seed hides inline subtasks [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f2.
 - KanbanFlow: golden 02 shows inline subtasks on the In Progress card.
 - ChipFlow: the seed script leaves the column card property for subtasks at its default (hidden), so seeded boards don't match the golden.
 - Fix direction: seed the card properties the golden board uses.
+- Acceptance: a board seeded by the golden-master seed script shows the inline subtasks on the In Progress card as golden board/02 does.
 
 ### KF-481 — Quick-add dialog actions are unverified against KanbanFlow [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f (KF-302 judgement).
 - KanbanFlow: the goldens show only the Members, Labels, Description and More buttons, not what they do.
 - ChipFlow: each saves the task and opens its details; plain Enter in the name field saves and closes.
 - Fix direction: capture KanbanFlow's click states on the test board and match them.
+- Acceptance: the quick-add Members, Labels, Description and More buttons and plain Enter behave as in a KanbanFlow capture of the same clicks on the test board.
 
 ### KF-482 — The card avatar ring is a lightened mix, not the card border colour [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f.
 - KanbanFlow: the avatar ring uses the card's border colour (#59d600 on green).
 - ChipFlow: a lightened mix (rgb 121,224,48 on green).
 - Fix direction: use the card's border colour.
+- Acceptance: a green card's avatar ring colour is #59d600 (the card border colour), and likewise for each standard colour.
 
 ### KF-483 — The board title colour is #1F2937 instead of #333 [LOW]
 - Status: OPEN — filed 2026-10-17 from verify-f.
 - KanbanFlow: #333.
 - ChipFlow: #1F2937.
 - Fix direction: use #333.
+- Acceptance: the board title's computed colour is #333333.
 
 ### KF-484 — Debug-build tests spend most of their CPU on full-cost Argon2 hashing [LOW]
 - Status: OPEN — filed 2026-10-17 from a CPU measurement of the autopilot run (30 min of samples; the analysis is kept locally).
 - KanbanFlow: n/a (test suite and developer experience).
 - ChipFlow: `hash_password` and `verify_password` use `Argon2::default()`, and debug builds compile argon2 unoptimised. One login test (`routes::tests::login_cookie_secure_only_over_https`) costs about 3 CPU-s while a pure test costs 0.00 s. The `chipflow-<hash>` unit-test binary costs about 27 CPU-s per run on main and about 150 CPU-s per run on the agentctl branch (more login tests). Its runs used about 1040 CPU-s across the sample window, close to a fifth of all cargo CPU.
 - Fix direction: build argon2 (and blake2) optimised in the dev profile (`[profile.dev.package.argon2] opt-level = 3`), or use cheap Argon2 parameters under `cfg(test)`. Keep the production parameters unchanged.
+- Acceptance: user CPU time of routes::tests::login_cookie_secure_only_over_https in a debug build is under 0.5 s, and the release binary is byte-identical to a build without the change.
