@@ -4319,6 +4319,15 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: after the repro, `GET /api/tasks/<id>` returns `completed_at: null` and its open subtask due 2020-01-01 renders with `tm-due-overdue`; a Rust test covers the repro; moving a task out of a column that is still done keeps clearing `completed_at` as today.
 
 ### KF-563 — Settings carries four bools, tripping clippy::struct_excessive_bools [LOW]
+- Status: RELEASED — batch-43, main dbbec24, live on green-box 2026-10-18: Settings.ding_enabled removed (dead), SCHEMA_VERSION 4; the dev-tooling migration (lint set, edition 2024, nextest) shipped in the same release (verify-43 PASS incl. token security matrix, real upgrade/refusal, 152 HTML pages identical; database copied first as chipflow-20261018T174625Z-before-dbbec24.redb).
 - Status: FIXED — 2026-10-18 on tooling/dev: removed the dead `Settings.ding_enabled` field (nothing read it; the form handler rewrote it to false on every save), leaving three bools so the clippy finding clears without a suppression. This changes the stored row and the settings JSON (the `ding_enabled` key is gone), so SCHEMA_VERSION is 4 with a new fingerprint; a version-3 row still holding the key loads under the new binary (`version_3_file_opens_stamped_4_with_settings_intact`).
 - Status: OPEN — filed 2026-10-18 from the dev lint adoption (tooling/dev); `cargo clippy` reports `src/models.rs` `Settings` (ding_enabled, notifications_enabled, sounds_enabled, pip_enabled). Grouping them changes the stored row or ripples through the form, PATCH and API handlers, so it was not done as a lint fix.
 - Acceptance: `Settings` has at most three bool fields (grouped into enums or small structs) with the stored JSON row and the `/api/v1` settings JSON byte-identical in key names and values, `stored_schema_matches_fingerprint` passes without a SCHEMA_VERSION bump or a new fingerprint entry, the settings page renders unchanged, and `dev lint` passes the clippy step.
+
+### KF-564 — Parity regress compare of board-09 is not repeatable on one server [LOW]
+- Status: OPEN — filed 2026-10-18 from verify-43 (observation): `regress.mjs` comparing a server with itself reports 18 px on board-09-boards-dropdown (a 5x3 shadow box below the add-column "+" at 283,69).
+- Acceptance: `node .dev/parity/regress.mjs --only board-09-boards-dropdown --candidate S/state.json --baseline S/state.json` reports 0 differing pixels on three runs in a row.
+
+### KF-565 — The Bearer auth scheme name is case-sensitive [LOW]
+- Status: OPEN — filed 2026-10-18 from verify-43 (observation; also in the baseline). `Authorization: bearer <valid token>` gets 401 after setup and 303 to /setup before; RFC 7235 makes auth scheme names case-insensitive.
+- Acceptance: `curl -H 'Authorization: bearer <valid token>' /api/boards` returns 200, same as `Bearer`; a Rust test covers `bearer` and `BEARER`.
