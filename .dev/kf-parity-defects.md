@@ -4325,9 +4325,11 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `Settings` has at most three bool fields (grouped into enums or small structs) with the stored JSON row and the `/api/v1` settings JSON byte-identical in key names and values, `stored_schema_matches_fingerprint` passes without a SCHEMA_VERSION bump or a new fingerprint entry, the settings page renders unchanged, and `dev lint` passes the clippy step.
 
 ### KF-564 — Parity regress compare of board-09 is not repeatable on one server [LOW]
+- Status: RELEASED — batch-44, main 0b2df9e, live on green-box 2026-10-18 (verify-44 PASS; database copied first as chipflow-20261018T190702Z-before-0b2df9e.redb).
 - Status: OPEN — filed 2026-10-18 from verify-43 (observation): `regress.mjs` comparing a server with itself reports 18 px on board-09-boards-dropdown (a 5x3 shadow box below the add-column "+" at 283,69).
 - Acceptance: `node .dev/parity/regress.mjs --only board-09-boards-dropdown --candidate S/state.json --baseline S/state.json` reports 0 differing pixels on three runs in a row.
 
 ### KF-565 — The Bearer auth scheme name is case-sensitive [LOW]
+- Status: RELEASED — batch-44, main 0b2df9e, live on green-box 2026-10-18 (verify-44 PASS; database copied first as chipflow-20261018T190702Z-before-0b2df9e.redb).
 - Status: OPEN — filed 2026-10-18 from verify-43 (observation; also in the baseline). `Authorization: bearer <valid token>` gets 401 after setup and 303 to /setup before; RFC 7235 makes auth scheme names case-insensitive.
 - Acceptance: `curl -H 'Authorization: bearer <valid token>' /api/boards` returns 200, same as `Bearer`; a Rust test covers `bearer` and `BEARER`.
