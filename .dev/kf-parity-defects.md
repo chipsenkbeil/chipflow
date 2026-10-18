@@ -3741,6 +3741,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a board seeded by the golden-master seed script shows the inline subtasks on the In Progress card as golden board/02 does.
 
 ### KF-481 — Quick-add dialog actions are unverified against KanbanFlow [LOW]
+- Status: OPEN — KanbanFlow capture taken 2026-10-18 on FQhhSs1 (local goldens quickadd/05..08: Labels inline popover with an Add labels input; Description inline Write/Preview editor in the dialog; More dropdown with Add due date / Add time estimate / Add other info; plain Enter saves and closes). Builder working from it.
 - Status: OPEN — partially fixed in batch-37 d2a466a: the quick-add Members button opens an inline popover and the three save shortcuts work as KanbanFlow's labels say (evidence .dev/evidence/batch-37-20261017/verify-w2-report.md and .dev/evidence/batch-37-20261017/verify-37c-report.md). Labels, Description and More are not captured from KanbanFlow yet; finishing needs a new capture.
 - Status: OPEN — filed 2026-10-17 from verify-f (KF-302 judgement).
 - KanbanFlow: the goldens show only the Members, Labels, Description and More buttons, not what they do.
@@ -4299,6 +4300,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `#tp-change-task` and `.kf-general-actions .kf-btn-large` use a font stack whose first available face is the same on macOS and Linux (e.g. a bundled or named face), and the parity harness entries timer-25-pomodoro-running and settings-02-general still pass; or a decision recorded here that macOS is the reference platform.
 
 ### KF-560 — graceful_shutdown second-signal test took 9.83 s once under heavy load [MEDIUM]
+- Status: RELEASED — batch-41, main 3c57d24, live on green-box 2026-10-18 (verify-41 PASS; evidence .dev/evidence/batch-41-20261018/).
 - Status: OPEN — filed 2026-10-18 from verify-39 (observation 3). `tests/graceful_shutdown.rs::second_signal_drops_open_requests_at_once` asserted < 1 s and took 9.83 s once at load average 15-25; 20 isolated reruns passed on both 7dc7b79 and 8ec4d30. Not dismissed as flaky: a real second-signal race is not ruled out.
 - Acceptance: the root cause is identified and written here (with a fix if it is a product race), and 50 consecutive runs of `TZ=UTC cargo test --test graceful_shutdown` while a CPU load generator keeps the load average above 15 all pass.
 
@@ -4310,6 +4312,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: at 1440x612 on the payment task modal of the golden-board seed, the subtitle's leftmost dark pixel is at x 446 (±2), and the title position checked by KF-532 is unchanged.
 
 ### KF-562 — A task keeps its completed stamp after its column stops being a done column [MEDIUM]
+- Status: RELEASED — batch-41, main 3c57d24, live on green-box 2026-10-18 (verify-41 PASS; evidence .dev/evidence/batch-41-20261018/).
 - Status: OPEN — filed 2026-10-18 from verify-40c (observation 1; pre-existing in db.rs move_task).
 - Repro: mark a column as done in board settings, move a task into it, turn that column's done flag off, then move the task to another column. `completed_at` stays set, so the task is still treated as done: no overdue chip, its subtasks are not flagged overdue, and it counts as completed. move_task clears `completed_at` only when the old column is still a done column.
 - Acceptance: after the repro, `GET /api/tasks/<id>` returns `completed_at: null` and its open subtask due 2020-01-01 renders with `tm-due-overdue`; a Rust test covers the repro; moving a task out of a column that is still done keeps clearing `completed_at` as today.
