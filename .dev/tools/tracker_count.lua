@@ -1,4 +1,4 @@
--- Port of .dev/tools/tracker_count.py; output format matches it line for line
+-- Counts tracker defects by status from .dev/kf-parity-defects.md
 local COUNTED = { "OPEN", "IN_PROGRESS", "BUILT", "VERIFIED", "DEPLOYED", "RELEASED" }
 local EXCLUDED = { "FIXED", "CLOSED", "INVALID" }
 
