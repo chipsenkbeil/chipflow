@@ -4154,120 +4154,140 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `rg -i 'until version 2 ships' src/db.rs` finds 0 lines, and the comment says any further stored change needs SCHEMA_VERSION 3 with an appended fingerprint.
 
 ### KF-539 — Overdue cards are 7 px shorter than KanbanFlow's [MEDIUM]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness (`.dev/parity/`, run on 8ec4d30; verify-p2 spot-checked it by eye).
 - KanbanFlow (goldens board/01, board/02): the overdue due line block has 4 px top and 3 px bottom padding around a 22 px inner box; a green overdue card is 79 px, a red one 87 px.
 - ChipFlow: 72 px and 80 px; every card below shifts up 7 px, and the responsive first-card heights differ by the same amount (In Review wraps differently: 43 vs 56 at 1120/900/640).
 - Acceptance: `node .dev/parity/run.mjs --only board-01,board-02,responsive-1920,responsive-1440,responsive-1120,responsive-900,responsive-640` passes the task/card height and y comparisons.
 
 ### KF-540 — The board Menu label is 15 px instead of 14 [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden board/01): "Menu" label 14 px at x 1386.
 - ChipFlow: 15 px at x 1387.5.
 - Acceptance: `run.mjs --only board-01` passes menuName.fs and menuName.x.
 
 ### KF-541 — The Boards dropdown differs from KanbanFlow's [MEDIUM]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden board/09): 2 px radius, the search box, 39 px board rows with 10px 12px padding, the current board row style, a "View archived boards" row in #555555, and a #2185d0 create button.
 - ChipFlow: 8 px radius, 31 px rows, #6b7280 archived link, #2f7de1 create button and other differences in all 7 compared elements.
 - Acceptance: `run.mjs --only board-09-boards-dropdown` passes.
 
 ### KF-542 — The card context menu rows are smaller than KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden cards/03): 34 px rows, 248 px menu, 15 px text, colour submenu at (589,244).
 - ChipFlow: 30 px rows, 224 px menu, 13.6 px text, submenu at (585,232).
 - Acceptance: `run.mjs --only cards-03-color-submenu` passes.
 
 ### KF-543 — Clicking a column name does not collapse the column [MEDIUM]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness (verify-p2 confirmed by hand).
 - KanbanFlow (golden columns/08): clicking a column's name collapses it to a strip.
 - ChipFlow: nothing happens; collapsing works only from the column menu.
 - Acceptance: `run.mjs --only columns-08-click` passes (the header gets the collapsed state after a click on the name, and the strip matches columns/08).
 
 ### KF-544 — The quick-add Save button is 1 px wider than KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden modal/12): 140 px.
 - ChipFlow: 141.2 px.
 - Acceptance: `run.mjs --only modal-12` passes button.w.
 
 ### KF-545 — A subtask's menu has no "Add due date" item [MEDIUM]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden modal/22): the subtask kebab menu offers "Add due date".
 - ChipFlow: no such item (subtasks have no due dates).
 - Acceptance: `run.mjs --only modal-22-subtask-due-date` passes; if a stored subtask due date is needed, it goes through a SCHEMA_VERSION 3 bump with a fingerprint and the docs.
 
 ### KF-546 — The due popover's calendar text and selected-day colours differ from KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness (KF-527 covers shadow, header and cells).
 - KanbanFlow (golden modal/23): calendar title weight 700, day text 12 px #333, selected day #33aaff, 2 px radius, top edge 3 px higher.
 - ChipFlow (8ec4d30): title 600, day 13.6 px #1f2937, selected #2563eb, 10 px radius.
 - Acceptance: `run.mjs --only modal-23-task-due-date` passes.
 
 ### KF-547 — The time estimate editor is a centred dialog instead of KanbanFlow's popover [MEDIUM]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden modal/27): a 184x130 popover at (1080,58), anchored like the due popover.
 - ChipFlow: a 420x183 centred dialog at (510,215).
 - Acceptance: `run.mjs --only modal-27-time-estimate` passes.
 
 ### KF-548 — Timer panel details differ from KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden timer/14): panel radius 4 px; round close button with 10 % white background; 42 px clock digits; Start border #535353; toolbar text 12 px #fff.
 - ChipFlow: radius 2 px, square transparent close, 46 px digits, border #373737, toolbar 13.33 px #efefef; timer/27's short break clock is also 46 px.
 - Acceptance: `run.mjs --only timer-14,timer-27-short-break` passes.
 
 ### KF-549 — The timer log filter bar has no background [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness (the 5 px x offset is KanbanFlow's scrollbar, recorded as a known offset).
 - KanbanFlow (golden timer/20): filter bar background #fafafa.
 - ChipFlow: transparent.
 - Acceptance: `run.mjs --only timer-20-log` passes with the documented offset.
 
 ### KF-550 — The timer-selected card and its avatar ring differ from KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden timer/22): the selected card is 338 px wide and 38 px tall; the avatar ring is dashed.
 - ChipFlow: 340 px wide, 44.6 px tall, solid ring.
 - Acceptance: `run.mjs --only timer-22` passes.
 
 ### KF-551 — Timer panel entry rows differ from KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden timer/25): rows have a 2 px radius, the time span is not italic, the entry menu button is 16x16.
 - ChipFlow: no radius, italic time span, 6x12 menu button.
 - Acceptance: `run.mjs --only timer-25` passes.
 
 ### KF-552 — The waiting state lacks the bell badge and the red added-time text [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden timer/26): a notification badge on the bell while the pomodoro waits, and the card's "+ 25m" in #8b0000.
 - ChipFlow: no badge; "+ 25m" in #606060.
 - Acceptance: `run.mjs --only timer-26` passes.
 
 ### KF-553 — The timer panel closes on "Take break" [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden timer/27): the panel stays open and shows the break.
 - ChipFlow: the panel closes.
 - Acceptance: `run.mjs --only timer-27-panel-stays-open` passes.
 
 ### KF-554 — The board settings General tab lacks KanbanFlow's sections [MEDIUM]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness (verify-p2 confirmed by hand: the tab shows only "Board name" and Save).
 - KanbanFlow (golden settings/02): Board name with an "Edit" link, the board owner row, an Actions section with Archive and Delete buttons; labels 18 px bold.
 - ChipFlow: Board name and Save only; labels 14.4 px, weight 600.
 - Acceptance: `run.mjs --only settings-02-general` passes.
 
 ### KF-555 — Help dialog tabs and subject rows are offset [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness.
 - KanbanFlow (golden account/09): selected tab text at x 486, other tabs at 639; subject rows 27 px tall starting at y 243.
 - ChipFlow: 483.2 and 637.7; rows 37 px at y 238.
 - Acceptance: `run.mjs --only account-09-help-dialog` passes.
 
 ### KF-556 — Dark mode cells lack KanbanFlow's borders [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from the parity harness (confirmed on both seeded boards).
 - KanbanFlow (golden dark board/02): cells have a 1 px #222 bottom and left border; the subtask checkbox radius is 2 px.
 - ChipFlow: no bottom border, transparent left border, 3 px checkbox radius.
 - Acceptance: `run.mjs --only board-dark-02` passes.
 
 ### KF-557 — The task "Add due date" popover uses the subtask popover's layout [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-17 from builder-h2's harness report (modal-23 popBox) and the golden INVENTORY.
 - KanbanFlow: task modal Add > Due date (golden modal/23) opens a 280x441 popover at x 1080, y 58 at 1440x612 with Date/Time, calendar, Target column and Repeat. Subtask ⋮ > Add due date (golden modal/22) opens the 280x350 Date/Time-only popover at modal-left+297, top 104.
 - ChipFlow (batch-39, KF-528): the task Add > Due date path opens the 280x350 subtask layout without Target column or Repeat.
 - Acceptance: `run.mjs --only modal-23-task-due-date` passes, including popBox 1080,58,280x441 and the Target column and Repeat controls present; and the subtask ⋮ > Add due date popover measures 280x350 at modal-left+297, top 104 (±2) with no Target column or Repeat.
 
 ### KF-558 — Edit due date calendar day cells are rounded with gaps [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-18 from verify-39 (observation 1, shots/edit-cmp.png in its scratch evidence).
 - KanbanFlow (golden dark/modal/23, modal/23): the day grid is a seamless #f5f5f5 block with square cells and #666 day numbers.
 - ChipFlow (batch-39): cells are rounded with 2 px white gaps and dark text.
@@ -4283,6 +4303,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: the root cause is identified and written here (with a fix if it is a product race), and 50 consecutive runs of `TZ=UTC cargo test --test graceful_shutdown` while a CPU load generator keeps the load average above 15 all pass.
 
 ### KF-561 — Task modal subtitle starts 4 px left of KanbanFlow's [LOW]
+- Status: RELEASED — batch-40, main ebd8ae6, live on green-box 2026-10-18 (verify-40a/40b/40c; evidence .dev/evidence/batch-40-20261018/).
 - Status: OPEN — filed 2026-10-18 from verify-39 (observation 4).
 - KanbanFlow (golden modal/01): the "In Progress · Created" subtitle text starts at x 446.
 - ChipFlow (8ec4d30 and batch-39): x 442.
