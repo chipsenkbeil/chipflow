@@ -4335,21 +4335,25 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `curl -H 'Authorization: bearer <valid token>' /api/boards` returns 200, same as `Bearer`; a Rust test covers `bearer` and `BEARER`.
 
 ### KF-566 — Column and swimlane creates silently land on the first board [MEDIUM]
+- Status: RELEASED — batch-46, main 69c056c, live on green-box 2026-10-18 (verify-46 and verify-46B PASS; database copied first as chipflow-20261018T221159Z-before-69c056c.redb).
 - Status: FIXED — 2026-10-18 (fix/a1-agent-api): `POST /api/columns` and `POST /api/swimlanes` return 400 "board_id is required" (or "unknown board_id") without a valid board_id and write nothing; the schema marks board_id required; agent-guide.md and agents/skill.md show it; the UI forms already send board_id (static/app.js).
 - Status: OPEN — filed 2026-10-18 from the agent-API audit (agent-api-audit.md; design slice 1). `POST /api/columns` and `POST /api/swimlanes` without `board_id` use the first board (src/routes.rs ~6139); the agent guide's examples omit `board_id`.
 - Acceptance: a create without `board_id` returns 400 with a message naming `board_id` and leaves every board unchanged; with `board_id` it works as today; the agent docs' examples include `board_id`.
 
 ### KF-567 — No endpoint lists a board's columns and swimlanes [MEDIUM]
+- Status: RELEASED — batch-46, main 69c056c, live on green-box 2026-10-18 (verify-46 and verify-46B PASS; database copied first as chipflow-20261018T221159Z-before-69c056c.redb).
 - Status: FIXED — 2026-10-18 (fix/a1-agent-api): `GET /api/boards/{id}` (operation `get_board`, Bearer read scope or cookie) returns {id, name, columns[{id,name,is_done,wip_limit}], swimlanes[{id,name}]} in board order; swimlanes equal export-data's; unknown board 404; utoipa-annotated; agent-guide.md and agents/skill.md document it.
 - Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 2). Agents can only learn swimlane ids from tasks or export-data.
 - Acceptance: `GET /api/boards/{id}` (Bearer, read scope) returns the board's id, name, and ordered columns (id, name, is_done, wip_limit) and swimlanes (id, name); its lane ids equal those in export-data in board order; unknown board 404; documented in OpenAPI and the agent docs.
 
 ### KF-568 — The OpenAPI spec includes UI routes and lacks stable operation ids [LOW]
+- Status: RELEASED — batch-46, main 69c056c, live on green-box 2026-10-18 (verify-46 and verify-46B PASS; database copied first as chipflow-20261018T221159Z-before-69c056c.redb).
 - Status: FIXED — 2026-10-18 (fix/a1-agent-api): 17 HTML page/fragment operations removed from the spec (routes unchanged); every remaining operation sets an explicit snake_case `operation_id`; no `KF-` in the served spec or agent docs; 401 declared on every Bearer-secured operation; `security(())` on the calendar feed; `info.version` is the crate version; `info.license.name` is "Proprietary"; every used tag declared; create_task/update_task document JSON only. Guarded by `src/routes/openapi_lint_tests.rs`.
 - Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 4). 15+ HTML page/fragment operations are in the spec, operationIds come from handler names, KF tracker ids appear in summaries, version is hard-coded 1.0.0, license name is empty, six operations lack 401, the public calendar feed claims to need a token, the "Board settings" tag is undeclared.
 - Acceptance: a spec-lint Rust test asserts every operation has an explicit operation_id, no operation returns text/html, no summary or description contains `KF-`, every Bearer-secured operation declares 401, the calendar feed declares no security, `info.version` equals the crate version, `info.license.name` is set, and every used tag is declared; served OpenAPI passes it.
 
 ### KF-569 — Agents can't see their own token's scope or expiry [LOW]
+- Status: RELEASED — batch-46, main 69c056c, live on green-box 2026-10-18 (verify-46 and verify-46B PASS; database copied first as chipflow-20261018T221159Z-before-69c056c.redb).
 - Status: FIXED — 2026-10-18 (fix/a1-agent-api): `GET /api/v1/auth/whoami` (operation `get_whoami`, cookie or Bearer with read scope) returns {kind: session|token|bootstrap, name, scope: read|write, expires_at: unix seconds or null} for a session, a named token and the bootstrap token; a revoked or expired token gets 401; annotated in OpenAPI; agent-guide.md and agents/skill.md document it.
 - Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 6).
 - Acceptance: `GET /api/v1/auth/whoami` returns `kind` (session|token|bootstrap), `name`, `scope` and `expires_at` correctly for a cookie session, a named API token and the bootstrap token; a revoked or expired token gets 401; documented in OpenAPI and the agent docs.
