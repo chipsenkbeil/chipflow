@@ -4287,3 +4287,8 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - KanbanFlow (golden modal/01): the "In Progress · Created" subtitle text starts at x 446.
 - ChipFlow (8ec4d30 and batch-39): x 442.
 - Acceptance: at 1440x612 on the payment task modal of the golden-board seed, the subtitle's leftmost dark pixel is at x 446 (±2), and the title position checked by KF-532 is unchanged.
+
+### KF-562 — A task keeps its completed stamp after its column stops being a done column [MEDIUM]
+- Status: OPEN — filed 2026-10-18 from verify-40c (observation 1; pre-existing in db.rs move_task).
+- Repro: mark a column as done in board settings, move a task into it, turn that column's done flag off, then move the task to another column. `completed_at` stays set, so the task is still treated as done: no overdue chip, its subtasks are not flagged overdue, and it counts as completed. move_task clears `completed_at` only when the old column is still a done column.
+- Acceptance: after the repro, `GET /api/tasks/<id>` returns `completed_at: null` and its open subtask due 2020-01-01 renders with `tm-due-overdue`; a Rust test covers the repro; moving a task out of a column that is still done keeps clearing `completed_at` as today.
