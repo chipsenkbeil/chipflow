@@ -4357,3 +4357,55 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: FIXED — 2026-10-18 (fix/a1-agent-api): `GET /api/v1/auth/whoami` (operation `get_whoami`, cookie or Bearer with read scope) returns {kind: session|token|bootstrap, name, scope: read|write, expires_at: unix seconds or null} for a session, a named token and the bootstrap token; a revoked or expired token gets 401; annotated in OpenAPI; agent-guide.md and agents/skill.md document it.
 - Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 6).
 - Acceptance: `GET /api/v1/auth/whoami` returns `kind` (session|token|bootstrap), `name`, `scope` and `expires_at` correctly for a cookie session, a named API token and the bootstrap token; a revoked or expired token gets 401; documented in OpenAPI and the agent docs.
+
+### KF-570 — Bearer callers get HTML from create, patch, move and task time unless they send Accept [MEDIUM]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 3; owner approved D1-D13 2026-10-19). `POST /api/tasks/{id}/move` returns an HTML card even with `Accept: application/json`; `GET`/`POST /api/tasks/{id}/time` return `TimeEntriesTemplate` HTML; create and patch return HTML without `Accept`.
+- Acceptance: for a Bearer request with no `Accept` header, `POST /api/tasks`, `PATCH /api/tasks/{id}`, `POST /api/tasks/{id}/move`, `GET /api/tasks/{id}/time` and `POST /api/tasks/{id}/time` return `application/json` bodies matching their OpenAPI schemas (`TaskDetail` for move); cookie requests return exactly the bytes they return today (the existing UI tests pass unchanged); the OpenAPI spec documents the JSON responses.
+
+### KF-571 — Bearer errors are plain text and unknown /api paths return empty bodies [MEDIUM]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 5, D7).
+- Acceptance: every 4xx/5xx returned to a Bearer request is `application/json` `{"code": "<stable snake_case>", "message": "<today's text>"}`; codes are enumerated in the spec's `ErrorBody` schema and every 4xx response in the spec references `ErrorBody`; a 401 on `/api/*` carries `WWW-Authenticate: Bearer` and `Link: </llms.txt>; rel="help"` and distinguishes `token_invalid` from `token_expired`; an unknown `/api/*` path returns JSON 404 and a wrong method returns JSON 405, each naming `/api/v1/openapi.json`; cookie requests keep today's plain-text error bodies byte for byte.
+
+### KF-572 — API concept prose lives in several hand-written copies [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 7, section 2.3).
+- Acceptance: the due-date, claim, readiness and timer-stop rules each appear exactly once in the source, in utoipa tag or operation descriptions; `GET /docs/api.md` is generated at request time from `ApiDoc::openapi()` and lists every spec operation with method, path, summary, parameters, body, responses and error codes; a test asserts every spec operation appears in it.
+
+### KF-573 — Agent docs: one skill, llms.txt and a version check [MEDIUM]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 8, D3, D9).
+- Acceptance: `GET /skill.md` (at most 150 lines, Agent Skills frontmatter with `metadata.version`) and `GET /llms.txt` (about 15 lines) are served; `GET /api/v1/version` reports `skill_version`; a test fails when the skill content changes without a `SKILL_VERSION` bump (fingerprint list like `SCHEMA_FINGERPRINTS`); a test asserts every `METHOD /path` in `skill.md` and `llms.txt` resolves to a spec operation; `/agents.md`, `/agents/skill.md` and `/.well-known/agents.json` return 404 and `agent-guide.md`, `agents/skill.md` and `agents.json` are deleted; Settings shows the install line; README has a short Agents section; the AGENTS.md rule names the new sources.
+
+### KF-574 — Device verification URL trusts the Host header [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 9).
+- Acceptance: `--public-url` / `CHIPFLOW_PUBLIC_URL` sets the base of `verification_url`, the OpenAPI `servers` entry and the absolute links in `llms.txt`; with the flag set, a device start with any `Host` header returns a `verification_url` on the flag's base; without it, behaviour is today's.
+
+### KF-575 — No rate limits on the API, device start or login [MEDIUM]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 10).
+- Acceptance: per credential, 20 requests per second with burst 100: request 101 inside one second from one token gets 429 with `Retry-After` and code `rate_limited`; per client IP, 10 per minute on `POST /api/v1/auth/device` and `POST /login`, the 11th within a minute gets 429; the client IP comes from `X-Forwarded-For` only when the peer is 127.0.0.1; limits are in memory.
+
+### KF-576 — Every Bearer request writes last_used_at [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 11).
+- Acceptance: `last_used_at` is written at most once per 60 seconds per token through an in-memory map; 100 GETs in one minute from one token cause at most one token-table write (asserted by a test); `whoami` and the token list still report a `last_used_at` no older than 60 seconds.
+
+### KF-577 — Token scopes are only read and write [MEDIUM]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 12, D4).
+- Acceptance: scopes `read`, `work`, `admin` (ordered, each includes the one before); `required_scope(method, matched_path)` reads one static table (GET defaults to read, work routes listed, any other method defaults to admin) and the spec emits per-operation `security: [{bearerAuth: [<scope>]}]`; a `work` token can claim, patch, move, comment and log time and gets 403 `insufficient_scope` ("insufficient token scope: needs admin") on `DELETE /api/boards/{id}`; a test asserts every route in `router()` has a table entry; `SCHEMA_VERSION` 5 with an upgrade that rewrites stored `["write"]` to `["admin"]` and leaves `["read"]`.
+
+### KF-578 — Device approval can't lower the scope or set an expiry [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 13, D5).
+- Acceptance: the approval page shows the requested scope with a warning line for `admin`, lets the owner lower it, and offers expiry 30, 90 (default) or 365 days or never; approving a `work` request as `read` with 30 days yields a token whose `whoami` shows scope `read` and an `expires_at` 30 days out.
+
+### KF-579 — The bootstrap token shares its name with the client's token variable [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 14, D6).
+- Acceptance: the server reads `CHIPFLOW_BOOTSTRAP_TOKEN` (admin power) and no longer reads `CHIPFLOW_API_TOKEN`; `whoami` reports `kind: "bootstrap"`; startup prints one line when it is set; docs updated.
+
+### KF-580 — Task lists are unpaginated [MEDIUM]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 15, D8).
+- Acceptance: `GET /api/boards/{id}/tasks` and `GET /api/tasks` take `limit` (default 200, max 1000) and `cursor` and return `{items, next_cursor}`; 450 tasks come back as three pages of `limit=200` with no duplicates and no gaps (asserted by a test); a `limit` above 1000 is a 400; the spec documents the shape.
+
+### KF-581 — Task history doesn't name the token that made a change [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 16, optional, approved with D1-D13).
+- Acceptance: `TaskEvent` stores `token_name` (schema bump, fingerprint appended); a move made with a named token shows that name in the task history (API and UI); cookie changes show none.
+
+### KF-582 — Measure how well an agent does with only the skill [LOW]
+- Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 17, D2).
+- Acceptance: a scripted run of 10 tasks (find ready work, claim, comment, move to Done, log 25 minutes, release, and so on) by an agent given only `/skill.md` against a scratch server produces a report counting failed calls by cause; if more than one call in ten fails on request shape, the report proposes the bash wrapper (B').
