@@ -4333,3 +4333,19 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: RELEASED — batch-44, main 0b2df9e, live on green-box 2026-10-18 (verify-44 PASS; database copied first as chipflow-20261018T190702Z-before-0b2df9e.redb).
 - Status: OPEN — filed 2026-10-18 from verify-43 (observation; also in the baseline). `Authorization: bearer <valid token>` gets 401 after setup and 303 to /setup before; RFC 7235 makes auth scheme names case-insensitive.
 - Acceptance: `curl -H 'Authorization: bearer <valid token>' /api/boards` returns 200, same as `Bearer`; a Rust test covers `bearer` and `BEARER`.
+
+### KF-566 — Column and swimlane creates silently land on the first board [MEDIUM]
+- Status: OPEN — filed 2026-10-18 from the agent-API audit (agent-api-audit.md; design slice 1). `POST /api/columns` and `POST /api/swimlanes` without `board_id` use the first board (src/routes.rs ~6139); the agent guide's examples omit `board_id`.
+- Acceptance: a create without `board_id` returns 400 with a message naming `board_id` and leaves every board unchanged; with `board_id` it works as today; the agent docs' examples include `board_id`.
+
+### KF-567 — No endpoint lists a board's columns and swimlanes [MEDIUM]
+- Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 2). Agents can only learn swimlane ids from tasks or export-data.
+- Acceptance: `GET /api/boards/{id}` (Bearer, read scope) returns the board's id, name, and ordered columns (id, name, is_done, wip_limit) and swimlanes (id, name); its lane ids equal those in export-data in board order; unknown board 404; documented in OpenAPI and the agent docs.
+
+### KF-568 — The OpenAPI spec includes UI routes and lacks stable operation ids [LOW]
+- Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 4). 15+ HTML page/fragment operations are in the spec, operationIds come from handler names, KF tracker ids appear in summaries, version is hard-coded 1.0.0, license name is empty, six operations lack 401, the public calendar feed claims to need a token, the "Board settings" tag is undeclared.
+- Acceptance: a spec-lint Rust test asserts every operation has an explicit operation_id, no operation returns text/html, no summary or description contains `KF-`, every Bearer-secured operation declares 401, the calendar feed declares no security, `info.version` equals the crate version, `info.license.name` is set, and every used tag is declared; served OpenAPI passes it.
+
+### KF-569 — Agents can't see their own token's scope or expiry [LOW]
+- Status: OPEN — filed 2026-10-18 from the agent-API audit (design slice 6).
+- Acceptance: `GET /api/v1/auth/whoami` returns `kind` (session|token|bootstrap), `name`, `scope` and `expires_at` correctly for a cookie session, a named API token and the bootstrap token; a revoked or expired token gets 401; documented in OpenAPI and the agent docs.
