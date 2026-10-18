@@ -3741,6 +3741,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a board seeded by the golden-master seed script shows the inline subtasks on the In Progress card as golden board/02 does.
 
 ### KF-481 — Quick-add dialog actions are unverified against KanbanFlow [LOW]
+- Status: RELEASED — batch-42, main 6eb868b, live on green-box 2026-10-18 (verify-42 PASS: Labels/Description/More inline per KanbanFlow capture quickadd/05..08, one JSON POST per save, cross-site 403, harness 29/29, gates; database copied first as chipflow-20261018T030459Z-before-6eb868b.redb).
 - Status: OPEN — KanbanFlow capture taken 2026-10-18 on FQhhSs1 (local goldens quickadd/05..08: Labels inline popover with an Add labels input; Description inline Write/Preview editor in the dialog; More dropdown with Add due date / Add time estimate / Add other info; plain Enter saves and closes). Builder working from it.
 - Status: OPEN — partially fixed in batch-37 d2a466a: the quick-add Members button opens an inline popover and the three save shortcuts work as KanbanFlow's labels say (evidence .dev/evidence/batch-37-20261017/verify-w2-report.md and .dev/evidence/batch-37-20261017/verify-37c-report.md). Labels, Description and More are not captured from KanbanFlow yet; finishing needs a new capture.
 - Status: OPEN — filed 2026-10-17 from verify-f (KF-302 judgement).
