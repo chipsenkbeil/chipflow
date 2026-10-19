@@ -4369,10 +4369,12 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: every 4xx/5xx returned to a Bearer request is `application/json` `{"code": "<stable snake_case>", "message": "<today's text>"}`; codes are enumerated in the spec's `ErrorBody` schema and every 4xx response in the spec references `ErrorBody`; a 401 on `/api/*` carries `WWW-Authenticate: Bearer` and `Link: </llms.txt>; rel="help"` and distinguishes `token_invalid` from `token_expired`; an unknown `/api/*` path returns JSON 404 and a wrong method returns JSON 405, each naming `/api/v1/openapi.json`; cookie requests keep today's plain-text error bodies byte for byte.
 
 ### KF-572 — API concept prose lives in several hand-written copies [LOW]
+- Status: RELEASED — batch-49, main acb4028, live on green-box 2026-10-19 (database copied first as chipflow-20261019T051310Z-before-acb4028.redb).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 7, section 2.3).
 - Acceptance: the due-date, claim, readiness and timer-stop rules each appear exactly once in the source, in utoipa tag or operation descriptions; `GET /docs/api.md` is generated at request time from `ApiDoc::openapi()` and lists every spec operation with method, path, summary, parameters, body, responses and error codes; a test asserts every spec operation appears in it.
 
 ### KF-573 — Agent docs: one skill, llms.txt and a version check [MEDIUM]
+- Status: RELEASED — batch-49, main acb4028, live on green-box 2026-10-19 (database copied first as chipflow-20261019T051310Z-before-acb4028.redb).
 - Status: OPEN — 2026-10-19: acceptance extended by verify-k (KF-574): with `--public-url` set, the absolute links in `llms.txt` use its base; unset, they follow the request's scheme and Host like the device flow (`base_url`).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 8, D3, D9).
 - Acceptance: `GET /skill.md` (at most 150 lines, Agent Skills frontmatter with `metadata.version`) and `GET /llms.txt` (about 15 lines) are served; `GET /api/v1/version` reports `skill_version`; a test fails when the skill content changes without a `SKILL_VERSION` bump (fingerprint list like `SCHEMA_FINGERPRINTS`); a test asserts every `METHOD /path` in `skill.md` and `llms.txt` resolves to a spec operation; `/agents.md`, `/agents/skill.md` and `/.well-known/agents.json` return 404 and `agent-guide.md`, `agents/skill.md` and `agents.json` are deleted; Settings shows the install line; README has a short Agents section; the AGENTS.md rule names the new sources.
@@ -4383,6 +4385,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `--public-url` / `CHIPFLOW_PUBLIC_URL` sets the base of `verification_url`, the OpenAPI `servers` entry and the absolute links in `llms.txt`; with the flag set, a device start with any `Host` header returns a `verification_url` on the flag's base; without it, behaviour is today's.
 
 ### KF-575 — No rate limits on the API, device start or login [MEDIUM]
+- Status: RELEASED — batch-49, main acb4028, live on green-box 2026-10-19 (database copied first as chipflow-20261019T051310Z-before-acb4028.redb).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 10).
 - Acceptance: per credential, 20 requests per second with burst 100: request 101 inside one second from one token gets 429 with `Retry-After` and code `rate_limited`; per client IP, 10 per minute on `POST /api/v1/auth/device` and `POST /login`, the 11th within a minute gets 429; the client IP comes from `X-Forwarded-For` only when the peer is 127.0.0.1; limits are in memory.
 
@@ -4417,13 +4420,16 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: a scripted run of 10 tasks (find ready work, claim, comment, move to Done, log 25 minutes, release, and so on) by an agent given only `/skill.md` against a scratch server produces a report counting failed calls by cause; if more than one call in ten fails on request shape, the report proposes the bash wrapper (B').
 
 ### KF-583 — A timer test fails when run in the first 90 seconds after midnight UTC [LOW]
+- Status: RELEASED — batch-49, main acb4028, live on green-box 2026-10-19 (database copied first as chipflow-20261019T051310Z-before-acb4028.redb).
 - Status: OPEN — filed 2026-10-19 by verify-k: `routes::tests::log_timer_session_should_complete_overtime_and_log_taskless_work` failed at 00:01 UTC (left 0, right 1) and passed at 00:09. Its pomodoro starts at now-90 s and `pomodoro_count` reads `entries_today()`, so the entry lands on the previous day. Decide whether the test or the count is wrong (a pomodoro that started before midnight and finished after it).
 - Acceptance: the test passes under libfaketime at 00:00:30 UTC, 00:01:29 UTC and 12:00 UTC; if the count rule changes, a test pins how a pomodoro spanning midnight is counted.
 
 ### KF-584 — --public-url accepts a non-numeric port and names the flag for env values [LOW]
+- Status: RELEASED — batch-49, main acb4028, live on green-box 2026-10-19 (database copied first as chipflow-20261019T051310Z-before-acb4028.redb).
 - Status: OPEN — filed 2026-10-19 by verify-k (break attempts on KF-574): `https://host:notaport` and `https://<x>` start the server; the error says `--public-url` when the value came from `CHIPFLOW_PUBLIC_URL`; `https:///` gets the "must start with http://" message.
 - Acceptance: a host that isn't a valid DNS name or IP, or a port that isn't 1-65535, refuses startup with exit 1; the message names the source (flag or `CHIPFLOW_PUBLIC_URL`) and the actual problem (empty host, bad port).
 
 ### KF-585 — Device-flow poll errors are plain text for the credential-less callers they are for [LOW]
+- Status: RELEASED — batch-49, main acb4028, live on green-box 2026-10-19 (database copied first as chipflow-20261019T051310Z-before-acb4028.redb).
 - Status: OPEN — filed 2026-10-19 by builder-m (KF-573): `POST /api/v1/auth/device/token` without credentials returns plain-text `invalid_grant`, `denied` and `expired`, while the spec declares `ErrorBody` with `invalid_grant`, `access_denied` and `device_code_expired`. The JSON error layer rewrites credential-less `/api` errors only for 401 and unknown routes.
 - Acceptance: every 4xx from an `/api/*` request that carries neither a Bearer token nor a cookie is `{"code","message"}` JSON; an unknown `device_code` returns `{"code":"invalid_grant",...}`, a denied pairing `access_denied`, an expired one `device_code_expired`, a pending one `authorization_pending`; cookie requests are unchanged.
