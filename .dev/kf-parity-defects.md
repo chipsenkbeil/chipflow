@@ -4445,10 +4445,12 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: every token-management operation in `/api/v1/openapi.json` and `/docs/api.md` says it needs the browser session (no Bearer scope), and a spec lint test pins that cookie-only operations declare no Bearer scope.
 
 ### KF-587 — A board-task cursor shifts when a column is added or deleted mid-walk [LOW]
+- Status: RELEASED — batch-52, main 980f1cc, live on green-box 2026-10-19 (database copied first as chipflow-20261019T082526Z-before-980f1cc.redb).
 - Status: OPEN — filed 2026-10-19 by verify-51 (KF-580): the cursor keys on the column's index, so deleting an empty column ahead of the cursor skipped 95 tasks and inserting a column at the front repeated 97. `limit=` (blank) and `limit=+5` are accepted, and a duplicate `limit` is a 400 on `/api/tasks` but last-wins on the board endpoint.
 - Acceptance: the cursor keys on the column's and lane's stored positions (or ids with their positions), so adding or deleting a column or lane between pages repeats or skips no task that stays on the board; a blank, signed or duplicated `limit` is a 400 `invalid_request` on both endpoints; the Paging docs name every change that can still repeat or skip a task.
 
 ### KF-588 — The skill's quoting advice breaks the timer stop, and a few replies are undescribed [LOW]
+- Status: RELEASED — batch-52, main 980f1cc, live on green-box 2026-10-19 (database copied first as chipflow-20261019T082526Z-before-980f1cc.redb).
 - Status: OPEN — filed 2026-10-19 from the KF-582 experiment: `jq -n --arg` (the skill's advice) sends `started_at` and `session_id` as strings, which `POST /api/timer/stop` rejects (400 `invalid type: string, expected i64`); the skill doesn't say the timer timestamps are Unix integers while task timestamps are RFC3339 strings, that the time-log reply is an array, or whether a move needs `If-Claim-Fence`; "the main board" is undefined when a user names none.
 - Acceptance: the skill's timer stop example builds the body with `--argjson` for the integer fields and says which timestamps are integers; it states the time-log reply shape, that moves of a claimed task send `If-Claim-Fence`, and what to do when the user names no board; `SKILL_VERSION` is bumped with a fingerprint pair; the skill stays at or under 150 lines.
 
