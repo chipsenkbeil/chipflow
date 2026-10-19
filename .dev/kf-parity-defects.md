@@ -4395,10 +4395,12 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `last_used_at` is written at most once per 60 seconds per token through an in-memory map; 100 GETs in one minute from one token cause at most one token-table write (asserted by a test); `whoami` and the token list still report a `last_used_at` no older than 60 seconds.
 
 ### KF-577 — Token scopes are only read and write [MEDIUM]
+- Status: RELEASED — batch-50, main 1e2c5bf, live on green-box 2026-10-19 (database copied first as chipflow-20261019T064619Z-before-1e2c5bf.redb).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 12, D4).
 - Acceptance: scopes `read`, `work`, `admin` (ordered, each includes the one before); `required_scope(method, matched_path)` reads one static table (GET defaults to read, work routes listed, any other method defaults to admin) and the spec emits per-operation `security: [{bearerAuth: [<scope>]}]`; a `work` token can claim, patch, move, comment and log time and gets 403 `insufficient_scope` ("insufficient token scope: needs admin") on `DELETE /api/boards/{id}`; a test asserts every route in `router()` has a table entry; `SCHEMA_VERSION` 5 with an upgrade that rewrites stored `["write"]` to `["admin"]` and leaves `["read"]`.
 
 ### KF-578 — Device approval can't lower the scope or set an expiry [LOW]
+- Status: RELEASED — batch-50, main 1e2c5bf, live on green-box 2026-10-19 (database copied first as chipflow-20261019T064619Z-before-1e2c5bf.redb).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 13, D5).
 - Acceptance: the approval page shows the requested scope with a warning line for `admin`, lets the owner lower it, and offers expiry 30, 90 (default) or 365 days or never; approving a `work` request as `read` with 30 days yields a token whose `whoami` shows scope `read` and an `expires_at` 30 days out.
 
@@ -4412,6 +4414,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `GET /api/boards/{id}/tasks` and `GET /api/tasks` take `limit` (default 200, max 1000) and `cursor` and return `{items, next_cursor}`; 450 tasks come back as three pages of `limit=200` with no duplicates and no gaps (asserted by a test); a `limit` above 1000 is a 400; the spec documents the shape.
 
 ### KF-581 — Task history doesn't name the token that made a change [LOW]
+- Status: RELEASED — batch-50, main 1e2c5bf, live on green-box 2026-10-19 (database copied first as chipflow-20261019T064619Z-before-1e2c5bf.redb).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 16, optional, approved with D1-D13).
 - Acceptance: `TaskEvent` stores `token_name` (schema bump, fingerprint appended); a move made with a named token shows that name in the task history (API and UI); cookie changes show none.
 
