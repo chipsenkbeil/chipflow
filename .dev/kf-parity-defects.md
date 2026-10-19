@@ -4458,3 +4458,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Status: RELEASED — batch-53, main 181ca47, live on green-box 2026-10-19 (database copied first as chipflow-20261019T084852Z-before-181ca47.redb).
 - Status: OPEN — filed 2026-10-19 by verify-52B: after KF-587 moved `/api/tasks` to `from_pairs`, a duplicated `board_id` (and by reading, `cursor`) returns 200 with the last value, where it was a 400 before; a duplicated `limit` is still a 400.
 - Acceptance: a duplicated `board_id` or `cursor` on `/api/tasks`, and a duplicated filter on the board task list, is a 400 `invalid_request` naming the parameter, matching the `limit` rule.
+
+### KF-590 — Revoke every pre-release API token before 1.0 [LOW]
+- Status: OPEN — filed 2026-10-20 from the owner (via homelab-1f): the tokens that exist today are test tokens, and the one stored `write` token became `admin` in the schema-5 upgrade on purpose; the owner will revoke them all and mint fresh `work` or `admin` tokens when ChipFlow reaches 1.0.
+- Acceptance: at 1.0, `GET /api/v1/auth/tokens` (cookie) lists only tokens minted after the 1.0 release, and every token created before it returns 401 `token_invalid`.
