@@ -4440,3 +4440,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 ### KF-586 — The spec says the token list needs read scope, but it needs the browser session [LOW]
 - Status: OPEN — filed 2026-10-19 by verify-50: `GET /api/v1/auth/tokens` declares `security: [{bearerAuth: ["read"]}]`, but the handler requires the cookie and answers every token with 403 `session_required` (list, mint and revoke alike).
 - Acceptance: every token-management operation in `/api/v1/openapi.json` and `/docs/api.md` says it needs the browser session (no Bearer scope), and a spec lint test pins that cookie-only operations declare no Bearer scope.
+
+### KF-587 — A board-task cursor shifts when a column is added or deleted mid-walk [LOW]
+- Status: OPEN — filed 2026-10-19 by verify-51 (KF-580): the cursor keys on the column's index, so deleting an empty column ahead of the cursor skipped 95 tasks and inserting a column at the front repeated 97. `limit=` (blank) and `limit=+5` are accepted, and a duplicate `limit` is a 400 on `/api/tasks` but last-wins on the board endpoint.
+- Acceptance: the cursor keys on the column's and lane's stored positions (or ids with their positions), so adding or deleting a column or lane between pages repeats or skips no task that stays on the board; a blank, signed or duplicated `limit` is a 400 `invalid_request` on both endpoints; the Paging docs name every change that can still repeat or skip a task.
