@@ -4451,3 +4451,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 ### KF-588 — The skill's quoting advice breaks the timer stop, and a few replies are undescribed [LOW]
 - Status: OPEN — filed 2026-10-19 from the KF-582 experiment: `jq -n --arg` (the skill's advice) sends `started_at` and `session_id` as strings, which `POST /api/timer/stop` rejects (400 `invalid type: string, expected i64`); the skill doesn't say the timer timestamps are Unix integers while task timestamps are RFC3339 strings, that the time-log reply is an array, or whether a move needs `If-Claim-Fence`; "the main board" is undefined when a user names none.
 - Acceptance: the skill's timer stop example builds the body with `--argjson` for the integer fields and says which timestamps are integers; it states the time-log reply shape, that moves of a claimed task send `If-Claim-Fence`, and what to do when the user names no board; `SKILL_VERSION` is bumped with a fingerprint pair; the skill stays at or under 150 lines.
+
+### KF-589 — Duplicated board_id or cursor on /api/tasks is accepted last-wins [LOW]
+- Status: OPEN — filed 2026-10-19 by verify-52B: after KF-587 moved `/api/tasks` to `from_pairs`, a duplicated `board_id` (and by reading, `cursor`) returns 200 with the last value, where it was a 400 before; a duplicated `limit` is still a 400.
+- Acceptance: a duplicated `board_id` or `cursor` on `/api/tasks`, and a duplicated filter on the board task list, is a 400 `invalid_request` naming the parameter, matching the `limit` rule.
