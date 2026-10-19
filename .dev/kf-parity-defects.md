@@ -4455,5 +4455,6 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: the skill's timer stop example builds the body with `--argjson` for the integer fields and says which timestamps are integers; it states the time-log reply shape, that moves of a claimed task send `If-Claim-Fence`, and what to do when the user names no board; `SKILL_VERSION` is bumped with a fingerprint pair; the skill stays at or under 150 lines.
 
 ### KF-589 — Duplicated board_id or cursor on /api/tasks is accepted last-wins [LOW]
+- Status: RELEASED — batch-53, main 181ca47, live on green-box 2026-10-19 (database copied first as chipflow-20261019T084852Z-before-181ca47.redb).
 - Status: OPEN — filed 2026-10-19 by verify-52B: after KF-587 moved `/api/tasks` to `from_pairs`, a duplicated `board_id` (and by reading, `cursor`) returns 200 with the last value, where it was a 400 before; a duplicated `limit` is still a 400.
 - Acceptance: a duplicated `board_id` or `cursor` on `/api/tasks`, and a duplicated filter on the board task list, is a 400 `invalid_request` naming the parameter, matching the `limit` rule.
