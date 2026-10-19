@@ -4410,6 +4410,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: the server reads `CHIPFLOW_BOOTSTRAP_TOKEN` (admin power) and no longer reads `CHIPFLOW_API_TOKEN`; `whoami` reports `kind: "bootstrap"`; startup prints one line when it is set; docs updated.
 
 ### KF-580 — Task lists are unpaginated [MEDIUM]
+- Status: RELEASED — batch-51, main 4e277df, live on green-box 2026-10-19 (database copied first as chipflow-20261019T074603Z-before-4e277df.redb).
 - Status: OPEN — filed 2026-10-19 from the agent-interface design (slice 15, D8).
 - Acceptance: `GET /api/boards/{id}/tasks` and `GET /api/tasks` take `limit` (default 200, max 1000) and `cursor` and return `{items, next_cursor}`; 450 tasks come back as three pages of `limit=200` with no duplicates and no gaps (asserted by a test); a `limit` above 1000 is a 400; the spec documents the shape.
 
@@ -4439,6 +4440,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: every 4xx from an `/api/*` request that carries neither a Bearer token nor a cookie is `{"code","message"}` JSON; an unknown `device_code` returns `{"code":"invalid_grant",...}`, a denied pairing `access_denied`, an expired one `device_code_expired`, a pending one `authorization_pending`; cookie requests are unchanged.
 
 ### KF-586 — The spec says the token list needs read scope, but it needs the browser session [LOW]
+- Status: RELEASED — batch-51, main 4e277df, live on green-box 2026-10-19 (database copied first as chipflow-20261019T074603Z-before-4e277df.redb).
 - Status: OPEN — filed 2026-10-19 by verify-50: `GET /api/v1/auth/tokens` declares `security: [{bearerAuth: ["read"]}]`, but the handler requires the cookie and answers every token with 403 `session_required` (list, mint and revoke alike).
 - Acceptance: every token-management operation in `/api/v1/openapi.json` and `/docs/api.md` says it needs the browser session (no Bearer scope), and a spec lint test pins that cookie-only operations declare no Bearer scope.
 
