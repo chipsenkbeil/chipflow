@@ -4423,3 +4423,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 ### KF-584 — --public-url accepts a non-numeric port and names the flag for env values [LOW]
 - Status: OPEN — filed 2026-10-19 by verify-k (break attempts on KF-574): `https://host:notaport` and `https://<x>` start the server; the error says `--public-url` when the value came from `CHIPFLOW_PUBLIC_URL`; `https:///` gets the "must start with http://" message.
 - Acceptance: a host that isn't a valid DNS name or IP, or a port that isn't 1-65535, refuses startup with exit 1; the message names the source (flag or `CHIPFLOW_PUBLIC_URL`) and the actual problem (empty host, bad port).
+
+### KF-585 — Device-flow poll errors are plain text for the credential-less callers they are for [LOW]
+- Status: OPEN — filed 2026-10-19 by builder-m (KF-573): `POST /api/v1/auth/device/token` without credentials returns plain-text `invalid_grant`, `denied` and `expired`, while the spec declares `ErrorBody` with `invalid_grant`, `access_denied` and `device_code_expired`. The JSON error layer rewrites credential-less `/api` errors only for 401 and unknown routes.
+- Acceptance: every 4xx from an `/api/*` request that carries neither a Bearer token nor a cookie is `{"code","message"}` JSON; an unknown `device_code` returns `{"code":"invalid_grant",...}`, a denied pairing `access_denied`, an expired one `device_code_expired`, a pending one `authorization_pending`; cookie requests are unchanged.
