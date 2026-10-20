@@ -4462,3 +4462,11 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 ### KF-590 — Revoke every pre-release API token before 1.0 [LOW]
 - Status: OPEN — filed 2026-10-20 from the owner (via homelab-1f): the tokens that exist today are test tokens, and the one stored `write` token became `admin` in the schema-5 upgrade on purpose; the owner will revoke them all and mint fresh `work` or `admin` tokens when ChipFlow reaches 1.0.
 - Acceptance: at 1.0, `GET /api/v1/auth/tokens` (cookie) lists only tokens minted after the 1.0 release, and every token created before it returns 401 `token_invalid`.
+
+### KF-591 — Global settings can only be reached through a board's settings page [MEDIUM]
+- Status: OPEN — filed 2026-10-20 from the owner (screenshot of /settings#api-tokens): `/settings` holds account-wide settings (activities, API tokens) but the only links to it are inside board settings (templates/board_settings.html "Settings → API tokens"); its own header shows only "Back to board".
+- Acceptance: from the board view, global settings opens in one click from a control that does not depend on board settings (where KanbanFlow puts account-level settings, matched to the goldens; if the goldens show no such control, the board header's account area); board settings links to it as today; the parity harness stays 29/29, or any golden entry that changes is explained against its golden.
+
+### KF-592 — The global settings page doesn't match the rest of ChipFlow's styling [MEDIUM]
+- Status: OPEN — filed 2026-10-20 from the owner (screenshot): `/settings` uses unstyled browser controls (plain text input, boxed fieldset, raw radio list, bare table, plain select) and a dark top bar with only "Back to board", unlike the board settings page.
+- Acceptance: `/settings` uses the same page frame and components as board settings (the KanbanFlow admin layout: light background, centred admin box, left nav for its sections such as Activities and API tokens; the same inputs, buttons, select, radio group and table styles); the token table header says "Scope" (one scope per token); UI copy on the page has no em dashes; dark mode renders it; no console errors; the parity harness stays 29/29.
