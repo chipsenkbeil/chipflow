@@ -4464,14 +4464,17 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: at 1.0, `GET /api/v1/auth/tokens` (cookie) lists only tokens minted after the 1.0 release, and every token created before it returns 401 `token_invalid`.
 
 ### KF-591 — Global settings can only be reached through a board's settings page [MEDIUM]
+- Status: RELEASED — batch-54, main 34df596, live on green-box 2026-10-20 (database copied first as chipflow-20261020T024200Z-before-34df596.redb).
 - Status: OPEN — filed 2026-10-20 from the owner (screenshot of /settings#api-tokens): `/settings` holds account-wide settings (activities, API tokens) but the only links to it are inside board settings (templates/board_settings.html "Settings → API tokens"); its own header shows only "Back to board".
 - Acceptance: from the board view, global settings opens in one click from a control that does not depend on board settings (where KanbanFlow puts account-level settings, matched to the goldens; if the goldens show no such control, the board header's account area); board settings links to it as today; the parity harness stays 29/29, or any golden entry that changes is explained against its golden.
 
 ### KF-592 — The global settings page doesn't match the rest of ChipFlow's styling [MEDIUM]
+- Status: RELEASED — batch-54, main 34df596, live on green-box 2026-10-20 (database copied first as chipflow-20261020T024200Z-before-34df596.redb).
 - Status: OPEN — filed 2026-10-20 from the owner (screenshot): `/settings` uses unstyled browser controls (plain text input, boxed fieldset, raw radio list, bare table, plain select) and a dark top bar with only "Back to board", unlike the board settings page.
 - Acceptance: `/settings` uses the same page frame and components as board settings (the KanbanFlow admin layout: light background, centred admin box, left nav for its sections such as Activities and API tokens; the same inputs, buttons, select, radio group and table styles); the token table header says "Scope" (one scope per token); UI copy on the page has no em dashes; dark mode renders it; no console errors; the parity harness stays 29/29.
 
 ### KF-593 — A provision scope for an agent that creates project boards but never deletes [MEDIUM]
+- Status: RELEASED — batch-54, main 34df596, live on green-box 2026-10-20 (database copied first as chipflow-20261020T024200Z-before-34df596.redb).
 - Status: OPEN — filed 2026-10-20, owner approved ("go"): the lead agent needs `admin` today only to create boards, which also lets it delete boards and tasks permanently.
 - Acceptance: a `provision` scope ordered between `work` and `admin` (read < work < provision < admin); it allows everything `work` does plus `POST /api/boards` (with or without `template_id`) and creating columns, swimlanes and fields (`POST /api/columns`, `POST /api/swimlanes`, `POST /api/boards/{id}/fields`); every delete and every PATCH/PUT on board structure, config, settings, colors, templates and the calendar feed stays `admin` (403 `insufficient_scope`, "needs admin"); the route scope table and the spec's per-operation scopes show it; tokens can be created with it in Settings and requested and approved at it in the device flow (the approval page can lower admin to provision); `whoami` reports it; a stored-type change gets a `SCHEMA_VERSION` bump if the stored scope enum changes; the skill says which scope creates boards (with a version bump).
 
