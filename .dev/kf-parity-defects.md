@@ -4531,6 +4531,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
 - Acceptance: `/` redirects to the lowest-position unarchived board, and falls back to an archived board only when every board is archived. A unit test covers both cases and fails on the old code.
 
 ### KF-604 — Custom fields can't hold an ordered list of typed records [MEDIUM]
+- Status: RELEASED — batch-63, main f0f6136, live on green-box 2026-10-23 (database copied first as chipflow-20261023T212102Z-before-f0f6136.redb).
 - Status: SCOPE NOTE 2026-10-23 by the orchestrator: no card face shows custom-field values today (cards carry only the "fields incomplete" badge), so the "UI, card face" criterion has nothing to extend and is dropped. FieldInputView.display returns "N rows" wherever a field's display text is used. Adding field values to cards would be a new feature.
 - Status: SCOPE CHANGED 2026-10-23 by the owner (chose "1", provision may make lossless conversions on any field). This supersedes the system-only gate above. Provision may convert ANY multiline field, whatever its owner, one way: (a) to `table` (lines become rows in the first text column, as above); (b) to `multiselect`, where each task's distinct non-empty trimmed lines become its selected options, and every line not already in `options` is appended to the field's options in first-seen order, so nothing is dropped. Both run in one write, and a rejected request changes nothing. Every other kind change, and any reverse conversion, stays refused (as today for provision and admin alike, unless it is one of these two). Tests cover both conversions, option appending and order, empty values, a user-owned field under provision, and atomicity.
 - Status: SCOPE ADDED 2026-10-23 by the owner (chose "1", convert in place with nothing deleted): `PATCH /api/fields/{id}` may turn a `multiline` field into `kind: "table"` with `columns`, one way only. Every task's existing value becomes rows, one per non-empty line (trimmed), in the table's first text column, and other columns stay unset. An empty or null value becomes no value. It runs in one write, so a rejected request changes nothing. If a converted row would fail validation (for example a required column besides the first text column), the whole request is a 400 naming the task and row. Provision may convert only `system`-owned fields, and converting a `user`-owned field needs admin (403 "insufficient token scope: needs admin"). Every other kind change stays refused as today. Tests cover the line split, an empty value, provision on system versus user, and atomicity.
@@ -4547,6 +4548,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
   - **Unchanged.** Every other field kind behaves exactly as today, and parity is 29/29.
 
 ### KF-605 — Descriptions and comments show markdown as raw text [MEDIUM]
+- Status: RELEASED — batch-63, main f0f6136, live on green-box 2026-10-23 (database copied first as chipflow-20261023T212102Z-before-f0f6136.redb).
 - Status: OPEN — filed 2026-10-23 by the owner ("support markdown styling in the description ... a way to toggle between raw and markdown rendered as HTML"). The owner chose: rendered by default; render descriptions and comments; ship in 0.2.0.
 - Acceptance:
   - **Render.** The task modal renders the description and every comment body as CommonMark (plus tables, strikethrough and task lists) on the server, in pure Rust. The output is sanitized against an allowlist: no script, no event handlers, no `javascript:` URLs, and links open with `rel="noopener noreferrer"`. A test proves a `<script>`, an `onerror` attribute and a `javascript:` link are stripped.
@@ -4556,6 +4558,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
   - **Unchanged.** The API stores and returns the raw text. Exports keep the raw text. Parity is 29/29.
 
 ### KF-606 — API comments can't show which agent wrote them [LOW]
+- Status: RELEASED — batch-63, main f0f6136, live on green-box 2026-10-23 (database copied first as chipflow-20261023T212102Z-before-f0f6136.redb).
 - Status: OPEN — filed 2026-10-23 from agentctl-d8; the owner chose to build it in 0.2.0. The comment `author` input already exists and does this job, so there is no new field: agentctl sends `author` (e.g. "reviewer · glm (standards)") instead of falling back to "api-token".
 - Acceptance:
   - **Length.** `author` on comment create is at most 80 characters after trimming, or it gets a 400 that names the limit.
@@ -4563,6 +4566,7 @@ New defects KF-127 through KF-131 were discovered during this browser pass and a
   - **Docs.** OpenAPI describes `author` as the display label for agents sharing one token, with its limit.
 
 ### KF-607 — System and oracle comments drown out reviews in the card view [LOW]
+- Status: RELEASED — batch-63, main f0f6136, live on green-box 2026-10-23 (database copied first as chipflow-20261023T212102Z-before-f0f6136.redb).
 - Status: OPEN — filed 2026-10-23 from agentctl-d8; the owner chose to build it in 0.2.0. UI only: `kind` is already stored.
 - Acceptance:
   - **Filter.** The comments area shows a toggle chip for each comment kind present on the task, plus "untagged" if any comment has no kind. Turning a chip off hides those comments and shows a count, e.g. "4 hidden".
